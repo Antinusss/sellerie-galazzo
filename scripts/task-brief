@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Usage: scripts/task-brief PLAN_FILE TASK_NUMBER
+# Extracts task N from plan and writes to .superpowers/sdd/task-N-brief.md
+set -e
+PLAN="$1"
+N="$2"
+OUT=".superpowers/sdd/task-${N}-brief.md"
+mkdir -p .superpowers/sdd
+
+# Extract from "### Task N:" to next "### Task" or end
+awk "/^### Task ${N}:/{found=1} found && /^### Task [0-9]/ && !/^### Task ${N}:/{found=0} found{print}" "$PLAN" > "$OUT"
+
+echo "$OUT"

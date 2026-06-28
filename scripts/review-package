@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Usage: scripts/review-package BASE HEAD
+# Writes diff package to .superpowers/sdd/review-<timestamp>.md
+set -e
+BASE="$1"
+HEAD="${2:-HEAD}"
+TS=$(date +%Y%m%d-%H%M%S)
+OUT=".superpowers/sdd/review-${TS}.md"
+mkdir -p .superpowers/sdd
+
+{
+  echo "# Review Package — $(date)"
+  echo "## Commits"
+  git log --oneline "${BASE}..${HEAD}"
+  echo ""
+  echo "## Stat"
+  git diff --stat "${BASE}..${HEAD}"
+  echo ""
+  echo "## Full Diff"
+  git diff -U10 "${BASE}..${HEAD}"
+} > "$OUT"
+
+echo "$OUT"
