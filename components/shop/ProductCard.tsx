@@ -24,7 +24,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     >
       <Link href={`/shop/${product.slug}`} className="block relative aspect-square overflow-hidden bg-gray-light">
         <Image
-          src={product.images[0]}
+          src={product.images[0] ?? ''}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"

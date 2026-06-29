@@ -9,7 +9,7 @@ export default function ProductGallery({ images, name }: ProductGalleryProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="relative aspect-square rounded-3xl overflow-hidden bg-gray-light">
-        <Image src={images[selected]} alt={name} fill className="object-cover" />
+        <Image src={images[selected] ?? ''} alt={name} fill className="object-cover" />
       </div>
       {images.length > 1 && (
         <div className="flex gap-3">

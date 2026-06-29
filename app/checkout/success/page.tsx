@@ -1,7 +1,11 @@
+'use client'
+import { useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
 
 export default function SuccessPage() {
+  const [orderNumber] = useState(() => Math.floor(Math.random() * 90000) + 10000)
+
   return (
     <div className="max-w-lg mx-auto px-4 py-24 text-center">
       <CheckCircle size={72} className="mx-auto text-green-500 mb-6" />
@@ -11,7 +15,7 @@ export default function SuccessPage() {
       </p>
       <div className="bg-gray-light rounded-2xl p-6 mb-8 text-left">
         <p className="text-sm font-semibold mb-1">Numero ordine</p>
-        <p className="text-2xl font-black text-red">#SG-{Math.floor(Math.random() * 90000) + 10000}</p>
+        <p className="text-2xl font-black text-red">#SG-{orderNumber}</p>
         <p className="text-xs text-gray-400 mt-2">Conserva questo numero per eventuali comunicazioni</p>
       </div>
       <Link

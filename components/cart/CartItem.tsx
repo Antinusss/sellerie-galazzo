@@ -12,7 +12,7 @@ export default function CartItem({ item }: CartItemProps) {
   return (
     <div className="flex gap-4 py-5 border-b border-gray-100">
       <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-light shrink-0">
-        <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />
+        <Image src={item.product.images[0] ?? ''} alt={item.product.name} fill className="object-cover" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs text-sand font-semibold uppercase">{item.product.category}</p>

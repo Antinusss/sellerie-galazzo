@@ -14,7 +14,7 @@ export default function OrderSummary() {
         {items.map(item => (
           <div key={item.product.id} className="flex gap-3 items-center">
             <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white shrink-0">
-              <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />
+              <Image src={item.product.images[0] ?? ''} alt={item.product.name} fill className="object-cover" />
               <span className="absolute -top-1 -right-1 bg-gray-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
                 {item.quantity}
               </span>
