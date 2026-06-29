@@ -1,0 +1,30 @@
+[
+  {
+    "id": "monta-inglese",
+    "name": "Monta Inglese",
+    "slug": "monta-inglese",
+    "image": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800&q=80",
+    "description": "Selle, abbigliamento e accessori per salto ostacoli e dressage"
+  },
+  {
+    "id": "monta-western",
+    "name": "Monta Western",
+    "slug": "monta-western",
+    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+    "description": "Tutto per la monta western: cappelli, stivali, selle e abbigliamento"
+  },
+  {
+    "id": "scuderia",
+    "name": "Scuderia",
+    "slug": "scuderia",
+    "image": "https://images.unsplash.com/photo-1534470397-6cfb73b8d4c5?w=800&q=80",
+    "description": "Prodotti per la cura quotidiana del cavallo e della scuderia"
+  },
+  {
+    "id": "cavaliere",
+    "name": "Cavaliere",
+    "slug": "cavaliere",
+    "image": "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80",
+    "description": "Abbigliamento tecnico e protezioni per il cavaliere"
+  }
+]

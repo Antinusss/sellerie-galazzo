@@ -4,7 +4,7 @@
 Started: 2026-06-28
 
 ## Tasks
-- [ ] Task 1: Project Scaffold
+- [x] Task 1: Project Scaffold (commits c415fd1..1ed27b7, review clean)
 - [ ] Task 2: Types + Data Layer
 - [ ] Task 3: Zustand Cart Store
 - [ ] Task 4: Layout Components

@@ -1,0 +1,8 @@
+[
+  { "id": "acavallo", "name": "Acavallo", "logo": "https://picsum.photos/seed/acavallo/200/80" },
+  { "id": "equestro", "name": "Equestro", "logo": "https://picsum.photos/seed/equestro/200/80" },
+  { "id": "franceschini", "name": "Franceschini Stivali", "logo": "https://picsum.photos/seed/franceschini/200/80" },
+  { "id": "acme", "name": "ACME", "logo": "https://picsum.photos/seed/acme/200/80" },
+  { "id": "kerbl", "name": "Kerbl", "logo": "https://picsum.photos/seed/kerbl/200/80" },
+  { "id": "waldhausen", "name": "Waldhausen", "logo": "https://picsum.photos/seed/waldhausen/200/80" }
+]
