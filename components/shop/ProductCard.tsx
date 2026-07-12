@@ -22,7 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       viewport={{ once: true }}
       className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
-      <Link href={`/shop/${product.slug}`} className="block relative aspect-square overflow-hidden bg-gray-light">
+      <Link href={`/prodotto/${product.slug}`} className="block relative aspect-square overflow-hidden bg-gray-light">
         <Image
           src={product.images[0] ?? ''}
           alt={product.name}

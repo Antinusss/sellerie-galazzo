@@ -25,9 +25,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="text-sand font-bold uppercase text-xs tracking-widest mb-2">{product.category}</p>
+        <p className="text-sand font-bold uppercase text-xs tracking-widest mb-2">{product.categoryPath.join(' / ')}</p>
         <h1 className="text-3xl lg:text-4xl font-black text-black leading-tight">{product.name}</h1>
-        <p className="text-gray-400 text-sm mt-1">{product.brand}</p>
+        {product.brand && <p className="text-gray-400 text-sm mt-1">{product.brand}</p>}
       </div>
 
       <div className="flex items-baseline gap-3">

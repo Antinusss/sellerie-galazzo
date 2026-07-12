@@ -9,19 +9,17 @@ export default function ProductTabs({ description, specs }: ProductTabsProps) {
   const [active, setActive] = useState<typeof TABS[number]>('Descrizione')
 
   const content: Record<typeof TABS[number], React.ReactNode> = {
-    'Descrizione': <p className="text-gray-600 leading-relaxed">{description}</p>,
-    'Specifiche': (
-      <div className="space-y-2">
-        {specs.split(' | ').map(spec => {
-          const [key, val] = spec.split(': ')
-          return (
-            <div key={spec} className="flex gap-4 py-2 border-b border-gray-100">
-              <span className="font-semibold text-sm w-40 shrink-0">{key}</span>
-              <span className="text-sm text-gray-600">{val}</span>
-            </div>
-          )
-        })}
-      </div>
+    'Descrizione': description ? (
+      <p className="text-gray-600 leading-relaxed">{description}</p>
+    ) : (
+      <p className="text-gray-400">Descrizione non disponibile.</p>
+    ),
+    'Specifiche': specs ? (
+      <ul className="space-y-2 list-disc list-inside text-sm text-gray-600">
+        {specs.split(' | ').map(item => <li key={item}>{item}</li>)}
+      </ul>
+    ) : (
+      <p className="text-sm text-gray-400">Nessuna specifica tecnica disponibile per questo prodotto.</p>
     ),
     'Spedizione & Resi': (
       <div className="space-y-4 text-sm text-gray-600">
