@@ -1,15 +1,20 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Globe, Share2, Mail } from 'lucide-react'
+import categoriesData from '@/data/categories.json'
+import type { Category } from '@/lib/types'
+import { getChildren } from '@/lib/category-tree'
+
+const topLevel = getChildren(categoriesData as Category[], undefined)
 
 export default function Footer() {
   return (
     <footer className="bg-black text-white mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand */}
           <div>
-            <div className="text-2xl font-black mb-3">
-              Selleria<span className="text-red">Galazzo</span>
+            <div className="relative h-12 w-[112px] bg-white rounded-lg p-2 mb-3">
+              <Image src="/logo-selleria-galazzo.png" alt="Selleria Galazzo" fill className="object-contain p-1" />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Selleria online specializzata in articoli per equitazione e abbigliamento tecnico per cavallo e cavaliere.
@@ -20,16 +25,16 @@ export default function Footer() {
               <a href="#" className="text-gray-400 hover:text-white transition-colors"><Mail size={20} /></a>
             </div>
           </div>
-          {/* Shop */}
           <div>
             <h4 className="font-bold mb-4 text-sand">Shop</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              {['Monta Inglese', 'Monta Western', 'Scuderia', 'Cavaliere', 'Offerte'].map(l => (
-                <li key={l}><Link href="/shop" className="hover:text-white transition-colors">{l}</Link></li>
+              {topLevel.map(cat => (
+                <li key={cat.slug.join('/')}>
+                  <Link href={`/shop/${cat.slug.join('/')}`} className="hover:text-white transition-colors">{cat.name}</Link>
+                </li>
               ))}
             </ul>
           </div>
-          {/* Customer service */}
           <div>
             <h4 className="font-bold mb-4 text-sand">Assistenza</h4>
             <ul className="space-y-2 text-sm text-gray-400">
@@ -38,7 +43,6 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-          {/* Newsletter */}
           <div>
             <h4 className="font-bold mb-4 text-sand">Newsletter</h4>
             <p className="text-sm text-gray-400 mb-4">Novità, offerte esclusive e consigli per cavalieri.</p>

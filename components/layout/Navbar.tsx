@@ -1,15 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
+import categoriesData from '@/data/categories.json'
+import type { Category } from '@/lib/types'
+import { getChildren } from '@/lib/category-tree'
 
-const categories = [
-  { name: 'Monta Inglese', slug: 'monta-inglese' },
-  { name: 'Monta Western', slug: 'monta-western' },
-  { name: 'Scuderia', slug: 'scuderia' },
-  { name: 'Cavaliere', slug: 'cavaliere' },
-]
+const categories = categoriesData as Category[]
+const topLevel = getChildren(categories, undefined)
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -28,27 +28,34 @@ export default function Navbar() {
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <span className="text-2xl font-black text-black tracking-tight">
-              Selleria<span className="text-red">Galazzo</span>
-            </span>
+          <Link href="/" className="flex-shrink-0 relative h-10 w-[93px]">
+            <Image src="/logo-selleria-galazzo.png" alt="Selleria Galazzo" fill className="object-contain object-left" priority />
           </Link>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8">
-            {categories.map(cat => (
-              <Link
-                key={cat.slug}
-                href={`/shop?category=${cat.slug}`}
-                className="text-sm font-medium text-black hover:text-red transition-colors"
-              >
-                {cat.name}
-              </Link>
+            {topLevel.map(cat => (
+              <div key={cat.slug.join('/')} className="group relative">
+                <Link
+                  href={`/shop/${cat.slug.join('/')}`}
+                  className="text-sm font-medium text-black hover:text-red transition-colors py-6 inline-block"
+                >
+                  {cat.name}
+                </Link>
+                <div className="absolute left-0 top-full hidden group-hover:flex flex-col bg-white shadow-lg rounded-xl py-2 min-w-[220px] z-50">
+                  {getChildren(categories, cat).map(child => (
+                    <Link
+                      key={child.slug.join('/')}
+                      href={`/shop/${child.slug.join('/')}`}
+                      className="px-4 py-2 text-sm text-black hover:bg-gray-light hover:text-red transition-colors"
+                    >
+                      {child.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
 
-          {/* Icons */}
           <div className="flex items-center gap-4">
             <button className="p-2 hover:text-red transition-colors">
               <Search size={20} />
@@ -64,22 +71,18 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-            <button
-              className="md:hidden p-2"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
+            <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden border-t border-gray-100 py-4">
-            {categories.map(cat => (
+            {topLevel.map(cat => (
               <Link
-                key={cat.slug}
-                href={`/shop?category=${cat.slug}`}
+                key={cat.slug.join('/')}
+                href={`/shop/${cat.slug.join('/')}`}
                 className="block py-3 text-sm font-medium text-black hover:text-red"
                 onClick={() => setMobileOpen(false)}
               >
