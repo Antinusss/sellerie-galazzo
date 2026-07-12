@@ -4,7 +4,8 @@ import type { Product } from '@/lib/types'
 
 const mockProduct: Product = {
   id: '1', name: 'Test', slug: 'test', price: 5000, originalPrice: null,
-  category: 'Monta Inglese', brand: 'Test', images: [], description: '', specs: '', inStock: true,
+  category: 'Monta Inglese', categoryPath: ['Monta Inglese'], brand: 'Test', images: [],
+  description: '', specs: '', inStock: true,
 }
 
 beforeEach(() => {

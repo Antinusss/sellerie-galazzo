@@ -16,7 +16,8 @@ describe('slugify', () => {
 describe('getProductBySlug', () => {
   const products: Product[] = [
     { id: '1', name: 'Test Product', slug: 'test-product', price: 1000, originalPrice: null,
-      category: 'Monta Inglese', brand: 'Equestro', images: [], description: '', specs: '', inStock: true },
+      category: 'Monta Inglese', categoryPath: ['Monta Inglese'], brand: 'Equestro', images: [],
+      description: '', specs: '', inStock: true },
   ]
   it('finds product by slug', () => expect(getProductBySlug('test-product', products)?.id).toBe('1'))
   it('returns undefined for missing slug', () => expect(getProductBySlug('nope', products)).toBeUndefined())
