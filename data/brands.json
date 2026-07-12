@@ -1,8 +1,312 @@
 [
-  { "id": "acavallo", "name": "Acavallo", "logo": "https://picsum.photos/seed/acavallo/200/80" },
-  { "id": "equestro", "name": "Equestro", "logo": "https://picsum.photos/seed/equestro/200/80" },
-  { "id": "franceschini", "name": "Franceschini Stivali", "logo": "https://picsum.photos/seed/franceschini/200/80" },
-  { "id": "acme", "name": "ACME", "logo": "https://picsum.photos/seed/acme/200/80" },
-  { "id": "kerbl", "name": "Kerbl", "logo": "https://picsum.photos/seed/kerbl/200/80" },
-  { "id": "waldhausen", "name": "Waldhausen", "logo": "https://picsum.photos/seed/waldhausen/200/80" }
+  {
+    "id": "equestro",
+    "name": "Equestro",
+    "productCount": 1137
+  },
+  {
+    "id": "umbria-equitazione",
+    "name": "Umbria Equitazione",
+    "productCount": 487
+  },
+  {
+    "id": "supreme",
+    "name": "Supreme",
+    "productCount": 261
+  },
+  {
+    "id": "tommy-hilfiger",
+    "name": "Tommy Hilfiger",
+    "productCount": 175
+  },
+  {
+    "id": "pools",
+    "name": "Pool's",
+    "productCount": 169
+  },
+  {
+    "id": "acavallo",
+    "name": "Acavallo",
+    "productCount": 112
+  },
+  {
+    "id": "lakota",
+    "name": "Lakota",
+    "productCount": 67
+  },
+  {
+    "id": "sergio-grasso",
+    "name": "Sergio Grasso",
+    "productCount": 62
+  },
+  {
+    "id": "pro-tech",
+    "name": "PRO-TECH",
+    "productCount": 52
+  },
+  {
+    "id": "tattini",
+    "name": "Tattini",
+    "productCount": 38
+  },
+  {
+    "id": "uke",
+    "name": "UKE",
+    "productCount": 37
+  },
+  {
+    "id": "daslo",
+    "name": "Daslo",
+    "productCount": 29
+  },
+  {
+    "id": "derby",
+    "name": "Derby",
+    "productCount": 28
+  },
+  {
+    "id": "pro-light",
+    "name": "Pro-Light",
+    "productCount": 22
+  },
+  {
+    "id": "burioni",
+    "name": "Burioni",
+    "productCount": 15
+  },
+  {
+    "id": "farnam",
+    "name": "Farnam",
+    "productCount": 10
+  },
+  {
+    "id": "oxford",
+    "name": "OXFORD",
+    "productCount": 10
+  },
+  {
+    "id": "zandona",
+    "name": "ZANDONA'",
+    "productCount": 10
+  },
+  {
+    "id": "franceschini",
+    "name": "Franceschini",
+    "productCount": 10
+  },
+  {
+    "id": "lami-cell",
+    "name": "Lami-Cell",
+    "productCount": 9
+  },
+  {
+    "id": "effol",
+    "name": "Effol",
+    "productCount": 8
+  },
+  {
+    "id": "power-energy",
+    "name": "Power energy",
+    "productCount": 7
+  },
+  {
+    "id": "corral",
+    "name": "Corral",
+    "productCount": 7
+  },
+  {
+    "id": "equality",
+    "name": "Equality",
+    "productCount": 7
+  },
+  {
+    "id": "acme",
+    "name": "Acme",
+    "productCount": 6
+  },
+  {
+    "id": "metalab",
+    "name": "METALAB",
+    "productCount": 6
+  },
+  {
+    "id": "denver",
+    "name": "Denver",
+    "productCount": 6
+  },
+  {
+    "id": "pharmakas",
+    "name": "Pharmakas",
+    "productCount": 5
+  },
+  {
+    "id": "seaver",
+    "name": "Seaver",
+    "productCount": 5
+  },
+  {
+    "id": "barkley",
+    "name": "Barkley",
+    "productCount": 5
+  },
+  {
+    "id": "kerbl",
+    "name": "Kerbl",
+    "productCount": 5
+  },
+  {
+    "id": "masc",
+    "name": "MASC",
+    "productCount": 5
+  },
+  {
+    "id": "v-plast",
+    "name": "V-plast",
+    "productCount": 4
+  },
+  {
+    "id": "heiniger",
+    "name": "HEINIGER",
+    "productCount": 4
+  },
+  {
+    "id": "e-l-t",
+    "name": "E-L-T",
+    "productCount": 4
+  },
+  {
+    "id": "likit",
+    "name": "Likit",
+    "productCount": 3
+  },
+  {
+    "id": "unika",
+    "name": "Unika",
+    "productCount": 3
+  },
+  {
+    "id": "red-horns",
+    "name": "Red horns",
+    "productCount": 3
+  },
+  {
+    "id": "fiebings",
+    "name": "Fiebing’s",
+    "productCount": 3
+  },
+  {
+    "id": "berlin-custom-leather-ltd",
+    "name": "Berlin Custom Leather Ltd",
+    "productCount": 3
+  },
+  {
+    "id": "happy-mouth",
+    "name": "Happy Mouth",
+    "productCount": 3
+  },
+  {
+    "id": "lemieux",
+    "name": "LeMieux",
+    "productCount": 3
+  },
+  {
+    "id": "stud-muffins",
+    "name": "Stud muffins",
+    "productCount": 2
+  },
+  {
+    "id": "lacme",
+    "name": "LACME",
+    "productCount": 2
+  },
+  {
+    "id": "flicka",
+    "name": "Flicka",
+    "productCount": 2
+  },
+  {
+    "id": "jockey",
+    "name": "Jockey",
+    "productCount": 2
+  },
+  {
+    "id": "tech-stirrups",
+    "name": "Tech Stirrups",
+    "productCount": 2
+  },
+  {
+    "id": "sarm-hippique",
+    "name": "Sarm Hippique",
+    "productCount": 2
+  },
+  {
+    "id": "absorbine",
+    "name": "Absorbine",
+    "productCount": 2
+  },
+  {
+    "id": "starbar",
+    "name": "STARBAR",
+    "productCount": 1
+  },
+  {
+    "id": "casco",
+    "name": "CASCO",
+    "productCount": 1
+  },
+  {
+    "id": "amahorse",
+    "name": "Amahorse",
+    "productCount": 1
+  },
+  {
+    "id": "compositi",
+    "name": "Compositi",
+    "productCount": 1
+  },
+  {
+    "id": "waldhausen",
+    "name": "Waldhausen",
+    "productCount": 1
+  },
+  {
+    "id": "jm",
+    "name": "JM",
+    "productCount": 1
+  },
+  {
+    "id": "kask",
+    "name": "Kask",
+    "productCount": 1
+  },
+  {
+    "id": "schutz-brothers",
+    "name": "Schutz Brothers",
+    "productCount": 1
+  },
+  {
+    "id": "mcbryan",
+    "name": "McBRYAN",
+    "productCount": 1
+  },
+  {
+    "id": "horse-master",
+    "name": "Horse Master",
+    "productCount": 1
+  },
+  {
+    "id": "hawtorne",
+    "name": "Hawtorne",
+    "productCount": 1
+  },
+  {
+    "id": "chifa",
+    "name": "Chifa",
+    "productCount": 1
+  },
+  {
+    "id": "candioli",
+    "name": "Candioli",
+    "productCount": 1
+  }
 ]

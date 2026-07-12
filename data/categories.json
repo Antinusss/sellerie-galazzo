@@ -1,30 +1,2046 @@
 [
   {
-    "id": "monta-inglese",
-    "name": "Monta Inglese",
-    "slug": "monta-inglese",
-    "image": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800&q=80",
-    "description": "Selle, abbigliamento e accessori per salto ostacoli e dressage"
-  },
-  {
-    "id": "monta-western",
-    "name": "Monta Western",
-    "slug": "monta-western",
-    "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
-    "description": "Tutto per la monta western: cappelli, stivali, selle e abbigliamento"
-  },
-  {
-    "id": "scuderia",
+    "path": [
+      "Scuderia"
+    ],
+    "slug": [
+      "scuderia"
+    ],
     "name": "Scuderia",
-    "slug": "scuderia",
-    "image": "https://images.unsplash.com/photo-1534470397-6cfb73b8d4c5?w=800&q=80",
-    "description": "Prodotti per la cura quotidiana del cavallo e della scuderia"
+    "depth": 1,
+    "productCount": 345,
+    "image": "https://selleriagalazzo.com/wp-content/uploads/2026/07/ACS00007_MAND-1.jpg"
   },
   {
-    "id": "cavaliere",
+    "path": [
+      "Scuderia",
+      "Cura del cuoio"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cuoio"
+    ],
+    "name": "Cura del cuoio",
+    "depth": 2,
+    "productCount": 20
+  },
+  {
+    "path": [
+      "Monta Western"
+    ],
+    "slug": [
+      "monta-western"
+    ],
+    "name": "Monta Western",
+    "depth": 1,
+    "productCount": 387,
+    "image": "https://selleriagalazzo.com/wp-content/uploads/2026/06/MO00194A_BN-1.jpg"
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo"
+    ],
+    "name": "Cavallo",
+    "depth": 2,
+    "productCount": 333
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Imboccature"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "imboccature"
+    ],
+    "name": "Imboccature",
+    "depth": 3,
+    "productCount": 32
+  },
+  {
+    "path": [
+      "Monta Inglese"
+    ],
+    "slug": [
+      "monta-inglese"
+    ],
+    "name": "Monta Inglese",
+    "depth": 1,
+    "productCount": 2334,
+    "image": "https://selleriagalazzo.com/wp-content/uploads/2026/06/VA00100_BK-1.jpg"
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo"
+    ],
+    "name": "Cavallo",
+    "depth": 2,
+    "productCount": 1022
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Briglie e accessori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "briglie-e-accessori"
+    ],
+    "name": "Briglie e accessori",
+    "depth": 3,
+    "productCount": 82
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Briglie e accessori",
+      "Redini e accessori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "briglie-e-accessori",
+      "redini-e-accessori"
+    ],
+    "name": "Redini e accessori",
+    "depth": 4,
+    "productCount": 13
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Abbeveratoi"
+    ],
+    "slug": [
+      "scuderia",
+      "abbeveratoi"
+    ],
+    "name": "Abbeveratoi",
+    "depth": 2,
+    "productCount": 6
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere"
+    ],
     "name": "Cavaliere",
-    "slug": "cavaliere",
-    "image": "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80",
-    "description": "Abbigliamento tecnico e protezioni per il cavaliere"
+    "depth": 2,
+    "productCount": 1312
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna"
+    ],
+    "name": "Donna",
+    "depth": 3,
+    "productCount": 739
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Accessori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "accessori"
+    ],
+    "name": "Accessori",
+    "depth": 4,
+    "productCount": 117
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Accessori",
+      "Occhiali da sole"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "accessori",
+      "occhiali-da-sole"
+    ],
+    "name": "Occhiali da sole",
+    "depth": 5,
+    "productCount": 5
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Protezioni"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "protezioni"
+    ],
+    "name": "Protezioni",
+    "depth": 4,
+    "productCount": 75
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Protezioni",
+      "Caschi"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "protezioni",
+      "caschi"
+    ],
+    "name": "Caschi",
+    "depth": 5,
+    "productCount": 53
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo"
+    ],
+    "name": "Cura del cavallo",
+    "depth": 2,
+    "productCount": 244
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Repellenti e maschere antimosche"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "repellenti-e-maschere-antimosche"
+    ],
+    "name": "Repellenti e maschere antimosche",
+    "depth": 3,
+    "productCount": 71
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Cura degli zoccoli"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "cura-degli-zoccoli"
+    ],
+    "name": "Cura degli zoccoli",
+    "depth": 3,
+    "productCount": 26
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Shampoo e sgroviglianti"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "shampoo-e-sgroviglianti"
+    ],
+    "name": "Shampoo e sgroviglianti",
+    "depth": 3,
+    "productCount": 20
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Benessere e recupero"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "benessere-e-recupero"
+    ],
+    "name": "Benessere e recupero",
+    "depth": 3,
+    "productCount": 34
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Fruste frustini"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "fruste-frustini"
+    ],
+    "name": "Fruste frustini",
+    "depth": 3,
+    "productCount": 17
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento"
+    ],
+    "name": "Abbigliamento",
+    "depth": 4,
+    "productCount": 495
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento",
+      "Pantaloni"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento",
+      "pantaloni"
+    ],
+    "name": "Pantaloni",
+    "depth": 5,
+    "productCount": 231
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Attrezzatura da Scuderia"
+    ],
+    "slug": [
+      "scuderia",
+      "attrezzatura-da-scuderia"
+    ],
+    "name": "Attrezzatura da Scuderia",
+    "depth": 2,
+    "productCount": 45
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Protezioni"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "protezioni"
+    ],
+    "name": "Protezioni",
+    "depth": 3,
+    "productCount": 175
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Recinti elettrici e accessori"
+    ],
+    "slug": [
+      "scuderia",
+      "recinti-elettrici-e-accessori"
+    ],
+    "name": "Recinti elettrici e accessori",
+    "depth": 2,
+    "productCount": 21
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavaliere"
+    ],
+    "slug": [
+      "monta-western",
+      "cavaliere"
+    ],
+    "name": "Cavaliere",
+    "depth": 2,
+    "productCount": 54
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavaliere",
+      "Abbigliamento"
+    ],
+    "slug": [
+      "monta-western",
+      "cavaliere",
+      "abbigliamento"
+    ],
+    "name": "Abbigliamento",
+    "depth": 3,
+    "productCount": 54
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavaliere",
+      "Abbigliamento",
+      "Stivali western"
+    ],
+    "slug": [
+      "monta-western",
+      "cavaliere",
+      "abbigliamento",
+      "stivali-western"
+    ],
+    "name": "Stivali western",
+    "depth": 4,
+    "productCount": 31
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento",
+      "T-shirt e polo d'allenamento"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento",
+      "t-shirt-e-polo-dallenamento"
+    ],
+    "name": "T-shirt e polo d'allenamento",
+    "depth": 5,
+    "productCount": 120
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina"
+    ],
+    "name": "Bambina",
+    "depth": 3,
+    "productCount": 241
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Abbigliamento"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "abbigliamento"
+    ],
+    "name": "Abbigliamento",
+    "depth": 4,
+    "productCount": 151
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Abbigliamento",
+      "T-shirt"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "abbigliamento",
+      "t-shirt"
+    ],
+    "name": "T-shirt",
+    "depth": 5,
+    "productCount": 37
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Cavezze e lunghine"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "cavezze-e-lunghine"
+    ],
+    "name": "Cavezze e lunghine",
+    "depth": 3,
+    "productCount": 212
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Sottosella e compensatori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "sottosella-e-compensatori"
+    ],
+    "name": "Sottosella e compensatori",
+    "depth": 3,
+    "productCount": 124
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Sottosella e compensatori",
+      "Sottosella e cuffiette"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "sottosella-e-compensatori",
+      "sottosella-e-cuffiette"
+    ],
+    "name": "Sottosella e cuffiette",
+    "depth": 4,
+    "productCount": 103
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento",
+      "Polo da concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento",
+      "polo-da-concorso"
+    ],
+    "name": "Polo da concorso",
+    "depth": 5,
+    "productCount": 67
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo"
+    ],
+    "name": "Uomo",
+    "depth": 3,
+    "productCount": 228
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Accessori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "accessori"
+    ],
+    "name": "Accessori",
+    "depth": 4,
+    "productCount": 26
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Accessori",
+      "Occhiali da sole"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "accessori",
+      "occhiali-da-sole"
+    ],
+    "name": "Occhiali da sole",
+    "depth": 5,
+    "productCount": 3
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Guanti"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "guanti"
+    ],
+    "name": "Guanti",
+    "depth": 4,
+    "productCount": 47
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Accessori",
+      "Guanti"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "accessori",
+      "guanti"
+    ],
+    "name": "Guanti",
+    "depth": 5,
+    "productCount": 50
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Accessori",
+      "Cappello"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "accessori",
+      "cappello"
+    ],
+    "name": "Cappello",
+    "depth": 5,
+    "productCount": 27
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino"
+    ],
+    "name": "Bambino",
+    "depth": 3,
+    "productCount": 104
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino",
+      "Abbigliamento"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino",
+      "abbigliamento"
+    ],
+    "name": "Abbigliamento",
+    "depth": 4,
+    "productCount": 38
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino",
+      "Abbigliamento",
+      "Calze"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino",
+      "abbigliamento",
+      "calze"
+    ],
+    "name": "Calze",
+    "depth": 5,
+    "productCount": 23
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Imboccature"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "imboccature"
+    ],
+    "name": "Imboccature",
+    "depth": 3,
+    "productCount": 55
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Abbigliamento",
+      "Pantaloni"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "abbigliamento",
+      "pantaloni"
+    ],
+    "name": "Pantaloni",
+    "depth": 5,
+    "productCount": 63
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento",
+      "Giubbini e smanicati"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento",
+      "giubbini-e-smanicati"
+    ],
+    "name": "Giubbini e smanicati",
+    "depth": 5,
+    "productCount": 16
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Briglie e accessori"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "briglie-e-accessori"
+    ],
+    "name": "Briglie e accessori",
+    "depth": 3,
+    "productCount": 68
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Briglie e accessori",
+      "Redini e accessori"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "briglie-e-accessori",
+      "redini-e-accessori"
+    ],
+    "name": "Redini e accessori",
+    "depth": 4,
+    "productCount": 21
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Briglie e accessori",
+      "Briglie"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "briglie-e-accessori",
+      "briglie"
+    ],
+    "name": "Briglie",
+    "depth": 4,
+    "productCount": 44
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Sottopancia e accessori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "sottopancia-e-accessori"
+    ],
+    "name": "Sottopancia e accessori",
+    "depth": 3,
+    "productCount": 40
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino",
+      "Protezioni"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino",
+      "protezioni"
+    ],
+    "name": "Protezioni",
+    "depth": 4,
+    "productCount": 6
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Pettorale"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "pettorale"
+    ],
+    "name": "Pettorale",
+    "depth": 3,
+    "productCount": 23
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Cavezze e lunghine",
+      "Cavezze"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "cavezze-e-lunghine",
+      "cavezze"
+    ],
+    "name": "Cavezze",
+    "depth": 4,
+    "productCount": 188
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino",
+      "Abbigliamento",
+      "Giacche concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino",
+      "abbigliamento",
+      "giacche-concorso"
+    ],
+    "name": "Giacche concorso",
+    "depth": 5,
+    "productCount": 7
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Cavezze e lunghine"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "cavezze-e-lunghine"
+    ],
+    "name": "Cavezze e lunghine",
+    "depth": 3,
+    "productCount": 107
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Staffe e staffili"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "staffe-e-staffili"
+    ],
+    "name": "Staffe e staffili",
+    "depth": 3,
+    "productCount": 53
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Staffe e staffili",
+      "Staffe"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "staffe-e-staffili",
+      "staffe"
+    ],
+    "name": "Staffe",
+    "depth": 4,
+    "productCount": 32
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento",
+      "Giacche da concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento",
+      "giacche-da-concorso"
+    ],
+    "name": "Giacche da concorso",
+    "depth": 5,
+    "productCount": 30
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Spazzole, nettapiedi e striglie"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "spazzole-nettapiedi-e-striglie"
+    ],
+    "name": "Spazzole, nettapiedi e striglie",
+    "depth": 3,
+    "productCount": 39
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Mangiatoie"
+    ],
+    "slug": [
+      "scuderia",
+      "mangiatoie"
+    ],
+    "name": "Mangiatoie",
+    "depth": 2,
+    "productCount": 9
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Attrezzatura da Scuderia",
+      "Pulizia scuderia"
+    ],
+    "slug": [
+      "scuderia",
+      "attrezzatura-da-scuderia",
+      "pulizia-scuderia"
+    ],
+    "name": "Pulizia scuderia",
+    "depth": 3,
+    "productCount": 8
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Stivaletti"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "stivaletti"
+    ],
+    "name": "Stivaletti",
+    "depth": 4,
+    "productCount": 20
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Staffe e staffili",
+      "Staffili"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "staffe-e-staffili",
+      "staffili"
+    ],
+    "name": "Staffili",
+    "depth": 4,
+    "productCount": 21
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Accessori coda e criniera"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "accessori-coda-e-criniera"
+    ],
+    "name": "Accessori coda e criniera",
+    "depth": 3,
+    "productCount": 27
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Sottosella"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "sottosella"
+    ],
+    "name": "Sottosella",
+    "depth": 3,
+    "productCount": 34
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Coperte"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "coperte"
+    ],
+    "name": "Coperte",
+    "depth": 3,
+    "productCount": 135
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Snack e biscotti"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "snack-e-biscotti"
+    ],
+    "name": "Snack e biscotti",
+    "depth": 3,
+    "productCount": 12
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Abbigliamento",
+      "Calze"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "abbigliamento",
+      "calze"
+    ],
+    "name": "Calze",
+    "depth": 5,
+    "productCount": 29
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento",
+      "Calze"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento",
+      "calze"
+    ],
+    "name": "Calze",
+    "depth": 5,
+    "productCount": 6
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Abbigliamento",
+      "Felpe"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "abbigliamento",
+      "felpe"
+    ],
+    "name": "Felpe",
+    "depth": 5,
+    "productCount": 25
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Felpe"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "felpe"
+    ],
+    "name": "Felpe",
+    "depth": 4,
+    "productCount": 11
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Abbigliamento"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "abbigliamento"
+    ],
+    "name": "Abbigliamento",
+    "depth": 4,
+    "productCount": 93
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Abbigliamento",
+      "Felpe"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "abbigliamento",
+      "felpe"
+    ],
+    "name": "Felpe",
+    "depth": 5,
+    "productCount": 7
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Calzature"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "calzature"
+    ],
+    "name": "Calzature",
+    "depth": 4,
+    "productCount": 50
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Calzature",
+      "Stivali"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "calzature",
+      "stivali"
+    ],
+    "name": "Stivali",
+    "depth": 5,
+    "productCount": 19
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Protezioni",
+      "Corpetti protettivi"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "protezioni",
+      "corpetti-protettivi"
+    ],
+    "name": "Corpetti protettivi",
+    "depth": 5,
+    "productCount": 20
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Sottopancia e accessori"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "sottopancia-e-accessori"
+    ],
+    "name": "Sottopancia e accessori",
+    "depth": 3,
+    "productCount": 26
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Selle e accessori"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "selle-e-accessori"
+    ],
+    "name": "Selle e accessori",
+    "depth": 3,
+    "productCount": 41
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Selle e accessori",
+      "Accessori"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "selle-e-accessori",
+      "accessori"
+    ],
+    "name": "Accessori",
+    "depth": 4,
+    "productCount": 22
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Selle e accessori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "selle-e-accessori"
+    ],
+    "name": "Selle e accessori",
+    "depth": 3,
+    "productCount": 37
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Selle e accessori",
+      "Selle da salto"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "selle-e-accessori",
+      "selle-da-salto"
+    ],
+    "name": "Selle da salto",
+    "depth": 4,
+    "productCount": 26
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Abbigliamento",
+      "Giacche da concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "abbigliamento",
+      "giacche-da-concorso"
+    ],
+    "name": "Giacche da concorso",
+    "depth": 5,
+    "productCount": 9
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Sottosella e compensatori",
+      "Compensatori"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "sottosella-e-compensatori",
+      "compensatori"
+    ],
+    "name": "Compensatori",
+    "depth": 4,
+    "productCount": 20
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Selle e accessori",
+      "Selle"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "selle-e-accessori",
+      "selle"
+    ],
+    "name": "Selle",
+    "depth": 4,
+    "productCount": 15
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Accessori da Doma"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "accessori-da-doma"
+    ],
+    "name": "Accessori da Doma",
+    "depth": 3,
+    "productCount": 33
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Accessori",
+      "Speroni e lacciolini"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "accessori",
+      "speroni-e-lacciolini"
+    ],
+    "name": "Speroni e lacciolini",
+    "depth": 5,
+    "productCount": 15
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Accessori",
+      "Speroni e lacciolini"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "accessori",
+      "speroni-e-lacciolini"
+    ],
+    "name": "Speroni e lacciolini",
+    "depth": 5,
+    "productCount": 4
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Abbigliamento",
+      "Polo da concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "abbigliamento",
+      "polo-da-concorso"
+    ],
+    "name": "Polo da concorso",
+    "depth": 5,
+    "productCount": 19
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Attrezzatura da Scuderia",
+      "borse e zaini"
+    ],
+    "slug": [
+      "scuderia",
+      "attrezzatura-da-scuderia",
+      "borse-e-zaini"
+    ],
+    "name": "borse e zaini",
+    "depth": 3,
+    "productCount": 7
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Abbigliamento",
+      "T-shirt e polo d'allenamento"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "abbigliamento",
+      "t-shirt-e-polo-dallenamento"
+    ],
+    "name": "T-shirt e polo d'allenamento",
+    "depth": 5,
+    "productCount": 17
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Accessori",
+      "Cinture"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "accessori",
+      "cinture"
+    ],
+    "name": "Cinture",
+    "depth": 5,
+    "productCount": 13
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino",
+      "Stivaletti"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino",
+      "stivaletti"
+    ],
+    "name": "Stivaletti",
+    "depth": 4,
+    "productCount": 46
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Briglie e accessori",
+      "Briglie"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "briglie-e-accessori",
+      "briglie"
+    ],
+    "name": "Briglie",
+    "depth": 4,
+    "productCount": 64
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavaliere",
+      "Abbigliamento",
+      "Speroni e laccioli"
+    ],
+    "slug": [
+      "monta-western",
+      "cavaliere",
+      "abbigliamento",
+      "speroni-e-laccioli"
+    ],
+    "name": "Speroni e laccioli",
+    "depth": 4,
+    "productCount": 14
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Calzature",
+      "Ghette"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "calzature",
+      "ghette"
+    ],
+    "name": "Ghette",
+    "depth": 5,
+    "productCount": 25
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Tosatrici e accessori"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "tosatrici-e-accessori"
+    ],
+    "name": "Tosatrici e accessori",
+    "depth": 3,
+    "productCount": 6
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambina",
+      "Abbigliamento",
+      "Giacche concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambina",
+      "abbigliamento",
+      "giacche-concorso"
+    ],
+    "name": "Giacche concorso",
+    "depth": 5,
+    "productCount": 3
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino",
+      "Abbigliamento",
+      "Polo da concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino",
+      "abbigliamento",
+      "polo-da-concorso"
+    ],
+    "name": "Polo da concorso",
+    "depth": 5,
+    "productCount": 5
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Accessori",
+      "Spille"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "accessori",
+      "spille"
+    ],
+    "name": "Spille",
+    "depth": 5,
+    "productCount": 4
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Attrezzatura da Scuderia",
+      "Bauli e bauletti"
+    ],
+    "slug": [
+      "scuderia",
+      "attrezzatura-da-scuderia",
+      "bauli-e-bauletti"
+    ],
+    "name": "Bauli e bauletti",
+    "depth": 3,
+    "productCount": 14
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Pettorali e martingale"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "pettorali-e-martingale"
+    ],
+    "name": "Pettorali e martingale",
+    "depth": 3,
+    "productCount": 59
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Calzature"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "calzature"
+    ],
+    "name": "Calzature",
+    "depth": 4,
+    "productCount": 106
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Calzature",
+      "Ghette"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "calzature",
+      "ghette"
+    ],
+    "name": "Ghette",
+    "depth": 5,
+    "productCount": 21
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Abbigliamento",
+      "Pantaloni"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "abbigliamento",
+      "pantaloni"
+    ],
+    "name": "Pantaloni",
+    "depth": 5,
+    "productCount": 49
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Bambino",
+      "Abbigliamento",
+      "T-shirt"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "bambino",
+      "abbigliamento",
+      "t-shirt"
+    ],
+    "name": "T-shirt",
+    "depth": 5,
+    "productCount": 3
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Abbigliamento",
+      "Polo da concorso"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "abbigliamento",
+      "polo-da-concorso"
+    ],
+    "name": "Polo da concorso",
+    "depth": 5,
+    "productCount": 7
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Selle e accessori",
+      "Selle da dressage"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "selle-e-accessori",
+      "selle-da-dressage"
+    ],
+    "name": "Selle da dressage",
+    "depth": 4,
+    "productCount": 6
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavallo",
+      "Selle e accessori",
+      "Selle da completo"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavallo",
+      "selle-e-accessori",
+      "selle-da-completo"
+    ],
+    "name": "Selle da completo",
+    "depth": 4,
+    "productCount": 3
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Abbigliamento",
+      "Giubbini e smanicati"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "abbigliamento",
+      "giubbini-e-smanicati"
+    ],
+    "name": "Giubbini e smanicati",
+    "depth": 5,
+    "productCount": 4
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Protezioni"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "protezioni"
+    ],
+    "name": "Protezioni",
+    "depth": 4,
+    "productCount": 3
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Protezioni",
+      "Caschi"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "protezioni",
+      "caschi"
+    ],
+    "name": "Caschi",
+    "depth": 5,
+    "productCount": 3
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Calzature",
+      "Stivali"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "calzature",
+      "stivali"
+    ],
+    "name": "Stivali",
+    "depth": 5,
+    "productCount": 13
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Calzature",
+      "Stivaletti"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "calzature",
+      "stivaletti"
+    ],
+    "name": "Stivaletti",
+    "depth": 5,
+    "productCount": 61
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Donna",
+      "Calzature",
+      "Stivaletti"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "donna",
+      "calzature",
+      "stivaletti"
+    ],
+    "name": "Stivaletti",
+    "depth": 5,
+    "productCount": 6
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavaliere",
+      "Abbigliamento",
+      "Cappelli western"
+    ],
+    "slug": [
+      "monta-western",
+      "cavaliere",
+      "abbigliamento",
+      "cappelli-western"
+    ],
+    "name": "Cappelli western",
+    "depth": 4,
+    "productCount": 9
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Accessori",
+      "Cinture"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "accessori",
+      "cinture"
+    ],
+    "name": "Cinture",
+    "depth": 5,
+    "productCount": 17
+  },
+  {
+    "path": [
+      "Monta Western",
+      "Cavallo",
+      "Accessori da doma"
+    ],
+    "slug": [
+      "monta-western",
+      "cavallo",
+      "accessori-da-doma"
+    ],
+    "name": "Accessori da doma",
+    "depth": 3,
+    "productCount": 2
+  },
+  {
+    "path": [
+      "Scuderia",
+      "Cura del cavallo",
+      "Coperte"
+    ],
+    "slug": [
+      "scuderia",
+      "cura-del-cavallo",
+      "coperte"
+    ],
+    "name": "Coperte",
+    "depth": 3,
+    "productCount": 9
+  },
+  {
+    "path": [
+      "Monta Inglese",
+      "Cavaliere",
+      "Uomo",
+      "Calzature",
+      "Scarpe da scuderia"
+    ],
+    "slug": [
+      "monta-inglese",
+      "cavaliere",
+      "uomo",
+      "calzature",
+      "scarpe-da-scuderia"
+    ],
+    "name": "Scarpe da scuderia",
+    "depth": 5,
+    "productCount": 11
   }
 ]
