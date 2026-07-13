@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
@@ -8,12 +9,15 @@ import categoriesData from '@/data/categories.json'
 import type { Category } from '@/lib/types'
 import { getChildren } from '@/lib/category-tree'
 
+const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
+
 const categories = categoriesData as Category[]
 const topLevel = getChildren(categories, undefined)
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const { totalItems } = useCartStore()
 
   useEffect(() => {
@@ -57,7 +61,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="p-2 hover:text-red transition-colors">
+            <button className="p-2 hover:text-red transition-colors" onClick={() => setSearchOpen(true)}>
               <Search size={20} />
             </button>
             <button className="p-2 hover:text-red transition-colors">
@@ -92,6 +96,8 @@ export default function Navbar() {
           </div>
         )}
       </div>
+
+      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
     </nav>
   )
 }
