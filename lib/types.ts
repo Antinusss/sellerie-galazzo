@@ -26,6 +26,7 @@ export interface Brand {
   id: string
   name: string
   productCount: number
+  logo?: string
 }
 
 export interface CartItem {

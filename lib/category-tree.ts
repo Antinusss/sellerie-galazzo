@@ -44,3 +44,10 @@ export function getRelatedProducts(product: Product, allProducts: Product[], lim
   )
   return [...sameLeaf, ...sameTop].slice(0, limit)
 }
+
+export function findCategoryByPath(categories: Category[], path: string[]): Category | undefined {
+  if (path.length === 0) return undefined
+  return categories.find(
+    c => c.path.length === path.length && c.path.every((seg, i) => seg === path[i])
+  )
+}

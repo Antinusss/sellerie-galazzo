@@ -5,17 +5,12 @@ import Image from 'next/image'
 import categoriesData from '@/data/categories.json'
 import type { Category } from '@/lib/types'
 import { getChildren } from '@/lib/category-tree'
+import { BRANCH_IMAGES } from '@/lib/branch-images'
 
 const DESCRIPTIONS: Record<string, string> = {
   'Monta Inglese': 'Selle, abbigliamento e accessori per salto ostacoli e dressage',
   'Monta Western': 'Tutto per la monta western: cappelli, stivali, selle e abbigliamento',
   'Scuderia': 'Prodotti per la cura quotidiana del cavallo e della scuderia',
-}
-
-const IMAGES: Record<string, string> = {
-  'Monta Inglese': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-inglese-e1781945615752-300x300.jpg',
-  'Monta Western': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-western-e1781945825723-300x300.jpg',
-  'Scuderia': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/scuderia-2-300x300.jpg',
 }
 
 export default function CategoryGrid() {
@@ -49,7 +44,7 @@ export default function CategoryGrid() {
                 className="group relative block aspect-[3/4] rounded-2xl overflow-hidden border-2 border-transparent hover:border-sand transition-all duration-300"
               >
                 <Image
-                  src={IMAGES[cat.name] ?? cat.image ?? ''}
+                  src={BRANCH_IMAGES[cat.name] ?? cat.image ?? ''}
                   alt={cat.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"

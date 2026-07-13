@@ -5,6 +5,7 @@ import {
   productsUnderCategory,
   breadcrumbFor,
   getRelatedProducts,
+  findCategoryByPath,
 } from '@/lib/category-tree'
 import type { Category, Product } from '@/lib/types'
 
@@ -94,5 +95,17 @@ describe('breadcrumbFor', () => {
   })
   it('returns a fallback label for undefined (root)', () => {
     expect(breadcrumbFor(undefined)).toBe('Tutti i prodotti')
+  })
+})
+
+describe('findCategoryByPath', () => {
+  it('finds a node by its name path (not slug)', () => {
+    expect(findCategoryByPath(categories, ['Monta Inglese', 'Cavallo'])?.name).toBe('Cavallo')
+  })
+  it('returns undefined for an unknown path', () => {
+    expect(findCategoryByPath(categories, ['Nope'])).toBeUndefined()
+  })
+  it('returns undefined for an empty path', () => {
+    expect(findCategoryByPath(categories, [])).toBeUndefined()
   })
 })
