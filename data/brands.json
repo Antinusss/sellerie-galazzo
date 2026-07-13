@@ -2,7 +2,8 @@
   {
     "id": "equestro",
     "name": "Equestro",
-    "productCount": 1137
+    "productCount": 1137,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/03/Equestro-150x150.jpg"
   },
   {
     "id": "umbria-equitazione",
@@ -17,27 +18,32 @@
   {
     "id": "tommy-hilfiger",
     "name": "Tommy Hilfiger",
-    "productCount": 175
+    "productCount": 175,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Tommy-Hilfiger-150x150.png"
   },
   {
     "id": "pools",
     "name": "Pool's",
-    "productCount": 169
+    "productCount": 169,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/pool-s-150x150.png"
   },
   {
     "id": "acavallo",
     "name": "Acavallo",
-    "productCount": 112
+    "productCount": 112,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/03/acavallo-150x150.png"
   },
   {
     "id": "lakota",
     "name": "Lakota",
-    "productCount": 67
+    "productCount": 67,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Lakota-150x150.png"
   },
   {
     "id": "sergio-grasso",
     "name": "Sergio Grasso",
-    "productCount": 62
+    "productCount": 62,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Sergio-Grasso-150x150.png"
   },
   {
     "id": "pro-tech",
@@ -72,12 +78,14 @@
   {
     "id": "burioni",
     "name": "Burioni",
-    "productCount": 15
+    "productCount": 15,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2026/06/square-image-150x150.jpg"
   },
   {
     "id": "farnam",
     "name": "Farnam",
-    "productCount": 10
+    "productCount": 10,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Farnam-150x150.png"
   },
   {
     "id": "oxford",
@@ -92,17 +100,20 @@
   {
     "id": "franceschini",
     "name": "Franceschini",
-    "productCount": 10
+    "productCount": 10,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Franceschini-150x150.png"
   },
   {
     "id": "lami-cell",
     "name": "Lami-Cell",
-    "productCount": 9
+    "productCount": 9,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Lami-Cell-150x150.png"
   },
   {
     "id": "effol",
     "name": "Effol",
-    "productCount": 8
+    "productCount": 8,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/03/Effol-150x150.jpeg"
   },
   {
     "id": "power-energy",
@@ -122,7 +133,8 @@
   {
     "id": "acme",
     "name": "Acme",
-    "productCount": 6
+    "productCount": 6,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/03/Acme-150x150.png"
   },
   {
     "id": "metalab",
@@ -157,7 +169,8 @@
   {
     "id": "masc",
     "name": "MASC",
-    "productCount": 5
+    "productCount": 5,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/07/logo-masc-3-1-1.jpeg"
   },
   {
     "id": "v-plast",
@@ -192,12 +205,14 @@
   {
     "id": "fiebings",
     "name": "Fiebing’s",
-    "productCount": 3
+    "productCount": 3,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Fiebing-s-150x150.png"
   },
   {
     "id": "berlin-custom-leather-ltd",
     "name": "Berlin Custom Leather Ltd",
-    "productCount": 3
+    "productCount": 3,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Berlin-Custom-Leather-Ltd-150x150.png"
   },
   {
     "id": "happy-mouth",
@@ -207,7 +222,8 @@
   {
     "id": "lemieux",
     "name": "LeMieux",
-    "productCount": 3
+    "productCount": 3,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/LeMieux-150x150.png"
   },
   {
     "id": "stud-muffins",
@@ -222,7 +238,8 @@
   {
     "id": "flicka",
     "name": "Flicka",
-    "productCount": 2
+    "productCount": 2,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Flicka-150x150.png"
   },
   {
     "id": "jockey",
@@ -242,7 +259,8 @@
   {
     "id": "absorbine",
     "name": "Absorbine",
-    "productCount": 2
+    "productCount": 2,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/03/Absorbine-150x150.png"
   },
   {
     "id": "starbar",
@@ -257,7 +275,8 @@
   {
     "id": "amahorse",
     "name": "Amahorse",
-    "productCount": 1
+    "productCount": 1,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2026/06/square-image-3-150x150.webp"
   },
   {
     "id": "compositi",
@@ -277,17 +296,20 @@
   {
     "id": "kask",
     "name": "Kask",
-    "productCount": 1
+    "productCount": 1,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Kask-150x150.png"
   },
   {
     "id": "schutz-brothers",
     "name": "Schutz Brothers",
-    "productCount": 1
+    "productCount": 1,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Schutz-Brothers-150x150.png"
   },
   {
     "id": "mcbryan",
     "name": "McBRYAN",
-    "productCount": 1
+    "productCount": 1,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/McBRYAN-150x150.png"
   },
   {
     "id": "horse-master",
@@ -297,7 +319,8 @@
   {
     "id": "hawtorne",
     "name": "Hawtorne",
-    "productCount": 1
+    "productCount": 1,
+    "logo": "https://selleriagalazzo.com/wp-content/uploads/2024/04/Hawtorne-150x150.png"
   },
   {
     "id": "chifa",

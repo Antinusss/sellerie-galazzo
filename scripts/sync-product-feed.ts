@@ -7,11 +7,41 @@ import {
   parseCategoryPath,
   dedupeSlugs,
 } from '../lib/feed-transform'
+import { applyOfferPricing } from '../lib/offers'
 import { slugify } from '../lib/utils'
 import type { Product, Category, Brand } from '../lib/types'
 
 const FEED_URL = 'https://selleriagalazzo.com/wp-content/uploads/woo-product-feed-pro/xml/fRYAYy1zVWYyPvFfJ7Sgior0vSkVdGfF.xml'
 const LOGO_URL = 'https://selleriagalazzo.com/wp-content/uploads/2024/02/logo-selleria-galazzo-200-b.png'
+
+// Real brand logos, sourced from selleriagalazzo.com's own homepage "I Brand
+// selezionati per voi" carousel. Only these 23 of the 62 real brands have a
+// logo asset there; the rest fall back to a styled text badge in the UI.
+const BRAND_LOGOS: Record<string, string> = {
+  'Equestro': 'https://selleriagalazzo.com/wp-content/uploads/2024/03/Equestro-150x150.jpg',
+  'Acavallo': 'https://selleriagalazzo.com/wp-content/uploads/2024/03/acavallo-150x150.png',
+  'Franceschini': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Franceschini-150x150.png',
+  'Acme': 'https://selleriagalazzo.com/wp-content/uploads/2024/03/Acme-150x150.png',
+  'Effol': 'https://selleriagalazzo.com/wp-content/uploads/2024/03/Effol-150x150.jpeg',
+  'Sergio Grasso': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Sergio-Grasso-150x150.png',
+  'LeMieux': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/LeMieux-150x150.png',
+  'Tommy Hilfiger': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Tommy-Hilfiger-150x150.png',
+  "Pool's": 'https://selleriagalazzo.com/wp-content/uploads/2024/04/pool-s-150x150.png',
+  'Farnam': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Farnam-150x150.png',
+  'Kask': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Kask-150x150.png',
+  'Fiebing’s': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Fiebing-s-150x150.png',
+  'Hawtorne': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Hawtorne-150x150.png',
+  'MASC': 'https://selleriagalazzo.com/wp-content/uploads/2024/07/logo-masc-3-1-1.jpeg',
+  'Absorbine': 'https://selleriagalazzo.com/wp-content/uploads/2024/03/Absorbine-150x150.png',
+  'Flicka': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Flicka-150x150.png',
+  'Lami-Cell': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Lami-Cell-150x150.png',
+  'Lakota': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Lakota-150x150.png',
+  'McBRYAN': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/McBRYAN-150x150.png',
+  'Schutz Brothers': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Schutz-Brothers-150x150.png',
+  'Berlin Custom Leather Ltd': 'https://selleriagalazzo.com/wp-content/uploads/2024/04/Berlin-Custom-Leather-Ltd-150x150.png',
+  'Burioni': 'https://selleriagalazzo.com/wp-content/uploads/2026/06/square-image-150x150.jpg',
+  'Amahorse': 'https://selleriagalazzo.com/wp-content/uploads/2026/06/square-image-3-150x150.webp',
+}
 
 interface FeedItem {
   'g:id': number | string
@@ -52,7 +82,7 @@ async function main() {
     }
   })
 
-  const products = dedupeSlugs(rawProducts)
+  const products = applyOfferPricing(dedupeSlugs(rawProducts))
 
   const nodePaths = new Map<string, string[]>()
   for (const p of products) {
@@ -84,7 +114,10 @@ async function main() {
   }
   const brands: Brand[] = [...brandCounts.entries()]
     .sort((a, b) => b[1] - a[1])
-    .map(([name, productCount]) => ({ id: slugify(name), name, productCount }))
+    .map(([name, productCount]) => {
+      const logo = BRAND_LOGOS[name]
+      return logo ? { id: slugify(name), name, productCount, logo } : { id: slugify(name), name, productCount }
+    })
 
   mkdirSync('data', { recursive: true })
   writeFileSync('data/products.json', JSON.stringify(products, null, 2))
