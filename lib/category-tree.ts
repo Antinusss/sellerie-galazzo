@@ -30,3 +30,17 @@ export function productsUnderCategory(products: Product[], category: Category | 
 export function breadcrumbFor(category: Category | undefined): string {
   return category ? category.path.join(' / ') : 'Tutti i prodotti'
 }
+
+export function getRelatedProducts(product: Product, allProducts: Product[], limit = 4): Product[] {
+  const leafKey = product.categoryPath.join(' > ')
+  const sameLeaf = allProducts.filter(
+    p => p.id !== product.id && p.categoryPath.join(' > ') === leafKey
+  )
+  if (sameLeaf.length >= limit) return sameLeaf.slice(0, limit)
+
+  const sameLeafIds = new Set(sameLeaf.map(p => p.id))
+  const sameTop = allProducts.filter(
+    p => p.id !== product.id && p.category === product.category && !sameLeafIds.has(p.id)
+  )
+  return [...sameLeaf, ...sameTop].slice(0, limit)
+}

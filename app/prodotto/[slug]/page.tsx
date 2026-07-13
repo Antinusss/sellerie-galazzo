@@ -4,6 +4,8 @@ import type { Product } from '@/lib/types'
 import ProductGallery from '@/components/product/ProductGallery'
 import ProductInfo from '@/components/product/ProductInfo'
 import ProductTabs from '@/components/product/ProductTabs'
+import RelatedProducts from '@/components/product/RelatedProducts'
+import NewsletterSection from '@/components/product/NewsletterSection'
 
 interface Props { params: { slug: string } }
 
@@ -22,6 +24,8 @@ export default function ProductPage({ params }: Props) {
         <ProductInfo product={product} />
       </div>
       <ProductTabs description={product.description} specs={product.specs} />
+      <RelatedProducts product={product} />
+      <NewsletterSection />
     </div>
   )
 }

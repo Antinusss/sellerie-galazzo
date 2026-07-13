@@ -4,6 +4,7 @@ import {
   getTopLevelCategories,
   productsUnderCategory,
   breadcrumbFor,
+  getRelatedProducts,
 } from '@/lib/category-tree'
 import type { Category, Product } from '@/lib/types'
 
@@ -69,6 +70,21 @@ describe('productsUnderCategory', () => {
   it('returns only products matching a leaf node exactly', () => {
     const cavallo = categories[1]
     expect(productsUnderCategory(products, cavallo).map(p => p.id).sort()).toEqual(['1', '2'])
+  })
+})
+
+describe('getRelatedProducts', () => {
+  it('prefers same-leaf-category products first, then fills from the same top-level category', () => {
+    expect(getRelatedProducts(products[0], products).map(p => p.id)).toEqual(['2', '3'])
+  })
+  it('stops once same-leaf matches already fill the limit', () => {
+    expect(getRelatedProducts(products[0], products, 1).map(p => p.id)).toEqual(['2'])
+  })
+  it('returns [] when no other product shares the top-level category', () => {
+    expect(getRelatedProducts(products[3], products)).toEqual([])
+  })
+  it('excludes the product itself', () => {
+    expect(getRelatedProducts(products[0], products).some(p => p.id === '1')).toBe(false)
   })
 })
 
