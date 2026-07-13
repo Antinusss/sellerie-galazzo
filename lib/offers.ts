@@ -8,7 +8,7 @@ const DISCOUNT_BUCKETS = 5
 export function applyOfferPricing(products: Product[]): Product[] {
   return products.map(p => {
     const numericId = Number(p.id)
-    if (!Number.isFinite(numericId) || numericId % OFFER_MODULO !== 0) return p
+    if (!Number.isFinite(numericId) || numericId % OFFER_MODULO !== 0 || p.price <= 0) return p
 
     const bucket = Math.floor(numericId / OFFER_MODULO) % DISCOUNT_BUCKETS
     const discountPct = DISCOUNT_BASE + bucket * DISCOUNT_STEP

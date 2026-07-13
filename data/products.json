@@ -2172,7 +2172,7 @@
     "name": "Equestro calza tecnica unisex Basic M 39-42 OXFORD TAN/WHITE",
     "slug": "equestro-calza-tecnica-unisex-basic-66720",
     "price": 0,
-    "originalPrice": 0,
+    "originalPrice": null,
     "category": "Monta Inglese",
     "categoryPath": [
       "Monta Inglese",
@@ -48926,7 +48926,7 @@
     "name": "Testiera inglese c/ottoni redini gomma BR P",
     "slug": "testiera-inglese-c-ottoni-redini-gomma-56175",
     "price": 0,
-    "originalPrice": 0,
+    "originalPrice": null,
     "category": "Monta Inglese",
     "categoryPath": [
       "Monta Inglese",

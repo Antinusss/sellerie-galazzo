@@ -41,6 +41,12 @@ describe('applyOfferPricing', () => {
     expect(result.originalPrice).toBe(1111)
   })
 
+  it('skips offer pricing for zero-price products even if id is in offer subset', () => {
+    const [result] = applyOfferPricing([product('15', 0)])
+    expect(result.originalPrice).toBeNull()
+    expect(result.price).toBe(0)
+  })
+
   it('does not mutate the input array', () => {
     const input = [product('15', 1000)]
     applyOfferPricing(input)
