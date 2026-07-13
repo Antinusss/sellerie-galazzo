@@ -28,7 +28,7 @@ export default function ShopPage({ params }: Props) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <p className="text-xs text-gray-400 mb-2">{breadcrumbFor(category)}</p>
       <h1 className="text-4xl font-black mb-8">
-        {title} <em className="font-serif text-red not-italic">Shop</em>
+        {title} <em className="text-red">Shop</em>
       </h1>
       <Suspense fallback={<div>Caricamento...</div>}>
         <ShopCategoryClient products={products} currentPath={slugPath} />

@@ -12,6 +12,12 @@ const DESCRIPTIONS: Record<string, string> = {
   'Scuderia': 'Prodotti per la cura quotidiana del cavallo e della scuderia',
 }
 
+const IMAGES: Record<string, string> = {
+  'Monta Inglese': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-inglese-e1781945615752-300x300.jpg',
+  'Monta Western': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-western-e1781945825723-300x300.jpg',
+  'Scuderia': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/scuderia-2-300x300.jpg',
+}
+
 export default function CategoryGrid() {
   const topLevel = getChildren(categoriesData as Category[], undefined)
 
@@ -26,7 +32,7 @@ export default function CategoryGrid() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-black text-black">
-            Scegli la tua <em className="font-serif text-red not-italic">disciplina</em>
+            Scegli la tua <em className="text-red">disciplina</em>
           </h2>
         </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -43,7 +49,7 @@ export default function CategoryGrid() {
                 className="group relative block aspect-[3/4] rounded-2xl overflow-hidden border-2 border-transparent hover:border-sand transition-all duration-300"
               >
                 <Image
-                  src={cat.image ?? ''}
+                  src={IMAGES[cat.name] ?? cat.image ?? ''}
                   alt={cat.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"

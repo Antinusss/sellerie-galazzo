@@ -10,7 +10,7 @@ export default function NewArrivalsCarousel() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10">
           <h2 className="text-4xl font-black">
-            Gli ultimi <em className="font-serif text-red not-italic">arrivati</em>
+            Gli ultimi <em className="text-red">arrivati</em>
           </h2>
           <Link href="/shop" className="text-sm font-semibold text-red underline underline-offset-4 hover:text-red-dark">
             Vedi tutti →

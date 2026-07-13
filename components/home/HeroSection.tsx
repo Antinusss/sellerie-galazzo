@@ -19,7 +19,7 @@ export default function HeroSection() {
             </p>
             <h1 className="text-5xl lg:text-7xl font-black text-black leading-tight mb-6">
               Equipaggiati per{' '}
-              <em className="font-serif text-red not-italic">vincere</em>
+              <em className="text-red">vincere</em>
             </h1>
             <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-md">
               Prodotti selezionati per monta inglese, western e scuderia. Qualità professionale per ogni cavaliere.
