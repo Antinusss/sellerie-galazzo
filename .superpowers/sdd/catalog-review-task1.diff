@@ -1,0 +1,109 @@
+# Review package: 5656e0b..HEAD
+
+## Commits
+4d3e4b9 refactor: widen Product/Category/Brand types for real catalog data
+
+## Files changed
+ __tests__/store.test.ts |  3 ++-
+ __tests__/utils.test.ts |  3 ++-
+ lib/types.ts            | 24 +++++++++++++-----------
+ 3 files changed, 17 insertions(+), 13 deletions(-)
+
+## Diff
+diff --git a/__tests__/store.test.ts b/__tests__/store.test.ts
+index 200b04f..2dff9a2 100644
+--- a/__tests__/store.test.ts
++++ b/__tests__/store.test.ts
+@@ -1,17 +1,18 @@
+ import { act, renderHook } from '@testing-library/react'
+ import { useCartStore } from '@/lib/store'
+ import type { Product } from '@/lib/types'
+ 
+ const mockProduct: Product = {
+   id: '1', name: 'Test', slug: 'test', price: 5000, originalPrice: null,
+-  category: 'Monta Inglese', brand: 'Test', images: [], description: '', specs: '', inStock: true,
++  category: 'Monta Inglese', categoryPath: ['Monta Inglese'], brand: 'Test', images: [],
++  description: '', specs: '', inStock: true,
+ }
+ 
+ beforeEach(() => {
+   const { result } = renderHook(() => useCartStore())
+   act(() => result.current.clearCart())
+ })
+ 
+ describe('addItem', () => {
+   it('adds new item', () => {
+     const { result } = renderHook(() => useCartStore())
+diff --git a/__tests__/utils.test.ts b/__tests__/utils.test.ts
+index ca76b0f..66bbb70 100644
+--- a/__tests__/utils.test.ts
++++ b/__tests__/utils.test.ts
+@@ -9,15 +9,16 @@ describe('formatPrice', () => {
+ 
+ describe('slugify', () => {
+   it('lowercases and hyphenates', () => expect(slugify('Equestro Cap')).toBe('equestro-cap'))
+   it('removes special chars', () => expect(slugify('Occhiali Da Sole')).toBe('occhiali-da-sole'))
+   it('handles accents', () => expect(slugify('Abbeveratoio a pressione')).toBe('abbeveratoio-a-pressione'))
+ })
+ 
+ describe('getProductBySlug', () => {
+   const products: Product[] = [
+     { id: '1', name: 'Test Product', slug: 'test-product', price: 1000, originalPrice: null,
+-      category: 'Monta Inglese', brand: 'Equestro', images: [], description: '', specs: '', inStock: true },
++      category: 'Monta Inglese', categoryPath: ['Monta Inglese'], brand: 'Equestro', images: [],
++      description: '', specs: '', inStock: true },
+   ]
+   it('finds product by slug', () => expect(getProductBySlug('test-product', products)?.id).toBe('1'))
+   it('returns undefined for missing slug', () => expect(getProductBySlug('nope', products)).toBeUndefined())
+ })
+diff --git a/lib/types.ts b/lib/types.ts
+index 8c479d6..8dbec99 100644
+--- a/lib/types.ts
++++ b/lib/types.ts
+@@ -1,33 +1,35 @@
+ export interface Product {
+   id: string
+   name: string
+   slug: string
+   price: number        // in cents, e.g. 17000 = €170.00
+-  originalPrice: number | null  // null if not on sale
+-  category: 'Monta Inglese' | 'Monta Western' | 'Scuderia' | 'Cavaliere'
+-  brand: string
+-  images: string[]     // URLs
++  originalPrice: number | null  // always null — feed has no discount data
++  category: string      // top-level branch, e.g. "Monta Inglese"
++  categoryPath: string[] // full path, e.g. ["Monta Inglese", "Cavaliere", "Donna", "Pantaloni"]
++  brand: string          // may be '' — ~6% of feed items have no brand
++  images: string[]       // URLs, single element (feed has one image per product)
+   description: string
+-  specs: string
++  specs: string           // pipe-joined bullet items, may be ''
+   inStock: boolean
+ }
+ 
+ export interface Category {
+-  id: string
+-  name: string
+-  slug: string
+-  image: string
+-  description: string
++  path: string[]    // e.g. ["Monta Inglese", "Cavaliere"]
++  slug: string[]    // slugified per segment, e.g. ["monta-inglese", "cavaliere"]
++  name: string       // last segment, e.g. "Cavaliere"
++  depth: number       // path.length
++  productCount: number
++  image?: string       // only set on the 3 top-level (depth 1) nodes
+ }
+ 
+ export interface Brand {
+   id: string
+   name: string
+-  logo: string
++  productCount: number
+ }
+ 
+ export interface CartItem {
+   product: Product
+   quantity: number
+   variant?: string
+ }

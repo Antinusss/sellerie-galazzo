@@ -1,0 +1,271 @@
+### Task 9: Checkout + Success Pages
+
+**Files:**
+- Create: `components/checkout/CheckoutSteps.tsx`
+- Create: `components/checkout/OrderSummary.tsx`
+- Create: `app/checkout/page.tsx`
+- Create: `app/checkout/success/page.tsx`
+
+- [ ] **Step 1: Create CheckoutSteps**
+
+Create `components/checkout/CheckoutSteps.tsx`:
+
+```typescript
+interface CheckoutStepsProps { currentStep: 1 | 2 | 3 }
+
+const STEPS = ['Contatti', 'Spedizione', 'Pagamento'] as const
+
+export default function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
+  return (
+    <div className="flex items-center gap-0 mb-10">
+      {STEPS.map((step, i) => {
+        const n = i + 1 as 1 | 2 | 3
+        const done = currentStep > n
+        const active = currentStep === n
+        return (
+          <div key={step} className="flex items-center">
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+                done ? 'bg-green-600 text-white' : active ? 'bg-red text-white' : 'bg-gray-light text-gray-400'
+              }`}>
+                {done ? '✓' : n}
+              </div>
+              <span className={`text-sm font-semibold hidden sm:block ${active ? 'text-black' : 'text-gray-400'}`}>
+                {step}
+              </span>
+            </div>
+            {i < STEPS.length - 1 && (
+              <div className={`w-12 sm:w-20 h-0.5 mx-3 ${currentStep > n ? 'bg-green-600' : 'bg-gray-200'}`} />
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+```
+
+- [ ] **Step 2: Create OrderSummary**
+
+Create `components/checkout/OrderSummary.tsx`:
+
+```typescript
+'use client'
+import Image from 'next/image'
+import { useCartStore } from '@/lib/store'
+import { formatPrice } from '@/lib/utils'
+
+export default function OrderSummary() {
+  const { items, totalPrice } = useCartStore()
+  const shipping = totalPrice >= 8000 ? 0 : 590
+
+  return (
+    <div className="bg-gray-light rounded-2xl p-6">
+      <h3 className="font-black text-lg mb-4">Il tuo ordine</h3>
+      <div className="space-y-3 mb-4">
+        {items.map(item => (
+          <div key={item.product.id} className="flex gap-3 items-center">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white shrink-0">
+              <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />
+              <span className="absolute -top-1 -right-1 bg-gray-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                {item.quantity}
+              </span>
+            </div>
+            <p className="text-xs font-semibold flex-1 line-clamp-2">{item.product.name}</p>
+            <p className="text-xs font-black">{formatPrice(item.product.price * item.quantity)}</p>
+          </div>
+        ))}
+      </div>
+      <div className="border-t border-gray-300 pt-4 space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-gray-500">Subtotale</span>
+          <span>{formatPrice(totalPrice)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-500">Spedizione</span>
+          <span className={shipping === 0 ? 'text-green-600 font-semibold' : ''}>
+            {shipping === 0 ? 'Gratuita' : formatPrice(shipping)}
+          </span>
+        </div>
+        <div className="flex justify-between font-black text-base pt-2 border-t border-gray-300">
+          <span>Totale</span>
+          <span>{formatPrice(totalPrice + shipping)}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 3: Create checkout page (3-step)**
+
+Create `app/checkout/page.tsx`:
+
+```typescript
+'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCartStore } from '@/lib/store'
+import CheckoutSteps from '@/components/checkout/CheckoutSteps'
+import OrderSummary from '@/components/checkout/OrderSummary'
+
+type Step = 1 | 2 | 3
+
+export default function CheckoutPage() {
+  const [step, setStep] = useState<Step>(1)
+  const [form, setForm] = useState({ email: '', nome: '', cognome: '', indirizzo: '', cap: '', citta: '', shipping: 'standard' })
+  const router = useRouter()
+  const clearCart = useCartStore(s => s.clearCart)
+
+  const updateForm = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }))
+
+  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sand transition-colors"
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <CheckoutSteps currentStep={step} />
+      <div className="flex flex-col lg:flex-row gap-10">
+        {/* Form area */}
+        <div className="flex-1">
+          {step === 1 && (
+            <div className="space-y-5">
+              <h2 className="text-2xl font-black">Contatti e indirizzo</h2>
+              <input placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
+              <div className="grid grid-cols-2 gap-4">
+                <input placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
+                <input placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
+              </div>
+              <input placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
+              <div className="grid grid-cols-3 gap-4">
+                <input placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
+                <input placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
+              </div>
+              <button onClick={() => setStep(2)} className="w-full bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors mt-4">
+                Continua alla spedizione →
+              </button>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-5">
+              <h2 className="text-2xl font-black">Metodo di spedizione</h2>
+              {[
+                { id: 'standard', label: 'Standard', desc: '3-5 giorni lavorativi', price: 'Gratuita sopra €80, altrimenti €5,90' },
+                { id: 'express', label: 'Express', desc: '1-2 giorni lavorativi', price: '€9,90' },
+              ].map(opt => (
+                <label
+                  key={opt.id}
+                  className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                    form.shipping === opt.id ? 'border-red bg-red/5' : 'border-gray-200 hover:border-sand'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value={opt.id}
+                      checked={form.shipping === opt.id}
+                      onChange={() => updateForm('shipping', opt.id)}
+                      className="accent-red"
+                    />
+                    <div>
+                      <p className="font-bold text-sm">{opt.label}</p>
+                      <p className="text-xs text-gray-400">{opt.desc}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-semibold">{opt.price}</p>
+                </label>
+              ))}
+              <div className="flex gap-3 mt-6">
+                <button onClick={() => setStep(1)} className="flex-1 border-2 border-black py-4 rounded-full font-bold hover:bg-black hover:text-white transition-colors">
+                  ← Indietro
+                </button>
+                <button onClick={() => setStep(3)} className="flex-1 bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors">
+                  Continua al pagamento →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-5">
+              <h2 className="text-2xl font-black">Pagamento</h2>
+              <div className="bg-gray-light rounded-xl p-4 text-xs text-gray-400 flex items-center gap-2">
+                🔒 Connessione sicura — I tuoi dati sono protetti con crittografia SSL
+              </div>
+              <input placeholder="Numero carta *" className={inputClass} maxLength={19} />
+              <div className="grid grid-cols-2 gap-4">
+                <input placeholder="Scadenza MM/AA *" className={inputClass} />
+                <input placeholder="CVV *" className={inputClass} maxLength={4} />
+              </div>
+              <input placeholder="Nome sul carta *" className={inputClass} />
+              <div className="flex gap-3 mt-6">
+                <button onClick={() => setStep(2)} className="flex-1 border-2 border-black py-4 rounded-full font-bold hover:bg-black hover:text-white transition-colors">
+                  ← Indietro
+                </button>
+                <button
+                  onClick={() => { clearCart(); router.push('/checkout/success') }}
+                  className="flex-1 bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
+                >
+                  Conferma ordine
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Order summary sidebar */}
+        <div className="lg:w-80">
+          <OrderSummary />
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 4: Create success page**
+
+Create `app/checkout/success/page.tsx`:
+
+```typescript
+import Link from 'next/link'
+import { CheckCircle } from 'lucide-react'
+
+export default function SuccessPage() {
+  return (
+    <div className="max-w-lg mx-auto px-4 py-24 text-center">
+      <CheckCircle size={72} className="mx-auto text-green-500 mb-6" />
+      <h1 className="text-4xl font-black mb-3">Ordine confermato!</h1>
+      <p className="text-gray-500 leading-relaxed mb-8">
+        Grazie per il tuo acquisto. Riceverai una email di conferma con i dettagli della spedizione entro pochi minuti.
+      </p>
+      <div className="bg-gray-light rounded-2xl p-6 mb-8 text-left">
+        <p className="text-sm font-semibold mb-1">Numero ordine</p>
+        <p className="text-2xl font-black text-red">#SG-{Math.floor(Math.random() * 90000) + 10000}</p>
+        <p className="text-xs text-gray-400 mt-2">Conserva questo numero per eventuali comunicazioni</p>
+      </div>
+      <Link
+        href="/shop"
+        className="inline-block bg-red text-white px-8 py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
+      >
+        Continua lo shopping
+      </Link>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 5: Verify full flow**
+
+Go through: add product → cart → checkout steps 1→2→3 → confirm → success page.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add .
+git commit -m "feat: checkout flow with 3 steps and success page"
+```
+
+---
+

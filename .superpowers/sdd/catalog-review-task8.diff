@@ -1,0 +1,14 @@
+# Review package: 0d5f71a..HEAD
+
+## Commits
+f4358f7 feat: move product detail to /prodotto/[slug] matching the real site
+
+## Files changed
+ app/{shop => prodotto}/[slug]/page.tsx | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+## Diff
+diff --git a/app/shop/[slug]/page.tsx b/app/prodotto/[slug]/page.tsx
+similarity index 100%
+rename from app/shop/[slug]/page.tsx
+rename to app/prodotto/[slug]/page.tsx

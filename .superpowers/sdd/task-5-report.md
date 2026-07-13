@@ -18,3 +18,22 @@
 
 ## Fix applied
 `useCartStore` does not accept a selector; changed `useCartStore(s => s.addItem)` → `const { addItem } = useCartStore()`.
+
+---
+
+## Follow-up Fixes (2026-06-29)
+
+**Commit:** `de61cfa`
+
+### Fix 1: Marquee CSS Animation
+- **Status:** Already present in `app/globals.css` (lines 14-20)
+- **Action:** None required — `.marquee` class and `@keyframes marquee` already defined in `@layer utilities`
+
+### Fix 2: NewArrivalsCarousel Grid Breakpoints
+- **File:** `components/home/NewArrivalsCarousel.tsx:18`
+- **Change:** Removed intermediate breakpoint `md:grid-cols-3`
+- **Before:** `className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"`
+- **After:** `className="grid grid-cols-2 lg:grid-cols-4 gap-5"`
+- **Result:** Grid now uses 2 columns on mobile, 4 columns on desktop (lg+)
+
+**Build Result:** ✓ Compiled successfully — no errors, no warnings.

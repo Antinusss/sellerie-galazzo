@@ -1,0 +1,195 @@
+### Task 2: `lib/feed-transform.ts` — pure feed-parsing functions
+
+**Files:**
+- Create: `lib/feed-transform.ts`
+- Test: `__tests__/feed-transform.test.ts`
+
+**Interfaces:**
+- Consumes: nothing (pure string transforms)
+- Produces: `parsePriceToCents(raw: string): number`, `decodeEntities(text: string): string`, `stripTags(html: string): string`, `splitDescriptionAndSpecs(html: string): { description: string; specs: string }`, `slugFromLink(link: string): string`, `parseCategoryPath(rawProductType: string): string[]`, `dedupeSlugs<T extends { slug: string; id: string }>(items: T[]): T[]` — all consumed by `scripts/sync-product-feed.ts` in Task 4.
+
+- [ ] **Step 1: Write the failing tests**
+
+Create `__tests__/feed-transform.test.ts`:
+
+```ts
+import {
+  parsePriceToCents,
+  decodeEntities,
+  stripTags,
+  splitDescriptionAndSpecs,
+  slugFromLink,
+  parseCategoryPath,
+  dedupeSlugs,
+} from '@/lib/feed-transform'
+
+describe('parsePriceToCents', () => {
+  it('parses EUR-prefixed price into cents', () => expect(parsePriceToCents('EUR15.99')).toBe(1599))
+  it('parses a smaller value', () => expect(parsePriceToCents('EUR7.99')).toBe(799))
+  it('parses a whole-euro value', () => expect(parsePriceToCents('EUR100.00')).toBe(10000))
+})
+
+describe('decodeEntities', () => {
+  it('decodes amp/lt/gt', () => expect(decodeEntities('Cuoio &amp; pelle &gt; 5 &lt; 10')).toBe('Cuoio & pelle > 5 < 10'))
+  it('leaves plain text untouched', () => expect(decodeEntities('Nessuna entità qui')).toBe('Nessuna entità qui'))
+})
+
+describe('stripTags', () => {
+  it('removes tags and decodes entities', () => expect(stripTags('<p>Cuoio &amp; pelle</p>')).toBe('Cuoio & pelle'))
+  it('collapses whitespace left by removed tags', () => expect(stripTags('<b>A</b>  <i>B</i>')).toBe('A B'))
+})
+
+describe('splitDescriptionAndSpecs', () => {
+  it('splits real feed description into plain description + pipe-joined specs', () => {
+    const html = 'Detergente specifico per la cura quotidiana del cuoio, arricchito con olio di mandorla e glicerina. Rimuove efficacemente sporco, sudore e residui, svolgendo al tempo stesso un’azione nutriente e ammorbidente sulle fibre. Ideale per mantenere il cuoio pulito, morbido ed elastico nel tempo, senza comprometterne la qualità.Per l’utilizzo, agitare bene prima dell’uso e spruzzare direttamente sulla superficie da trattare. Lasciare agire per qualche secondo, quindi strofinare con un panno pulito per rimuovere lo sporco. Completare il trattamento lucidando per ottenere una finitura uniforme e curata. L’uso regolare consente di preservare l’aspetto e le prestazioni del cuoio.<em><strong>Specifiche tecniche:</strong></em><ul> <li>Formula con olio di mandorla e glicerina</li> <li>Azione detergente efficace su sporco e sudore</li> <li>Nutre e ammorbidisce le fibre del cuoio</li> <li>Ideale per uso quotidiano</li> <li>Facile applicazione spray</li> <li>Mantiene elasticità e morbidezz</li></ul>'
+
+    const result = splitDescriptionAndSpecs(html)
+
+    expect(result.description).toBe('Detergente specifico per la cura quotidiana del cuoio, arricchito con olio di mandorla e glicerina. Rimuove efficacemente sporco, sudore e residui, svolgendo al tempo stesso un’azione nutriente e ammorbidente sulle fibre. Ideale per mantenere il cuoio pulito, morbido ed elastico nel tempo, senza comprometterne la qualità.Per l’utilizzo, agitare bene prima dell’uso e spruzzare direttamente sulla superficie da trattare. Lasciare agire per qualche secondo, quindi strofinare con un panno pulito per rimuovere lo sporco. Completare il trattamento lucidando per ottenere una finitura uniforme e curata. L’uso regolare consente di preservare l’aspetto e le prestazioni del cuoio.')
+    expect(result.specs).toBe('Formula con olio di mandorla e glicerina | Azione detergente efficace su sporco e sudore | Nutre e ammorbidisce le fibre del cuoio | Ideale per uso quotidiano | Facile applicazione spray | Mantiene elasticità e morbidezz')
+  })
+
+  it('returns plain description with empty specs when there is no list', () => {
+    const html = 'In cuoio di alta qualità, dotato di fibbia metallica resistente per regolazione precisa.'
+    expect(splitDescriptionAndSpecs(html)).toEqual({
+      description: 'In cuoio di alta qualità, dotato di fibbia metallica resistente per regolazione precisa.',
+      specs: '',
+    })
+  })
+
+  it('returns empty description and specs for empty input', () => {
+    expect(splitDescriptionAndSpecs('')).toEqual({ description: '', specs: '' })
+  })
+})
+
+describe('slugFromLink', () => {
+  it('extracts the slug from a real product URL with tracking params', () => {
+    const link = 'https://selleriagalazzo.com/prodotto/acavallo-sapone-per-il-cuoio-alla-mandorla-500ml-glicerina/?utm_source=Google%20Shopping&utm_campaign=Google%20Shopping'
+    expect(slugFromLink(link)).toBe('acavallo-sapone-per-il-cuoio-alla-mandorla-500ml-glicerina')
+  })
+})
+
+describe('parseCategoryPath', () => {
+  it('splits the double-encoded product_type into segments, dropping Home', () => {
+    expect(parseCategoryPath('Home &gt; Scuderia &gt; Cura del cuoio')).toEqual(['Scuderia', 'Cura del cuoio'])
+  })
+  it('handles a deeper path', () => {
+    expect(parseCategoryPath('Home &gt; Monta Inglese &gt; Cavaliere &gt; Donna &gt; Pantaloni'))
+      .toEqual(['Monta Inglese', 'Cavaliere', 'Donna', 'Pantaloni'])
+  })
+})
+
+describe('dedupeSlugs', () => {
+  it('leaves unique slugs untouched', () => {
+    const items = [{ id: '1', slug: 'a' }, { id: '2', slug: 'b' }]
+    expect(dedupeSlugs(items)).toEqual(items)
+  })
+  it('suffixes every collision after the first with its id', () => {
+    const items = [
+      { id: '67027', slug: 'frustino-bicolore-master' },
+      { id: '67025', slug: 'frustino-bicolore-master' },
+      { id: '67026', slug: 'frustino-bicolore-master' },
+    ]
+    expect(dedupeSlugs(items).map(i => i.slug)).toEqual([
+      'frustino-bicolore-master',
+      'frustino-bicolore-master-67025',
+      'frustino-bicolore-master-67026',
+    ])
+  })
+})
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `npm test -- feed-transform`
+Expected: FAIL with "Cannot find module '@/lib/feed-transform'"
+
+- [ ] **Step 3: Implement `lib/feed-transform.ts`**
+
+```ts
+export function parsePriceToCents(raw: string): number {
+  const match = raw.match(/(\d+)\.(\d{2})$/)
+  if (!match) throw new Error(`Unrecognized price format: ${raw}`)
+  return Number(match[1]) * 100 + Number(match[2])
+}
+
+const ENTITY_MAP: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  '#39': "'",
+}
+
+export function decodeEntities(text: string): string {
+  return text.replace(/&(#?\w+);/g, (match, name) => ENTITY_MAP[name] ?? match)
+}
+
+export function stripTags(html: string): string {
+  return decodeEntities(html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+}
+
+export interface DescriptionParts {
+  description: string
+  specs: string
+}
+
+export function splitDescriptionAndSpecs(html: string): DescriptionParts {
+  if (!html) return { description: '', specs: '' }
+
+  const lists = [...html.matchAll(/<(ul|ol)>([\s\S]*?)<\/\1>/g)]
+  if (lists.length === 0) {
+    return { description: stripTags(html), specs: '' }
+  }
+
+  const lastList = lists[lists.length - 1]
+  const before = html.slice(0, lastList.index)
+  const items = [...lastList[2].matchAll(/<li>([\s\S]*?)<\/li>/g)]
+    .map(m => stripTags(m[1]))
+    .filter(Boolean)
+
+  return { description: stripTags(before), specs: items.join(' | ') }
+}
+
+export function slugFromLink(link: string): string {
+  const path = new URL(link).pathname
+  const segments = path.split('/').filter(Boolean)
+  return segments[segments.length - 1]
+}
+
+export function parseCategoryPath(rawProductType: string): string[] {
+  return rawProductType
+    .split('&gt;')
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && s !== 'Home')
+}
+
+export function dedupeSlugs<T extends { slug: string; id: string }>(items: T[]): T[] {
+  const seen = new Set<string>()
+  return items.map(item => {
+    if (!seen.has(item.slug)) {
+      seen.add(item.slug)
+      return item
+    }
+    const uniqueSlug = `${item.slug}-${item.id}`
+    seen.add(uniqueSlug)
+    return { ...item, slug: uniqueSlug }
+  })
+}
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `npm test -- feed-transform`
+Expected: PASS (all cases above green)
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add lib/feed-transform.ts __tests__/feed-transform.test.ts
+git commit -m "feat: add pure feed-parsing transforms for the product XML feed"
+```
+
+---
+
