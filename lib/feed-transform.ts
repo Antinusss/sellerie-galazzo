@@ -36,8 +36,10 @@ export function splitDescriptionAndSpecs(html: string): DescriptionParts {
 
   const lastList = lists[lists.length - 1]
   let before = html.slice(0, lastList.index)
-  // Remove any formatting/header tags and content that appear right before the list
-  before = before.replace(/<(?:em|strong|b|i|span|p)[^>]*>[\s\S]*?<\/(?:em|strong|b|i|span|p)>\s*$/g, '')
+  // Remove a short heading (e.g. "<em><strong>Specifiche tecniche:</strong></em>") immediately
+  // before the list. Bounded to tag-free inner text so it can't reach back into an earlier
+  // <strong>/<em> run inside the real description and eat everything after it.
+  before = before.replace(/(?:<(?:em|strong|b|i|span|p)>)+[^<]{0,200}(?:<\/(?:em|strong|b|i|span|p)>)+\s*$/, '')
 
   const items = [...lastList[2].matchAll(/<li>([\s\S]*?)<\/li>/g)]
     .map(m => stripTags(m[1]))

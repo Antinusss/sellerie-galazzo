@@ -45,6 +45,36 @@ describe('splitDescriptionAndSpecs', () => {
   it('returns empty description and specs for empty input', () => {
     expect(splitDescriptionAndSpecs('')).toEqual({ description: '', specs: '' })
   })
+
+  it('keeps an early <strong>/<em> run intact and only strips the heading right before the list', () => {
+    // Regression: an earlier version's heading-stripping regex matched from the FIRST
+    // formatting tag anywhere in the text through to the end, deleting the rest of the
+    // description whenever it contained an early <strong>/<em> run (as most real feed
+    // descriptions do, e.g. "<strong>lenti polarizzate</strong>" mid-sentence).
+    const html = `Prodotto con <strong>materiale premium</strong> e finiture di alta qualità per un uso quotidiano intenso.<em><strong>Info e care:</strong></em><ul> <li>Pulire con panno morbido</li> <li>Non esporre al sole diretto</li></ul>`
+
+    const result = splitDescriptionAndSpecs(html)
+
+    expect(result.description).toBe('Prodotto con materiale premium e finiture di alta qualità per un uso quotidiano intenso.')
+    expect(result.specs).toBe('Pulire con panno morbido | Non esporre al sole diretto')
+  })
+
+  it('does not truncate a real feed description with a fake inline bullet section before the real list', () => {
+    // Real case (product 67217) that triggered the regression above: an early <strong> tag,
+    // a "•"-bulleted section that is plain text (not a real <ul>), and only then the real
+    // <ul> list with its own heading right before it.
+    const html = `Occhiali da sole Sunniva con <strong>lenti polarizzate</strong> per sport equestri che offrono una visione nitida e confortevole grazie alla riduzione dell’abbagliamento e alla protezione dai raggi UV. Migliorano il contrasto e la percezione dei colori per una <strong>maggiore precisione e sicurezza in sella</strong>, riducono l’affaticamento visivo durante le lunghe sessioni di equitazione e, grazie alle caratteristiche <strong>antiurto e antigraffio</strong>, proteggono efficacemente da urti, detriti e condizioni ambientali impegnative.<em><strong>Specifiche tecniche:</strong></em>Vantaggi delle lenti Polaroid TAC•Polarizzazione superiore: offre una forte riduzione dei riflessi, ideale per condizioni di luce intensa all'aperto.<em><strong>Info e care:</strong></em><ul> <li>Pulire le lenti con un panno in microfibra e prodotti specifici per lenti</li> <li>Riporre sempre gli occhiali nella custodia protettiva quando non in uso</li></ul>`
+
+    const result = splitDescriptionAndSpecs(html)
+
+    expect(result.description.length).toBeGreaterThan(400)
+    expect(result.description).toContain('lenti polarizzate')
+    expect(result.description).toContain('antiurto e antigraffio')
+    expect(result.description).toContain('impegnative.')
+    expect(result.description).toContain('Polaroid TAC')
+    expect(result.description).not.toContain('Info e care')
+    expect(result.specs).toBe('Pulire le lenti con un panno in microfibra e prodotti specifici per lenti | Riporre sempre gli occhiali nella custodia protettiva quando non in uso')
+  })
 })
 
 describe('slugFromLink', () => {
