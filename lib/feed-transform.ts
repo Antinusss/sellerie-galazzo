@@ -48,6 +48,20 @@ export function splitDescriptionAndSpecs(html: string): DescriptionParts {
   return { description: stripTags(before), specs: items.join(' | ') }
 }
 
+export interface BulletedText {
+  intro: string
+  items: string[]
+}
+
+// Some feed descriptions embed a "•"-delimited list as plain text rather than a real
+// <ul>/<li> list (e.g. "...Vantaggi delle lenti TAC•Item uno.•Item due."). Split that out
+// so it can be rendered as an actual bullet list instead of one run-on paragraph.
+export function splitBulletedText(text: string): BulletedText {
+  if (!text.includes('•')) return { intro: text, items: [] }
+  const [intro, ...rest] = text.split('•')
+  return { intro: intro.trim(), items: rest.map(s => s.trim()).filter(Boolean) }
+}
+
 export function slugFromLink(link: string): string {
   const path = new URL(link).pathname
   const segments = path.split('/').filter(Boolean)

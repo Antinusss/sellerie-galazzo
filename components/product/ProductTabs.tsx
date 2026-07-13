@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { splitBulletedText } from '@/lib/feed-transform'
 
 interface ProductTabsProps { description: string; specs: string }
 
@@ -7,10 +8,18 @@ const TABS = ['Descrizione', 'Specifiche', 'Spedizione & Resi'] as const
 
 export default function ProductTabs({ description, specs }: ProductTabsProps) {
   const [active, setActive] = useState<typeof TABS[number]>('Descrizione')
+  const { intro, items: bulletItems } = splitBulletedText(description)
 
   const content: Record<typeof TABS[number], React.ReactNode> = {
     'Descrizione': description ? (
-      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <div className="space-y-4">
+        {intro && <p className="text-gray-600 leading-relaxed">{intro}</p>}
+        {bulletItems.length > 0 && (
+          <ul className="space-y-2 list-disc list-inside text-sm text-gray-600">
+            {bulletItems.map((item, i) => <li key={i}>{item}</li>)}
+          </ul>
+        )}
+      </div>
     ) : (
       <p className="text-gray-400">Descrizione non disponibile.</p>
     ),

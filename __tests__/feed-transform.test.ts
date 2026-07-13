@@ -3,6 +3,7 @@ import {
   decodeEntities,
   stripTags,
   splitDescriptionAndSpecs,
+  splitBulletedText,
   slugFromLink,
   parseCategoryPath,
   dedupeSlugs,
@@ -74,6 +75,30 @@ describe('splitDescriptionAndSpecs', () => {
     expect(result.description).toContain('Polaroid TAC')
     expect(result.description).not.toContain('Info e care')
     expect(result.specs).toBe('Pulire le lenti con un panno in microfibra e prodotti specifici per lenti | Riporre sempre gli occhiali nella custodia protettiva quando non in uso')
+  })
+})
+
+describe('splitBulletedText', () => {
+  it('returns the text unchanged as intro when there is no bullet character', () => {
+    expect(splitBulletedText('Testo normale senza elenchi.')).toEqual({
+      intro: 'Testo normale senza elenchi.',
+      items: [],
+    })
+  })
+
+  it('splits an inline "•"-delimited run into intro + items', () => {
+    const text = "Vantaggi delle lenti TAC•Polarizzazione superiore: ottima.•Elevata nitidezza ottica."
+    expect(splitBulletedText(text)).toEqual({
+      intro: 'Vantaggi delle lenti TAC',
+      items: ['Polarizzazione superiore: ottima.', 'Elevata nitidezza ottica.'],
+    })
+  })
+
+  it('returns an empty intro when the text starts with a bullet', () => {
+    expect(splitBulletedText('•Primo punto.•Secondo punto.')).toEqual({
+      intro: '',
+      items: ['Primo punto.', 'Secondo punto.'],
+    })
   })
 })
 
