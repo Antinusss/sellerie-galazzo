@@ -3,7 +3,7 @@ export interface Product {
   name: string
   slug: string
   price: number        // in cents, e.g. 17000 = €170.00
-  originalPrice: number | null  // always null — feed has no discount data
+  originalPrice: number | null  // null for real feed data; ~1/15 of products get a synthetic value via lib/offers.ts
   category: string      // top-level branch, e.g. "Monta Inglese"
   categoryPath: string[] // full path, e.g. ["Monta Inglese", "Cavaliere", "Donna", "Pantaloni"]
   brand: string          // may be '' — ~6% of feed items have no brand
