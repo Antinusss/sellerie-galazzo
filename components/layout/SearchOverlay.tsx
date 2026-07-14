@@ -6,6 +6,7 @@ import { Search, X } from 'lucide-react'
 import allProducts from '@/data/products.json'
 import type { Product } from '@/lib/types'
 import { formatPrice } from '@/lib/utils'
+import { searchProducts } from '@/lib/search'
 
 const products = allProducts as Product[]
 
@@ -26,10 +27,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [onClose])
 
-  const q = query.trim().toLowerCase()
-  const results = q
-    ? products.filter(p => p.name.toLowerCase().includes(q)).slice(0, 8)
-    : []
+  const results = searchProducts(products, query)
 
   return (
     <div className="fixed inset-0 z-50">
@@ -51,7 +49,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
             </button>
           </div>
 
-          {q && (
+          {query.trim() && (
             <div className="max-h-[60vh] overflow-y-auto">
               {results.length === 0 ? (
                 <p className="px-5 py-8 text-center text-sm text-gray-400">
