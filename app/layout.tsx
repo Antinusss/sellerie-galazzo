@@ -3,6 +3,7 @@ import './globals.css'
 import AnnouncementBar from '@/components/layout/AnnouncementBar'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import CookieBanner from '@/components/layout/CookieBanner'
 
 export const metadata: Metadata = {
   title: 'Selleria Galazzo — Articoli Equestri Online',
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         <main className="pt-24">{children}</main>
         <Footer />
+        <CookieBanner />
       </body>
     </html>
   )
