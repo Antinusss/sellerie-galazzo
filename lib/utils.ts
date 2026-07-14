@@ -1,5 +1,7 @@
 import type { Product } from './types'
 
+export const FREE_SHIPPING_THRESHOLD = 8000
+
 export function formatPrice(cents: number): string {
   return '€' + (cents / 100).toFixed(2).replace('.', ',')
 }

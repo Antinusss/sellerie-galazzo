@@ -39,7 +39,7 @@ const TEXTS = [
 
 const RATING_POOL = [4.2, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0]
 
-function hashOf(id: string): number {
+export function hashOf(id: string): number {
   const n = Number(id)
   return Number.isFinite(n) ? n : id.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0)
 }

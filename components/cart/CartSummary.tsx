@@ -2,12 +2,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/lib/store'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, FREE_SHIPPING_THRESHOLD } from '@/lib/utils'
 
 export default function CartSummary() {
   const { totalPrice } = useCartStore()
   const [coupon, setCoupon] = useState('')
-  const shipping = totalPrice >= 8000 ? 0 : 590
+  const shipping = totalPrice >= FREE_SHIPPING_THRESHOLD ? 0 : 590
   const total = totalPrice + shipping
 
   return (
@@ -26,7 +26,7 @@ export default function CartSummary() {
           </span>
         </div>
         {shipping > 0 && (
-          <p className="text-xs text-gray-400">Aggiungi {formatPrice(8000 - totalPrice)} per la spedizione gratuita</p>
+          <p className="text-xs text-gray-400">Aggiungi {formatPrice(FREE_SHIPPING_THRESHOLD - totalPrice)} per la spedizione gratuita</p>
         )}
       </div>
 
