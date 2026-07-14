@@ -1,9 +1,14 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { Heart, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
 import { formatPrice } from '@/lib/utils'
-import type { Product } from '@/lib/types'
+import { findCategoryByPath } from '@/lib/category-tree'
+import categoriesData from '@/data/categories.json'
+import type { Product, Category } from '@/lib/types'
+
+const categories = categoriesData as Category[]
 
 interface ProductInfoProps { product: Product }
 
@@ -11,6 +16,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
   const { addItem } = useCartStore()
+  const breadcrumbSlug = findCategoryByPath(categories, product.categoryPath)?.slug ?? []
 
   const discountPct = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
@@ -25,7 +31,20 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="text-sand font-bold uppercase text-xs tracking-widest mb-2">{product.categoryPath.join(' / ')}</p>
+        <nav className="text-sand font-bold uppercase text-xs tracking-widest mb-2 flex flex-wrap items-center gap-1">
+          {product.categoryPath.map((segment, i) => (
+            <span key={segment} className="flex items-center gap-1">
+              {i > 0 && <span className="text-gray-300">/</span>}
+              {breadcrumbSlug.length > 0 ? (
+                <Link href={`/shop/${breadcrumbSlug.slice(0, i + 1).join('/')}`} className="hover:text-red transition-colors">
+                  {segment}
+                </Link>
+              ) : (
+                <span>{segment}</span>
+              )}
+            </span>
+          ))}
+        </nav>
         <h1 className="text-3xl lg:text-4xl font-black text-black leading-tight">{product.name}</h1>
         {product.brand && <p className="text-gray-400 text-sm mt-1">{product.brand}</p>}
       </div>
