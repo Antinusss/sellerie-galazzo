@@ -10,6 +10,8 @@ import brandsData from '@/data/brands.json'
 import type { Category, Brand } from '@/lib/types'
 import { getChildren } from '@/lib/category-tree'
 import { BRANCH_IMAGES } from '@/lib/branch-images'
+import HeaderSearchBar from './HeaderSearchBar'
+import CartDrawer from '@/components/cart/CartDrawer'
 
 const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
 
@@ -33,7 +35,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
-  const { totalItems } = useCartStore()
+  const { totalItems, openCart } = useCartStore()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -51,132 +53,134 @@ export default function Navbar() {
             <Image src="/logo-selleria-galazzo.png" alt="Selleria Galazzo" fill className="object-contain object-left" priority />
           </Link>
 
-          <div className="hidden md:flex items-center gap-6">
-            {topLevel.map(cat => (
-              <div key={cat.slug.join('/')} className="group relative">
-                <Link
-                  href={`/shop/${cat.slug.join('/')}`}
-                  className="text-sm font-medium text-black hover:text-red transition-colors py-6 inline-block"
-                >
-                  {cat.name}
-                </Link>
-                <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:flex bg-white shadow-lg rounded-xl p-6 gap-8 z-50 w-max max-w-3xl">
-                  <div className="flex gap-8">
-                    {getChildren(categories, cat).map(mid => (
-                      <div key={mid.slug.join('/')} className="min-w-[160px]">
-                        <Link
-                          href={`/shop/${mid.slug.join('/')}`}
-                          className="block text-xs font-bold uppercase tracking-wide text-black hover:text-red transition-colors mb-3"
-                        >
-                          {mid.name}
-                        </Link>
-                        <div className="flex flex-col gap-2">
-                          {getChildren(categories, mid).map(leaf => (
-                            <Link
-                              key={leaf.slug.join('/')}
-                              href={`/shop/${leaf.slug.join('/')}`}
-                              className="text-sm text-gray-600 hover:text-red transition-colors"
-                            >
-                              {leaf.name}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <Link
-                    href={`/shop/${cat.slug.join('/')}`}
-                    className="relative w-48 shrink-0 rounded-xl overflow-hidden group/promo"
-                  >
-                    <Image
-                      src={BRANCH_IMAGES[cat.name] ?? cat.image ?? ''}
-                      alt={cat.name}
-                      fill
-                      className="object-cover group-hover/promo:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="text-white font-black text-lg">{cat.name}</p>
-                      <p className="text-white/80 text-xs font-semibold mt-1">Scopri tutto →</p>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            ))}
-
-            <div className="group relative">
-              <Link href="/marche" className="text-sm font-medium text-black hover:text-red transition-colors py-6 inline-block">
-                Marche
-              </Link>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block bg-white shadow-lg rounded-xl p-6 z-50 w-[420px]">
-                <div className="grid grid-cols-4 gap-4">
-                  {topBrands.map(brand => (
-                    <Link
-                      key={brand.id}
-                      href={`/brand/${brand.id}`}
-                      className="flex flex-col items-center gap-2 text-center group/brand"
-                    >
-                      {brand.logo ? (
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-light">
-                          <Image src={brand.logo} alt={brand.name} fill className="object-contain p-1" />
-                        </div>
-                      ) : (
-                        <div className="w-12 h-12 rounded-full bg-gray-light flex items-center justify-center text-xs font-black text-gray-400">
-                          {brand.name.slice(0, 2).toUpperCase()}
-                        </div>
-                      )}
-                      <span className="text-xs text-black group-hover/brand:text-red transition-colors leading-tight">{brand.name}</span>
-                    </Link>
-                  ))}
-                </div>
-                <Link href="/marche" className="block text-center text-sm font-semibold text-red mt-4 hover:text-red-dark">
-                  Vedi tutti i marchi →
-                </Link>
-              </div>
-            </div>
-
-            <Link href="/offerte" className="text-sm font-medium text-red hover:text-red-dark transition-colors py-6 inline-block">
-              Offerte
-            </Link>
-
-            <div className="group relative">
-              <span className="text-sm font-medium text-black py-6 inline-block cursor-default">
-                Guida ai prodotti
-              </span>
-              <div className="absolute right-0 top-full hidden group-hover:block bg-white shadow-lg rounded-xl p-6 z-50 w-64">
-                <div className="flex flex-col gap-2">
-                  {GUIDE_LINKS.map(link => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="text-sm text-black hover:text-red transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <HeaderSearchBar />
 
           <div className="flex items-center gap-4">
-            <button className="p-2 hover:text-red transition-colors" onClick={() => setSearchOpen(true)}>
+            <button className="p-2 hover:text-red transition-colors md:hidden" onClick={() => setSearchOpen(true)}>
               <Search size={20} />
             </button>
             <button className="p-2 hover:text-red transition-colors">
               <Heart size={20} />
             </button>
-            <Link href="/cart" className="relative p-2 hover:text-red transition-colors">
+            <button className="relative p-2 hover:text-red transition-colors" onClick={openCart}>
               <ShoppingCart size={20} />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                   {totalItems}
                 </span>
               )}
-            </Link>
+            </button>
             <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
+          </div>
+        </div>
+
+        <div className="hidden md:flex items-center gap-6 h-12 border-t border-gray-100">
+          {topLevel.map(cat => (
+            <div key={cat.slug.join('/')} className="group relative">
+              <Link
+                href={`/shop/${cat.slug.join('/')}`}
+                className="text-sm font-medium text-black hover:text-red transition-colors h-12 inline-flex items-center"
+              >
+                {cat.name}
+              </Link>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:flex bg-white shadow-lg rounded-xl p-6 gap-8 z-50 w-max max-w-3xl">
+                <div className="flex gap-8">
+                  {getChildren(categories, cat).map(mid => (
+                    <div key={mid.slug.join('/')} className="min-w-[160px]">
+                      <Link
+                        href={`/shop/${mid.slug.join('/')}`}
+                        className="block text-xs font-bold uppercase tracking-wide text-black hover:text-red transition-colors mb-3"
+                      >
+                        {mid.name}
+                      </Link>
+                      <div className="flex flex-col gap-2">
+                        {getChildren(categories, mid).map(leaf => (
+                          <Link
+                            key={leaf.slug.join('/')}
+                            href={`/shop/${leaf.slug.join('/')}`}
+                            className="text-sm text-gray-600 hover:text-red transition-colors"
+                          >
+                            {leaf.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Link
+                  href={`/shop/${cat.slug.join('/')}`}
+                  className="relative w-48 shrink-0 rounded-xl overflow-hidden group/promo"
+                >
+                  <Image
+                    src={BRANCH_IMAGES[cat.name] ?? cat.image ?? ''}
+                    alt={cat.name}
+                    fill
+                    className="object-cover group-hover/promo:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-white font-black text-lg">{cat.name}</p>
+                    <p className="text-white/80 text-xs font-semibold mt-1">Scopri tutto →</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          ))}
+
+          <div className="group relative">
+            <Link href="/marche" className="text-sm font-medium text-black hover:text-red transition-colors h-12 inline-flex items-center">
+              Marche
+            </Link>
+            <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block bg-white shadow-lg rounded-xl p-6 z-50 w-[420px]">
+              <div className="grid grid-cols-4 gap-4">
+                {topBrands.map(brand => (
+                  <Link
+                    key={brand.id}
+                    href={`/brand/${brand.id}`}
+                    className="flex flex-col items-center gap-2 text-center group/brand"
+                  >
+                    {brand.logo ? (
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-light">
+                        <Image src={brand.logo} alt={brand.name} fill className="object-contain p-1" />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gray-light flex items-center justify-center text-xs font-black text-gray-400">
+                        {brand.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="text-xs text-black group-hover/brand:text-red transition-colors leading-tight">{brand.name}</span>
+                  </Link>
+                ))}
+              </div>
+              <Link href="/marche" className="block text-center text-sm font-semibold text-red mt-4 hover:text-red-dark">
+                Vedi tutti i marchi →
+              </Link>
+            </div>
+          </div>
+
+          <Link href="/offerte" className="text-sm font-medium text-red hover:text-red-dark transition-colors h-12 inline-flex items-center">
+            Offerte
+          </Link>
+
+          <div className="group relative">
+            <span className="text-sm font-medium text-black h-12 inline-flex items-center cursor-default">
+              Guida ai prodotti
+            </span>
+            <div className="absolute right-0 top-full hidden group-hover:block bg-white shadow-lg rounded-xl p-6 z-50 w-64">
+              <div className="flex flex-col gap-2">
+                {GUIDE_LINKS.map(link => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-sm text-black hover:text-red transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -203,6 +207,7 @@ export default function Navbar() {
       </div>
 
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
+      <CartDrawer />
     </nav>
   )
 }
