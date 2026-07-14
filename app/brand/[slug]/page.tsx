@@ -20,9 +20,13 @@ export default function BrandPage({ params }: Props) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="flex items-center gap-4 mb-8">
-        {brand.logo && (
+        {brand.logo ? (
           <div className="relative w-16 h-16 shrink-0">
             <Image src={brand.logo} alt={brand.name} fill className="object-contain" />
+          </div>
+        ) : (
+          <div className="w-16 h-16 shrink-0 rounded-full bg-gray-light flex items-center justify-center text-lg font-black text-gray-400">
+            {brand.name.slice(0, 2).toUpperCase()}
           </div>
         )}
         <div>
