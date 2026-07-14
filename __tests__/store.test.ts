@@ -11,6 +11,7 @@ const mockProduct: Product = {
 beforeEach(() => {
   const { result } = renderHook(() => useCartStore())
   act(() => result.current.clearCart())
+  act(() => result.current.closeCart())
 })
 
 describe('addItem', () => {
@@ -57,5 +58,23 @@ describe('computed values', () => {
     const { result } = renderHook(() => useCartStore())
     act(() => result.current.addItem(mockProduct, 2))
     expect(result.current.totalPrice).toBe(10000)
+  })
+})
+
+describe('cart drawer state', () => {
+  it('starts closed', () => {
+    const { result } = renderHook(() => useCartStore())
+    expect(result.current.isCartOpen).toBe(false)
+  })
+  it('openCart sets isCartOpen to true', () => {
+    const { result } = renderHook(() => useCartStore())
+    act(() => result.current.openCart())
+    expect(result.current.isCartOpen).toBe(true)
+  })
+  it('closeCart sets isCartOpen to false', () => {
+    const { result } = renderHook(() => useCartStore())
+    act(() => result.current.openCart())
+    act(() => result.current.closeCart())
+    expect(result.current.isCartOpen).toBe(false)
   })
 })

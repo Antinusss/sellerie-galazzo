@@ -4,10 +4,13 @@ import type { CartItem, Product } from './types'
 
 interface InternalState {
   items: CartItem[]
+  isCartOpen: boolean
   addItem: (product: Product, quantity: number, variant?: string) => void
   removeItem: (productId: string) => void
   updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
+  openCart: () => void
+  closeCart: () => void
 }
 
 export interface CartStore extends InternalState {
@@ -19,6 +22,7 @@ const useInternalStore = create<InternalState>()(
   persist(
     (set, get) => ({
       items: [],
+      isCartOpen: false,
       addItem: (product, quantity, variant) => {
         const existing = get().items.find(i => i.product.id === product.id)
         if (existing) {
@@ -38,8 +42,13 @@ const useInternalStore = create<InternalState>()(
           items: s.items.map(i => i.product.id === productId ? { ...i, quantity } : i),
         })),
       clearCart: () => set({ items: [] }),
+      openCart: () => set({ isCartOpen: true }),
+      closeCart: () => set({ isCartOpen: false }),
     }),
-    { name: 'selleria-galazzo-cart' }
+    {
+      name: 'selleria-galazzo-cart',
+      partialize: (state) => ({ items: state.items }),
+    }
   )
 )
 
