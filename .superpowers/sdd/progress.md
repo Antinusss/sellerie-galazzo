@@ -29,3 +29,18 @@ Plan: docs/superpowers/plans/2026-07-12-real-catalog-import.md
 - [x] Task 9: /shop/[[...slug]] category routing (commit afe358a, review clean)
 - [x] Task 10: CategoryGrid real 3-branch taxonomy (commit 685ce6b, review clean; tsc --noEmit fully clean)
 - [x] Task 11: Full build+test+manual verification (npm test 40/40, npm run build 3199 pages, curl+grep content checks all clean; interactive browser check deferred to controller)
+
+## Mega Menu, Brands, Pagination (2026-07-13)
+Plan: docs/superpowers/plans/2026-07-13-mega-menu-brands-pagination.md
+
+- [x] Task 1: lib foundations (commit 9c125b3, review clean; stale comment fixed in 1-line follow-up)
+- [x] Task 2: sync script — brand logos + synthetic offers (commits b00b653,83b9925, review clean; caught/fixed zero-price offer bug — 195 valid offers, 23 logos)
+- [x] Task 3: PaginatedProductGrid + ShopCategoryClient wiring (commit cf4a0b4, review clean; implementer died from session limit mid-task, controller finished/verified/committed directly)
+- [x] Task 4: Navbar mega menu rewrite (commit fad383d, review clean)
+- [x] Task 5: real brand logos in BrandCarousel (commit 32d55f0, review clean)
+- [x] Task 6: /marche page (commit 1e0073b, review clean; selleriagalazzo.com remotePattern confirmed already whitelisted)
+- [x] Task 7: /brand/[slug] page (commit cb5f85b, review clean)
+- [x] Task 8: /offerte page (commit 6adabea, review clean)
+- [x] Task 9: brand section on product page (commit 43eef9b, review clean)
+- [x] Task 10: clickable breadcrumbs in ProductInfo (commit e648ade, review clean)
+- [x] Task 11: full build+test+manual verification (60/60 tests, 3263 pages, full interactive browser check, zero bugs found)

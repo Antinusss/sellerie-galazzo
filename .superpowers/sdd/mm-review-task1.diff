@@ -1,0 +1,257 @@
+# Review package: 735e710..HEAD
+
+## Commits
+9c125b3 feat: add Brand.logo, findCategoryByPath, applyOfferPricing, shared branch images
+
+## Files changed
+ __tests__/category-tree.test.ts  | 13 +++++++++++
+ __tests__/offers.test.ts         | 49 ++++++++++++++++++++++++++++++++++++++++
+ components/home/CategoryGrid.tsx |  9 ++------
+ lib/branch-images.ts             |  5 ++++
+ lib/category-tree.ts             |  7 ++++++
+ lib/offers.ts                    | 19 ++++++++++++++++
+ lib/types.ts                     |  1 +
+ 7 files changed, 96 insertions(+), 7 deletions(-)
+
+## Diff
+diff --git a/__tests__/category-tree.test.ts b/__tests__/category-tree.test.ts
+index 9a066bd..f900ac9 100644
+--- a/__tests__/category-tree.test.ts
++++ b/__tests__/category-tree.test.ts
+@@ -1,17 +1,18 @@
+ import {
+   findCategoryBySlugPath,
+   getChildren,
+   getTopLevelCategories,
+   productsUnderCategory,
+   breadcrumbFor,
+   getRelatedProducts,
++  findCategoryByPath,
+ } from '@/lib/category-tree'
+ import type { Category, Product } from '@/lib/types'
+ 
+ const categories: Category[] = [
+   { path: ['Monta Inglese'], slug: ['monta-inglese'], name: 'Monta Inglese', depth: 1, productCount: 3 },
+   { path: ['Monta Inglese', 'Cavallo'], slug: ['monta-inglese', 'cavallo'], name: 'Cavallo', depth: 2, productCount: 2 },
+   { path: ['Monta Inglese', 'Cavaliere'], slug: ['monta-inglese', 'cavaliere'], name: 'Cavaliere', depth: 2, productCount: 1 },
+   { path: ['Scuderia'], slug: ['scuderia'], name: 'Scuderia', depth: 1, productCount: 1 },
+ ]
+ 
+@@ -89,10 +90,22 @@ describe('getRelatedProducts', () => {
+ })
+ 
+ describe('breadcrumbFor', () => {
+   it('joins the path with " / "', () => {
+     expect(breadcrumbFor(categories[1])).toBe('Monta Inglese / Cavallo')
+   })
+   it('returns a fallback label for undefined (root)', () => {
+     expect(breadcrumbFor(undefined)).toBe('Tutti i prodotti')
+   })
+ })
++
++describe('findCategoryByPath', () => {
++  it('finds a node by its name path (not slug)', () => {
++    expect(findCategoryByPath(categories, ['Monta Inglese', 'Cavallo'])?.name).toBe('Cavallo')
++  })
++  it('returns undefined for an unknown path', () => {
++    expect(findCategoryByPath(categories, ['Nope'])).toBeUndefined()
++  })
++  it('returns undefined for an empty path', () => {
++    expect(findCategoryByPath(categories, [])).toBeUndefined()
++  })
++})
+diff --git a/__tests__/offers.test.ts b/__tests__/offers.test.ts
+new file mode 100644
+index 0000000..d88835c
+--- /dev/null
++++ b/__tests__/offers.test.ts
+@@ -0,0 +1,49 @@
++import { applyOfferPricing } from '@/lib/offers'
++import type { Product } from '@/lib/types'
++
++function product(id: string, price: number): Product {
++  return {
++    id, name: `P${id}`, slug: `p${id}`, price, originalPrice: null,
++    category: 'Scuderia', categoryPath: ['Scuderia'], brand: 'X', images: [],
++    description: '', specs: '', inStock: true,
++  }
++}
++
++describe('applyOfferPricing', () => {
++  it('leaves a product whose id is not a multiple of 15 untouched', () => {
++    const [result] = applyOfferPricing([product('14', 1000)])
++    expect(result.originalPrice).toBeNull()
++    expect(result.price).toBe(1000)
++  })
++
++  it('applies a 15% discount original price for id=15', () => {
++    const [result] = applyOfferPricing([product('15', 1000)])
++    expect(result.originalPrice).toBe(1176)
++  })
++
++  it('applies a 20% discount original price for id=30', () => {
++    const [result] = applyOfferPricing([product('30', 1000)])
++    expect(result.originalPrice).toBe(1250)
++  })
++
++  it('applies a 25% discount original price for id=45', () => {
++    const [result] = applyOfferPricing([product('45', 1000)])
++    expect(result.originalPrice).toBe(1333)
++  })
++
++  it('applies a 30% discount original price for id=60', () => {
++    const [result] = applyOfferPricing([product('60', 1000)])
++    expect(result.originalPrice).toBe(1429)
++  })
++
++  it('cycles back to a 10% discount for id=75', () => {
++    const [result] = applyOfferPricing([product('75', 1000)])
++    expect(result.originalPrice).toBe(1111)
++  })
++
++  it('does not mutate the input array', () => {
++    const input = [product('15', 1000)]
++    applyOfferPricing(input)
++    expect(input[0].originalPrice).toBeNull()
++  })
++})
+diff --git a/components/home/CategoryGrid.tsx b/components/home/CategoryGrid.tsx
+index c9df225..aebc0e7 100644
+--- a/components/home/CategoryGrid.tsx
++++ b/components/home/CategoryGrid.tsx
+@@ -1,30 +1,25 @@
+ 'use client'
+ import { motion } from 'framer-motion'
+ import Link from 'next/link'
+ import Image from 'next/image'
+ import categoriesData from '@/data/categories.json'
+ import type { Category } from '@/lib/types'
+ import { getChildren } from '@/lib/category-tree'
++import { BRANCH_IMAGES } from '@/lib/branch-images'
+ 
+ const DESCRIPTIONS: Record<string, string> = {
+   'Monta Inglese': 'Selle, abbigliamento e accessori per salto ostacoli e dressage',
+   'Monta Western': 'Tutto per la monta western: cappelli, stivali, selle e abbigliamento',
+   'Scuderia': 'Prodotti per la cura quotidiana del cavallo e della scuderia',
+ }
+ 
+-const IMAGES: Record<string, string> = {
+-  'Monta Inglese': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-inglese-e1781945615752-300x300.jpg',
+-  'Monta Western': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-western-e1781945825723-300x300.jpg',
+-  'Scuderia': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/scuderia-2-300x300.jpg',
+-}
+-
+ export default function CategoryGrid() {
+   const topLevel = getChildren(categoriesData as Category[], undefined)
+ 
+   return (
+     <section className="py-20 bg-gray-light">
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+         <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+@@ -42,21 +37,21 @@ export default function CategoryGrid() {
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.5, delay: i * 0.1 }}
+             >
+               <Link
+                 href={`/shop/${cat.slug.join('/')}`}
+                 className="group relative block aspect-[3/4] rounded-2xl overflow-hidden border-2 border-transparent hover:border-sand transition-all duration-300"
+               >
+                 <Image
+-                  src={IMAGES[cat.name] ?? cat.image ?? ''}
++                  src={BRANCH_IMAGES[cat.name] ?? cat.image ?? ''}
+                   alt={cat.name}
+                   fill
+                   className="object-cover group-hover:scale-105 transition-transform duration-500"
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                 <div className="absolute bottom-0 left-0 right-0 p-5">
+                   <h3 className="text-white text-xl font-black">{cat.name}</h3>
+                   <p className="text-white/70 text-xs mt-1 hidden group-hover:block transition-all">
+                     {DESCRIPTIONS[cat.name] ?? ''}
+                   </p>
+diff --git a/lib/branch-images.ts b/lib/branch-images.ts
+new file mode 100644
+index 0000000..e4935cd
+--- /dev/null
++++ b/lib/branch-images.ts
+@@ -0,0 +1,5 @@
++export const BRANCH_IMAGES: Record<string, string> = {
++  'Monta Inglese': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-inglese-e1781945615752-300x300.jpg',
++  'Monta Western': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/monta-western-e1781945825723-300x300.jpg',
++  'Scuderia': 'https://selleriagalazzo.com/wp-content/uploads/2024/02/scuderia-2-300x300.jpg',
++}
+diff --git a/lib/category-tree.ts b/lib/category-tree.ts
+index ba33f73..472c109 100644
+--- a/lib/category-tree.ts
++++ b/lib/category-tree.ts
+@@ -37,10 +37,17 @@ export function getRelatedProducts(product: Product, allProducts: Product[], lim
+     p => p.id !== product.id && p.categoryPath.join(' > ') === leafKey
+   )
+   if (sameLeaf.length >= limit) return sameLeaf.slice(0, limit)
+ 
+   const sameLeafIds = new Set(sameLeaf.map(p => p.id))
+   const sameTop = allProducts.filter(
+     p => p.id !== product.id && p.category === product.category && !sameLeafIds.has(p.id)
+   )
+   return [...sameLeaf, ...sameTop].slice(0, limit)
+ }
++
++export function findCategoryByPath(categories: Category[], path: string[]): Category | undefined {
++  if (path.length === 0) return undefined
++  return categories.find(
++    c => c.path.length === path.length && c.path.every((seg, i) => seg === path[i])
++  )
++}
+diff --git a/lib/offers.ts b/lib/offers.ts
+new file mode 100644
+index 0000000..4865533
+--- /dev/null
++++ b/lib/offers.ts
+@@ -0,0 +1,19 @@
++import type { Product } from './types'
++
++const OFFER_MODULO = 15
++const DISCOUNT_BASE = 10
++const DISCOUNT_STEP = 5
++const DISCOUNT_BUCKETS = 5
++
++export function applyOfferPricing(products: Product[]): Product[] {
++  return products.map(p => {
++    const numericId = Number(p.id)
++    if (!Number.isFinite(numericId) || numericId % OFFER_MODULO !== 0) return p
++
++    const bucket = Math.floor(numericId / OFFER_MODULO) % DISCOUNT_BUCKETS
++    const discountPct = DISCOUNT_BASE + bucket * DISCOUNT_STEP
++    const originalPrice = Math.round(p.price / (1 - discountPct / 100))
++
++    return { ...p, originalPrice }
++  })
++}
+diff --git a/lib/types.ts b/lib/types.ts
+index 8dbec99..d6f8055 100644
+--- a/lib/types.ts
++++ b/lib/types.ts
+@@ -19,17 +19,18 @@ export interface Category {
+   name: string       // last segment, e.g. "Cavaliere"
+   depth: number       // path.length
+   productCount: number
+   image?: string       // only set on the 3 top-level (depth 1) nodes
+ }
+ 
+ export interface Brand {
+   id: string
+   name: string
+   productCount: number
++  logo?: string
+ }
+ 
+ export interface CartItem {
+   product: Product
+   quantity: number
+   variant?: string
+ }

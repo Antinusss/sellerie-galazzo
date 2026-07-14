@@ -1,0 +1,137 @@
+# Review package: 83b9925..HEAD
+
+## Commits
+cf4a0b4 feat: paginate category product listings (24/page)
+
+## Files changed
+ components/shop/PaginatedProductGrid.tsx | 80 ++++++++++++++++++++++++++++++++
+ components/shop/ShopCategoryClient.tsx   |  6 +--
+ 2 files changed, 82 insertions(+), 4 deletions(-)
+
+## Diff
+diff --git a/components/shop/PaginatedProductGrid.tsx b/components/shop/PaginatedProductGrid.tsx
+new file mode 100644
+index 0000000..ec5dc4e
+--- /dev/null
++++ b/components/shop/PaginatedProductGrid.tsx
+@@ -0,0 +1,80 @@
++'use client'
++import { useEffect, useState } from 'react'
++import ProductCard from '@/components/shop/ProductCard'
++import type { Product } from '@/lib/types'
++
++const PAGE_SIZE = 24
++
++interface PaginatedProductGridProps {
++  products: Product[]
++}
++
++export default function PaginatedProductGrid({ products }: PaginatedProductGridProps) {
++  const [page, setPage] = useState(1)
++
++  useEffect(() => {
++    setPage(1)
++  }, [products])
++
++  if (products.length === 0) return null
++
++  const totalPages = Math.max(1, Math.ceil(products.length / PAGE_SIZE))
++  const currentPage = Math.min(page, totalPages)
++  const start = (currentPage - 1) * PAGE_SIZE
++  const pageItems = products.slice(start, start + PAGE_SIZE)
++
++  const pageNumbers: (number | 'ellipsis')[] = (() => {
++    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
++    const nums = new Set<number>([1, 2, totalPages - 1, totalPages, currentPage - 1, currentPage, currentPage + 1])
++    const sorted = [...nums].filter(n => n >= 1 && n <= totalPages).sort((a, b) => a - b)
++    const result: (number | 'ellipsis')[] = []
++    let prev = 0
++    for (const n of sorted) {
++      if (prev && n - prev > 1) result.push('ellipsis')
++      result.push(n)
++      prev = n
++    }
++    return result
++  })()
++
++  return (
++    <div>
++      <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
++        {pageItems.map(p => <ProductCard key={p.id} product={p} />)}
++      </div>
++      {totalPages > 1 && (
++        <div className="flex items-center justify-center gap-2 mt-10 flex-wrap">
++          <button
++            onClick={() => setPage(p => Math.max(1, p - 1))}
++            disabled={currentPage === 1}
++            className="px-4 py-2 rounded-full text-sm font-semibold border-2 border-gray-200 disabled:opacity-40 hover:border-red hover:text-red transition-colors"
++          >
++            ← Precedente
++          </button>
++          {pageNumbers.map((n, i) =>
++            n === 'ellipsis' ? (
++              <span key={`e${i}`} className="px-2 text-gray-400">…</span>
++            ) : (
++              <button
++                key={n}
++                onClick={() => setPage(n)}
++                className={`w-9 h-9 rounded-full text-sm font-semibold transition-colors ${
++                  n === currentPage ? 'bg-red text-white' : 'hover:bg-gray-light'
++                }`}
++              >
++                {n}
++              </button>
++            )
++          )}
++          <button
++            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
++            disabled={currentPage === totalPages}
++            className="px-4 py-2 rounded-full text-sm font-semibold border-2 border-gray-200 disabled:opacity-40 hover:border-red hover:text-red transition-colors"
++          >
++            Successiva →
++          </button>
++        </div>
++      )}
++    </div>
++  )
++}
+diff --git a/components/shop/ShopCategoryClient.tsx b/components/shop/ShopCategoryClient.tsx
+index 13e7d63..ac8febb 100644
+--- a/components/shop/ShopCategoryClient.tsx
++++ b/components/shop/ShopCategoryClient.tsx
+@@ -1,14 +1,14 @@
+ 'use client'
+ import { useState, useMemo } from 'react'
+ import { useSearchParams } from 'next/navigation'
+-import ProductCard from '@/components/shop/ProductCard'
++import PaginatedProductGrid from '@/components/shop/PaginatedProductGrid'
+ import FilterSidebar from '@/components/shop/FilterSidebar'
+ import SortDropdown from '@/components/shop/SortDropdown'
+ import type { Product } from '@/lib/types'
+ 
+ interface ShopCategoryClientProps {
+   products: Product[]
+   currentPath: string[]
+ }
+ 
+ export default function ShopCategoryClient({ products, currentPath }: ShopCategoryClientProps) {
+@@ -33,18 +33,16 @@ export default function ShopCategoryClient({ products, currentPath }: ShopCatego
+           <SortDropdown value={sort} onChange={setSort} />
+         </div>
+         {filtered.length === 0 ? (
+           <div className="text-center py-20 text-gray-400">
+             <p className="text-lg font-semibold">Nessun prodotto trovato</p>
+             <button onClick={() => setPriceRange([0, 50000])} className="mt-4 text-red underline text-sm">
+               Rimuovi i filtri
+             </button>
+           </div>
+         ) : (
+-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
+-            {filtered.map(p => <ProductCard key={p.id} product={p} />)}
+-          </div>
++          <PaginatedProductGrid products={filtered} />
+         )}
+       </div>
+     </div>
+   )
+ }

@@ -1,0 +1,88 @@
+# Review package: 6adabea..HEAD
+
+## Commits
+43eef9b feat: brand section on product pages
+
+## Files changed
+ app/prodotto/[slug]/page.tsx        |  2 ++
+ components/product/BrandSection.tsx | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
+
+## Diff
+diff --git a/app/prodotto/[slug]/page.tsx b/app/prodotto/[slug]/page.tsx
+index 95fea91..33d31f3 100644
+--- a/app/prodotto/[slug]/page.tsx
++++ b/app/prodotto/[slug]/page.tsx
+@@ -1,31 +1,33 @@
+ import { notFound } from 'next/navigation'
+ import allProducts from '@/data/products.json'
+ import type { Product } from '@/lib/types'
+ import ProductGallery from '@/components/product/ProductGallery'
+ import ProductInfo from '@/components/product/ProductInfo'
+ import ProductTabs from '@/components/product/ProductTabs'
+ import RelatedProducts from '@/components/product/RelatedProducts'
+ import NewsletterSection from '@/components/product/NewsletterSection'
++import BrandSection from '@/components/product/BrandSection'
+ 
+ interface Props { params: { slug: string } }
+ 
+ export async function generateStaticParams() {
+   return (allProducts as Product[]).map(p => ({ slug: p.slug }))
+ }
+ 
+ export default function ProductPage({ params }: Props) {
+   const product = (allProducts as Product[]).find(p => p.slug === params.slug)
+   if (!product) notFound()
+ 
+   return (
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+         <ProductGallery images={product.images} name={product.name} />
+         <ProductInfo product={product} />
+       </div>
++      <BrandSection product={product} />
+       <ProductTabs description={product.description} specs={product.specs} />
+       <RelatedProducts product={product} />
+       <NewsletterSection />
+     </div>
+   )
+ }
+diff --git a/components/product/BrandSection.tsx b/components/product/BrandSection.tsx
+new file mode 100644
+index 0000000..1e90c21
+--- /dev/null
++++ b/components/product/BrandSection.tsx
+@@ -0,0 +1,33 @@
++import Image from 'next/image'
++import Link from 'next/link'
++import allBrands from '@/data/brands.json'
++import type { Brand, Product } from '@/lib/types'
++
++interface BrandSectionProps { product: Product }
++
++export default function BrandSection({ product }: BrandSectionProps) {
++  if (!product.brand) return null
++  const brand = (allBrands as Brand[]).find(b => b.name === product.brand)
++  if (!brand) return null
++
++  return (
++    <section className="mt-12 bg-gray-light rounded-2xl p-6 flex items-center gap-4">
++      {brand.logo ? (
++        <div className="relative w-14 h-14 shrink-0 bg-white rounded-full overflow-hidden">
++          <Image src={brand.logo} alt={brand.name} fill className="object-contain p-2" />
++        </div>
++      ) : (
++        <div className="w-14 h-14 shrink-0 rounded-full bg-white flex items-center justify-center text-sm font-black text-gray-400">
++          {brand.name.slice(0, 2).toUpperCase()}
++        </div>
++      )}
++      <div className="flex-1">
++        <p className="text-xs text-gray-400 uppercase tracking-wide">Venduto da</p>
++        <p className="font-black text-lg">{brand.name}</p>
++      </div>
++      <Link href={`/brand/${brand.id}`} className="text-sm font-semibold text-red hover:text-red-dark whitespace-nowrap">
++        Vedi tutti i prodotti →
++      </Link>
++    </section>
++  )
++}
