@@ -36,6 +36,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [openCategory, setOpenCategory] = useState<string | null>(null)
   const { totalItems, openCart } = useCartStore()
   const { productIds: wishlistIds } = useWishlistStore()
 
@@ -83,17 +84,33 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-6 h-12 border-t border-gray-100">
+        <div className="hidden md:flex items-center gap-6 h-12 border-t border-gray-100 relative">
           {topLevel.map(cat => (
-            <div key={cat.slug.join('/')} className="group relative">
+            <div
+              key={cat.slug.join('/')}
+              onMouseEnter={() => setOpenCategory(cat.name)}
+              onMouseLeave={() => setOpenCategory(null)}
+            >
               <Link
                 href={`/shop/${cat.slug.join('/')}`}
                 className="text-sm font-medium text-black hover:text-red transition-colors h-12 inline-flex items-center"
               >
                 {cat.name}
               </Link>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:flex bg-white shadow-lg rounded-xl p-6 gap-8 z-50 w-max max-w-3xl">
-                <div className="flex gap-8">
+            </div>
+          ))}
+
+          {topLevel.map(cat => (
+            <div
+              key={`panel-${cat.slug.join('/')}`}
+              onMouseEnter={() => setOpenCategory(cat.name)}
+              onMouseLeave={() => setOpenCategory(null)}
+              className={`absolute left-0 right-0 top-full bg-white shadow-lg border-t border-gray-100 z-50 ${
+                openCategory === cat.name ? 'block' : 'hidden'
+              }`}
+            >
+              <div className="flex gap-10 p-8">
+                <div className="flex-1 flex gap-16">
                   {getChildren(categories, cat).map(mid => (
                     <div key={mid.slug.join('/')} className="min-w-[160px]">
                       <Link
@@ -118,7 +135,7 @@ export default function Navbar() {
                 </div>
                 <Link
                   href={`/shop/${cat.slug.join('/')}`}
-                  className="relative w-48 shrink-0 rounded-xl overflow-hidden group/promo"
+                  className="relative w-64 shrink-0 rounded-xl overflow-hidden group/promo"
                 >
                   <Image
                     src={BRANCH_IMAGES[cat.name] ?? cat.image ?? ''}

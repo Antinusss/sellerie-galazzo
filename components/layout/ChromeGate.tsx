@@ -38,7 +38,7 @@ export default function ChromeGate({ children }: { children: React.ReactNode }) 
         <AnnouncementBar />
         <Navbar />
       </div>
-      <main className="pt-24">{children}</main>
+      <main className="pt-24 md:pt-36">{children}</main>
       <Footer />
     </>
   )
