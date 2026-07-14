@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
+import { useWishlistStore } from '@/lib/wishlist-store'
 import categoriesData from '@/data/categories.json'
 import brandsData from '@/data/brands.json'
 import type { Category, Brand } from '@/lib/types'
@@ -36,6 +37,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const { totalItems, openCart } = useCartStore()
+  const { productIds: wishlistIds } = useWishlistStore()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -59,9 +61,14 @@ export default function Navbar() {
             <button className="p-2 hover:text-red transition-colors md:hidden" onClick={() => setSearchOpen(true)}>
               <Search size={20} />
             </button>
-            <button className="p-2 hover:text-red transition-colors">
+            <Link href="/wishlist" className="relative p-2 hover:text-red transition-colors">
               <Heart size={20} />
-            </button>
+              {wishlistIds.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                  {wishlistIds.length}
+                </span>
+              )}
+            </Link>
             <button className="relative p-2 hover:text-red transition-colors" onClick={openCart}>
               <ShoppingCart size={20} />
               {totalItems > 0 && (
