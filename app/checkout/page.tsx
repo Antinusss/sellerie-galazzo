@@ -10,6 +10,7 @@ type Step = 1 | 2 | 3
 export default function CheckoutPage() {
   const [step, setStep] = useState<Step>(1)
   const [form, setForm] = useState({ email: '', nome: '', cognome: '', indirizzo: '', cap: '', citta: '', shipping: 'standard' })
+  const [payment, setPayment] = useState('card')
   const router = useRouter()
   const { clearCart } = useCartStore()
 
@@ -89,12 +90,59 @@ export default function CheckoutPage() {
               <div className="bg-gray-light rounded-xl p-4 text-xs text-gray-400 flex items-center gap-2">
                 🔒 Connessione sicura — I tuoi dati sono protetti con crittografia SSL
               </div>
-              <input placeholder="Numero carta *" className={inputClass} maxLength={19} />
-              <div className="grid grid-cols-2 gap-4">
-                <input placeholder="Scadenza MM/AA *" className={inputClass} />
-                <input placeholder="CVV *" className={inputClass} maxLength={4} />
+
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { id: 'card', label: 'Carta di credito/debito' },
+                  { id: 'paypal', label: 'PayPal' },
+                  { id: 'klarna', label: 'Klarna — Paga a rate' },
+                  { id: 'bonifico', label: 'Bonifico bancario' },
+                ].map(opt => (
+                  <label
+                    key={opt.id}
+                    className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                      payment === opt.id ? 'border-red bg-red/5' : 'border-gray-200 hover:border-sand'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value={opt.id}
+                      checked={payment === opt.id}
+                      onChange={() => setPayment(opt.id)}
+                      className="accent-red"
+                    />
+                    <span className="font-semibold text-sm">{opt.label}</span>
+                  </label>
+                ))}
               </div>
-              <input placeholder="Nome sulla carta *" className={inputClass} />
+
+              {payment === 'card' && (
+                <>
+                  <input placeholder="Numero carta *" className={inputClass} maxLength={19} />
+                  <div className="grid grid-cols-2 gap-4">
+                    <input placeholder="Scadenza MM/AA *" className={inputClass} />
+                    <input placeholder="CVV *" className={inputClass} maxLength={4} />
+                  </div>
+                  <input placeholder="Nome sulla carta *" className={inputClass} />
+                </>
+              )}
+              {payment === 'paypal' && (
+                <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                  Verrai reindirizzato a PayPal per completare il pagamento in sicurezza.
+                </p>
+              )}
+              {payment === 'klarna' && (
+                <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                  Paga in 3 rate senza interessi o tra 30 giorni con Klarna. Verrai reindirizzato a Klarna per completare l&apos;acquisto.
+                </p>
+              )}
+              {payment === 'bonifico' && (
+                <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                  Riceverai le coordinate bancarie via email per completare il bonifico. L&apos;ordine sarà spedito alla ricezione del pagamento.
+                </p>
+              )}
+
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(2)} className="flex-1 border-2 border-black py-4 rounded-full font-bold hover:bg-black hover:text-white transition-colors">
                   ← Indietro
