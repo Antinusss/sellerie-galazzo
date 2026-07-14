@@ -1,0 +1,873 @@
+# Review package: b8c990898a5263743998a9303a92a061491554ce..2ee6a03e19d20c4df038943a401cc894c8ae8281
+
+## Commits
+2ee6a03 feat: hide full navbar/footer on checkout for a distraction-free layout
+c49f31d feat: add best-sellers section to home page
+a33d16a feat: add autocomplete and input-mode attributes to checkout form
+96d0f9b fix: raise CartDrawer z-index above CookieBanner to prevent button occlusion
+22b3291 feat: add cookie consent banner
+27a1e60 feat: add branded 404 page
+bd96c6a feat: add free-shipping progress, continue-shopping link, and back-to-top
+e08a4eb feat: wire wishlist toggle into ProductInfo
+8de071f feat: wire wishlist toggle and badges into ProductCard
+324e4a1 feat: add wishlist page and navbar entry point
+8483068 feat: add deterministic product badge module
+52a3120 feat: add wishlist store
+
+## Files changed
+ __tests__/badges.test.ts               | 28 +++++++++++++++++++++
+ __tests__/wishlist-store.test.ts       | 44 +++++++++++++++++++++++++++++++++
+ app/cart/page.tsx                      |  8 +++++-
+ app/checkout/page.tsx                  | 20 +++++++--------
+ app/layout.tsx                         | 13 +++-------
+ app/not-found.tsx                      | 22 +++++++++++++++++
+ app/page.tsx                           |  2 ++
+ app/wishlist/page.tsx                  | 40 ++++++++++++++++++++++++++++++
+ components/cart/CartDrawer.tsx         |  7 +++++-
+ components/home/BestsellersSection.tsx | 29 ++++++++++++++++++++++
+ components/layout/ChromeGate.tsx       | 45 ++++++++++++++++++++++++++++++++++
+ components/layout/CookieBanner.tsx     | 43 ++++++++++++++++++++++++++++++++
+ components/layout/Footer.tsx           |  9 ++++++-
+ components/layout/Navbar.tsx           | 11 +++++++--
+ components/product/ProductInfo.tsx     | 14 ++++++++---
+ components/shop/ProductCard.tsx        | 32 ++++++++++++++++++------
+ lib/badges.ts                          | 20 +++++++++++++++
+ lib/wishlist-store.ts                  | 24 ++++++++++++++++++
+ 18 files changed, 377 insertions(+), 34 deletions(-)
+
+## Diff
+diff --git a/__tests__/badges.test.ts b/__tests__/badges.test.ts
+new file mode 100644
+index 0000000..30dfc34
+--- /dev/null
++++ b/__tests__/badges.test.ts
+@@ -0,0 +1,28 @@
++import { getBadge } from '@/lib/badges'
++
++describe('getBadge', () => {
++  it('is deterministic for the same product id', () => {
++    expect(getBadge('67217')).toBe(getBadge('67217'))
++  })
++
++  it('returns "bestseller" for a product with a high review count', () => {
++    // id=108 -> reviewCount = 3 + (108 % 118) = 111, above the 110 threshold
++    expect(getBadge('108')).toBe('bestseller')
++  })
++
++  it('returns "novita" for a product whose id is a multiple of 12 and not a bestseller', () => {
++    // id=12 -> reviewCount = 3 + (12 % 118) = 15 (below threshold), 12 % 12 === 0
++    expect(getBadge('12')).toBe('novita')
++  })
++
++  it('returns null for a product matching neither rule', () => {
++    // id=1 -> reviewCount = 4 (below threshold), 1 % 12 !== 0
++    expect(getBadge('1')).toBeNull()
++  })
++
++  it('never returns both — every id yields exactly one of the three values', () => {
++    for (let id = 0; id < 300; id++) {
++      expect(['novita', 'bestseller', null]).toContain(getBadge(String(id)))
++    }
++  })
++})
+diff --git a/__tests__/wishlist-store.test.ts b/__tests__/wishlist-store.test.ts
+new file mode 100644
+index 0000000..b96ced6
+--- /dev/null
++++ b/__tests__/wishlist-store.test.ts
+@@ -0,0 +1,44 @@
++import { act, renderHook } from '@testing-library/react'
++import { useWishlistStore } from '@/lib/wishlist-store'
++
++beforeEach(() => {
++  const { result } = renderHook(() => useWishlistStore())
++  act(() => {
++    for (const id of [...result.current.productIds]) result.current.toggleWishlist(id)
++  })
++})
++
++describe('toggleWishlist', () => {
++  it('adds a product id when not present', () => {
++    const { result } = renderHook(() => useWishlistStore())
++    act(() => result.current.toggleWishlist('42'))
++    expect(result.current.productIds).toEqual(['42'])
++  })
++
++  it('removes a product id when already present', () => {
++    const { result } = renderHook(() => useWishlistStore())
++    act(() => result.current.toggleWishlist('42'))
++    act(() => result.current.toggleWishlist('42'))
++    expect(result.current.productIds).toEqual([])
++  })
++
++  it('supports multiple distinct ids', () => {
++    const { result } = renderHook(() => useWishlistStore())
++    act(() => result.current.toggleWishlist('1'))
++    act(() => result.current.toggleWishlist('2'))
++    expect(result.current.productIds).toEqual(['1', '2'])
++  })
++})
++
++describe('isWishlisted', () => {
++  it('returns false for an id never added', () => {
++    const { result } = renderHook(() => useWishlistStore())
++    expect(result.current.isWishlisted('999')).toBe(false)
++  })
++
++  it('returns true after toggling on', () => {
++    const { result } = renderHook(() => useWishlistStore())
++    act(() => result.current.toggleWishlist('7'))
++    expect(result.current.isWishlisted('7')).toBe(true)
++  })
++})
+diff --git a/app/cart/page.tsx b/app/cart/page.tsx
+index 89e0c35..7c0ebcc 100644
+--- a/app/cart/page.tsx
++++ b/app/cart/page.tsx
+@@ -19,23 +19,29 @@ export default function CartPage() {
+           className="inline-block bg-red text-white px-8 py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
+         >
+           Vai allo shop
+         </Link>
+       </div>
+     )
+   }
+ 
+   return (
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+-      <h1 className="text-4xl font-black mb-10">
++      <h1 className="text-4xl font-black mb-6">
+         Il tuo <em className="text-red">carrello</em>
+       </h1>
++      <div className="flex items-center justify-between mb-6">
++        <p className="text-sm text-gray-400">{items.length} {items.length === 1 ? 'articolo' : 'articoli'}</p>
++        <Link href="/shop" className="text-sm font-semibold text-red hover:text-red-dark transition-colors">
++          ← Continua lo shopping
++        </Link>
++      </div>
+       <div className="flex flex-col lg:flex-row gap-10">
+         <div className="flex-1">
+           {items.map(item => <CartItem key={item.product.id} item={item} />)}
+         </div>
+         <div className="lg:w-80">
+           <CartSummary />
+         </div>
+       </div>
+     </div>
+   )
+diff --git a/app/checkout/page.tsx b/app/checkout/page.tsx
+index 332f1bb..f47b93c 100644
+--- a/app/checkout/page.tsx
++++ b/app/checkout/page.tsx
+@@ -20,29 +20,29 @@ export default function CheckoutPage() {
+ 
+   return (
+     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+       <CheckoutSteps currentStep={step} />
+       <div className="flex flex-col lg:flex-row gap-10">
+         {/* Form area */}
+         <div className="flex-1">
+           {step === 1 && (
+             <div className="space-y-5">
+               <h2 className="text-2xl font-black">Contatti e indirizzo</h2>
+-              <input placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
++              <input type="email" autoComplete="email" placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
+               <div className="grid grid-cols-2 gap-4">
+-                <input placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
+-                <input placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
++                <input autoComplete="given-name" placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
++                <input autoComplete="family-name" placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
+               </div>
+-              <input placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
++              <input autoComplete="street-address" placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
+               <div className="grid grid-cols-3 gap-4">
+-                <input placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
+-                <input placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
++                <input inputMode="numeric" autoComplete="postal-code" placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
++                <input autoComplete="address-level2" placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
+               </div>
+               <button onClick={() => setStep(2)} className="w-full bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors mt-4">
+                 Continua alla spedizione →
+               </button>
+             </div>
+           )}
+ 
+           {step === 2 && (
+             <div className="space-y-5">
+               <h2 className="text-2xl font-black">Metodo di spedizione</h2>
+@@ -112,26 +112,26 @@ export default function CheckoutPage() {
+                       onChange={() => setPayment(opt.id)}
+                       className="accent-red"
+                     />
+                     <span className="font-semibold text-sm">{opt.label}</span>
+                   </label>
+                 ))}
+               </div>
+ 
+               {payment === 'card' && (
+                 <>
+-                  <input placeholder="Numero carta *" className={inputClass} maxLength={19} />
++                  <input inputMode="numeric" autoComplete="cc-number" placeholder="Numero carta *" className={inputClass} maxLength={19} />
+                   <div className="grid grid-cols-2 gap-4">
+-                    <input placeholder="Scadenza MM/AA *" className={inputClass} />
+-                    <input placeholder="CVV *" className={inputClass} maxLength={4} />
++                    <input autoComplete="cc-exp" placeholder="Scadenza MM/AA *" className={inputClass} />
++                    <input inputMode="numeric" autoComplete="cc-csc" placeholder="CVV *" className={inputClass} maxLength={4} />
+                   </div>
+-                  <input placeholder="Nome sulla carta *" className={inputClass} />
++                  <input autoComplete="cc-name" placeholder="Nome sulla carta *" className={inputClass} />
+                 </>
+               )}
+               {payment === 'paypal' && (
+                 <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                   Verrai reindirizzato a PayPal per completare il pagamento in sicurezza.
+                 </p>
+               )}
+               {payment === 'klarna' && (
+                 <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                   Paga in 3 rate senza interessi o tra 30 giorni con Klarna. Verrai reindirizzato a Klarna per completare l&apos;acquisto.
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 6805853..f6c2454 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -1,25 +1,20 @@
+ import type { Metadata } from 'next'
+ import './globals.css'
+-import AnnouncementBar from '@/components/layout/AnnouncementBar'
+-import Navbar from '@/components/layout/Navbar'
+-import Footer from '@/components/layout/Footer'
++import ChromeGate from '@/components/layout/ChromeGate'
++import CookieBanner from '@/components/layout/CookieBanner'
+ 
+ export const metadata: Metadata = {
+   title: 'Selleria Galazzo — Articoli Equestri Online',
+   description: 'Selleria online specializzata in articoli per equitazione, monta inglese, western e prodotti per la scuderia.',
+ }
+ 
+ export default function RootLayout({ children }: { children: React.ReactNode }) {
+   return (
+     <html lang="it">
+       <body className="antialiased">
+-        <div className="fixed top-0 left-0 right-0 z-50">
+-          <AnnouncementBar />
+-          <Navbar />
+-        </div>
+-        <main className="pt-24">{children}</main>
+-        <Footer />
++        <ChromeGate>{children}</ChromeGate>
++        <CookieBanner />
+       </body>
+     </html>
+   )
+ }
+diff --git a/app/not-found.tsx b/app/not-found.tsx
+new file mode 100644
+index 0000000..1366356
+--- /dev/null
++++ b/app/not-found.tsx
+@@ -0,0 +1,22 @@
++import Link from 'next/link'
++
++export default function NotFound() {
++  return (
++    <div className="max-w-2xl mx-auto px-4 py-24 text-center">
++      <p className="text-sand font-black text-sm uppercase tracking-widest mb-4">Errore 404</p>
++      <h1 className="text-4xl md:text-5xl font-black mb-4">
++        Pagina <em className="text-red">non trovata</em>
++      </h1>
++      <p className="text-gray-400 mb-10">
++        La pagina che cerchi non esiste più o è stata spostata. Torna allo shop per continuare
++        a curiosare tra i nostri prodotti.
++      </p>
++      <Link
++        href="/shop"
++        className="inline-block bg-red text-white px-8 py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
++      >
++        Vai allo shop
++      </Link>
++    </div>
++  )
++}
+diff --git a/app/page.tsx b/app/page.tsx
+index e1d4f6c..7e9a735 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,17 +1,19 @@
+ import HeroSection from '@/components/home/HeroSection'
+ import CategoryGrid from '@/components/home/CategoryGrid'
+ import NewArrivalsCarousel from '@/components/home/NewArrivalsCarousel'
++import BestsellersSection from '@/components/home/BestsellersSection'
+ import TrustSection from '@/components/home/TrustSection'
+ import BrandCarousel from '@/components/home/BrandCarousel'
+ 
+ export default function HomePage() {
+   return (
+     <>
+       <HeroSection />
+       <CategoryGrid />
+       <NewArrivalsCarousel />
++      <BestsellersSection />
+       <TrustSection />
+       <BrandCarousel />
+     </>
+   )
+ }
+diff --git a/app/wishlist/page.tsx b/app/wishlist/page.tsx
+new file mode 100644
+index 0000000..b11eed7
+--- /dev/null
++++ b/app/wishlist/page.tsx
+@@ -0,0 +1,40 @@
++'use client'
++import Link from 'next/link'
++import { Heart } from 'lucide-react'
++import allProducts from '@/data/products.json'
++import type { Product } from '@/lib/types'
++import { useWishlistStore } from '@/lib/wishlist-store'
++import PaginatedProductGrid from '@/components/shop/PaginatedProductGrid'
++
++const products = allProducts as Product[]
++
++export default function WishlistPage() {
++  const { productIds } = useWishlistStore()
++  const wishlisted = products.filter(p => productIds.includes(p.id))
++
++  if (wishlisted.length === 0) {
++    return (
++      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
++        <Heart size={64} className="mx-auto text-gray-200 mb-6" />
++        <h1 className="text-3xl font-black mb-3">La tua wishlist è vuota</h1>
++        <p className="text-gray-400 mb-8">Salva i prodotti che ti piacciono per ritrovarli facilmente.</p>
++        <Link
++          href="/shop"
++          className="inline-block bg-red text-white px-8 py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
++        >
++          Vai allo shop
++        </Link>
++      </div>
++    )
++  }
++
++  return (
++    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
++      <h1 className="text-4xl font-black mb-2">
++        La tua <em className="text-red">wishlist</em>
++      </h1>
++      <p className="text-sm text-gray-400 mb-8">{wishlisted.length} prodotti salvati</p>
++      <PaginatedProductGrid products={wishlisted} />
++    </div>
++  )
++}
+diff --git a/components/cart/CartDrawer.tsx b/components/cart/CartDrawer.tsx
+index 69d248e..cbda4ee 100644
+--- a/components/cart/CartDrawer.tsx
++++ b/components/cart/CartDrawer.tsx
+@@ -3,21 +3,21 @@ import Image from 'next/image'
+ import Link from 'next/link'
+ import { Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
+ import { formatPrice } from '@/lib/utils'
+ 
+ export default function CartDrawer() {
+   const { items, totalItems, totalPrice, isCartOpen, closeCart, removeItem, updateQuantity } = useCartStore()
+ 
+   return (
+     <div
+-      className={`fixed inset-0 z-50 transition-opacity duration-300 ${
++      className={`fixed inset-0 z-[70] transition-opacity duration-300 ${
+         isCartOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+       }`}
+     >
+       <div className="absolute inset-0 bg-black/40" onClick={closeCart} />
+       <aside
+         className={`absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col transition-transform duration-300 ${
+           isCartOpen ? 'translate-x-0' : 'translate-x-full'
+         }`}
+       >
+         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+@@ -67,20 +67,25 @@ export default function CartDrawer() {
+                         <Trash2 size={14} />
+                       </button>
+                     </div>
+                   </div>
+                   <p className="text-sm font-black shrink-0">{formatPrice(item.product.price * item.quantity)}</p>
+                 </div>
+               ))}
+             </div>
+ 
+             <div className="px-6 py-5 border-t border-gray-100">
++              {totalPrice < 8000 && (
++                <p className="text-xs text-gray-400 mb-3">
++                  Aggiungi {formatPrice(8000 - totalPrice)} per la spedizione gratuita
++                </p>
++              )}
+               <div className="flex justify-between font-black text-lg mb-4">
+                 <span>Subtotale</span>
+                 <span>{formatPrice(totalPrice)}</span>
+               </div>
+               <div className="flex flex-col gap-2">
+                 <Link
+                   href="/cart"
+                   onClick={closeCart}
+                   className="w-full text-center border-2 border-black py-3 rounded-full font-bold text-sm hover:bg-black hover:text-white transition-colors"
+                 >
+diff --git a/components/home/BestsellersSection.tsx b/components/home/BestsellersSection.tsx
+new file mode 100644
+index 0000000..fef37a4
+--- /dev/null
++++ b/components/home/BestsellersSection.tsx
+@@ -0,0 +1,29 @@
++import Link from 'next/link'
++import ProductCard from '@/components/shop/ProductCard'
++import products from '@/data/products.json'
++import type { Product } from '@/lib/types'
++import { getReviewSummary } from '@/lib/reviews'
++
++export default function BestsellersSection() {
++  const ranked = [...(products as Product[])]
++    .sort((a, b) => getReviewSummary(b.id).count - getReviewSummary(a.id).count)
++    .slice(0, 8)
++
++  return (
++    <section className="py-20 bg-gray-light">
++      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
++        <div className="flex items-end justify-between mb-10">
++          <h2 className="text-4xl font-black">
++            I più <em className="text-red">venduti</em>
++          </h2>
++          <Link href="/shop" className="text-sm font-semibold text-red underline underline-offset-4 hover:text-red-dark">
++            Vedi tutti →
++          </Link>
++        </div>
++        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
++          {ranked.map(p => <ProductCard key={p.id} product={p} />)}
++        </div>
++      </div>
++    </section>
++  )
++}
+diff --git a/components/layout/ChromeGate.tsx b/components/layout/ChromeGate.tsx
+new file mode 100644
+index 0000000..e2ea581
+--- /dev/null
++++ b/components/layout/ChromeGate.tsx
+@@ -0,0 +1,45 @@
++'use client'
++import { usePathname } from 'next/navigation'
++import Image from 'next/image'
++import Link from 'next/link'
++import { Lock } from 'lucide-react'
++import AnnouncementBar from './AnnouncementBar'
++import Navbar from './Navbar'
++import Footer from './Footer'
++
++const MINIMAL_CHROME_PATHS = ['/checkout', '/checkout/success']
++
++export default function ChromeGate({ children }: { children: React.ReactNode }) {
++  const pathname = usePathname()
++  const minimal = MINIMAL_CHROME_PATHS.includes(pathname)
++
++  if (minimal) {
++    return (
++      <>
++        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
++          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
++            <Link href="/" className="relative h-10 w-[93px]">
++              <Image src="/logo-selleria-galazzo.png" alt="Selleria Galazzo" fill className="object-contain object-left" priority />
++            </Link>
++            <span className="flex items-center gap-2 text-xs font-semibold text-gray-500">
++              <Lock size={14} />
++              Pagamento sicuro
++            </span>
++          </div>
++        </div>
++        <main className="pt-16">{children}</main>
++      </>
++    )
++  }
++
++  return (
++    <>
++      <div className="fixed top-0 left-0 right-0 z-50">
++        <AnnouncementBar />
++        <Navbar />
++      </div>
++      <main className="pt-24">{children}</main>
++      <Footer />
++    </>
++  )
++}
+diff --git a/components/layout/CookieBanner.tsx b/components/layout/CookieBanner.tsx
+new file mode 100644
+index 0000000..90c6b89
+--- /dev/null
++++ b/components/layout/CookieBanner.tsx
+@@ -0,0 +1,43 @@
++'use client'
++import { useEffect, useState } from 'react'
++
++const STORAGE_KEY = 'selleria-galazzo-cookie-consent'
++
++export default function CookieBanner() {
++  const [visible, setVisible] = useState(false)
++
++  useEffect(() => {
++    if (!localStorage.getItem(STORAGE_KEY)) setVisible(true)
++  }, [])
++
++  const dismiss = (choice: 'accepted' | 'rejected') => {
++    localStorage.setItem(STORAGE_KEY, choice)
++    setVisible(false)
++  }
++
++  if (!visible) return null
++
++  return (
++    <div className="fixed bottom-0 left-0 right-0 z-[60] bg-black text-white px-4 py-4 sm:px-6">
++      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center gap-4 justify-between">
++        <p className="text-sm text-gray-300">
++          Usiamo cookie tecnici necessari al funzionamento del sito. Nessun dato viene condiviso con terze parti.
++        </p>
++        <div className="flex gap-3 shrink-0">
++          <button
++            onClick={() => dismiss('rejected')}
++            className="border border-white/30 px-4 py-2 rounded-full text-sm font-semibold hover:bg-white/10 transition-colors"
++          >
++            Rifiuta
++          </button>
++          <button
++            onClick={() => dismiss('accepted')}
++            className="bg-red text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-dark transition-colors"
++          >
++            Accetta
++          </button>
++        </div>
++      </div>
++    </div>
++  )
++}
+diff --git a/components/layout/Footer.tsx b/components/layout/Footer.tsx
+index 907f931..52ba37b 100644
+--- a/components/layout/Footer.tsx
++++ b/components/layout/Footer.tsx
+@@ -1,10 +1,11 @@
++'use client'
+ import Link from 'next/link'
+ import Image from 'next/image'
+ import { Globe, Share2, Mail } from 'lucide-react'
+ import categoriesData from '@/data/categories.json'
+ import type { Category } from '@/lib/types'
+ import { getChildren } from '@/lib/category-tree'
+ 
+ const topLevel = getChildren(categoriesData as Category[], undefined)
+ 
+ export default function Footer() {
+@@ -53,20 +54,26 @@ export default function Footer() {
+                 className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-sand"
+               />
+               <button className="bg-red text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-red-dark transition-colors">
+                 OK
+               </button>
+             </div>
+           </div>
+         </div>
+         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+           <p>© 2026 Selleria Galazzo di Biag Galazzo. Tutti i diritti riservati.</p>
+-          <div className="flex gap-6">
++          <div className="flex items-center gap-6">
+             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+             <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
+             <a href="#" className="hover:text-white transition-colors">P.IVA 00000000000</a>
++            <button
++              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
++              className="hover:text-white transition-colors"
++            >
++              ↑ Torna su
++            </button>
+           </div>
+         </div>
+       </div>
+     </footer>
+   )
+ }
+diff --git a/components/layout/Navbar.tsx b/components/layout/Navbar.tsx
+index 312a292..9a56f53 100644
+--- a/components/layout/Navbar.tsx
++++ b/components/layout/Navbar.tsx
+@@ -1,17 +1,18 @@
+ 'use client'
+ import { useState, useEffect } from 'react'
+ import dynamic from 'next/dynamic'
+ import Image from 'next/image'
+ import Link from 'next/link'
+ import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
++import { useWishlistStore } from '@/lib/wishlist-store'
+ import categoriesData from '@/data/categories.json'
+ import brandsData from '@/data/brands.json'
+ import type { Category, Brand } from '@/lib/types'
+ import { getChildren } from '@/lib/category-tree'
+ import { BRANCH_IMAGES } from '@/lib/branch-images'
+ import HeaderSearchBar from './HeaderSearchBar'
+ import CartDrawer from '@/components/cart/CartDrawer'
+ 
+ const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
+ 
+@@ -29,20 +30,21 @@ const GUIDE_LINKS = [
+   { label: 'Protezioni', href: '/shop/monta-inglese/cavallo/protezioni' },
+   { label: 'Selle e accessori (Western)', href: '/shop/monta-western/cavallo/selle-e-accessori' },
+   { label: 'Briglie e accessori', href: '/shop/monta-inglese/cavallo/briglie-e-accessori' },
+ ]
+ 
+ export default function Navbar() {
+   const [scrolled, setScrolled] = useState(false)
+   const [mobileOpen, setMobileOpen] = useState(false)
+   const [searchOpen, setSearchOpen] = useState(false)
+   const { totalItems, openCart } = useCartStore()
++  const { productIds: wishlistIds } = useWishlistStore()
+ 
+   useEffect(() => {
+     const onScroll = () => setScrolled(window.scrollY > 10)
+     window.addEventListener('scroll', onScroll)
+     return () => window.removeEventListener('scroll', onScroll)
+   }, [])
+ 
+   return (
+     <nav className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
+       scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
+@@ -52,23 +54,28 @@ export default function Navbar() {
+           <Link href="/" className="flex-shrink-0 relative h-10 w-[93px]">
+             <Image src="/logo-selleria-galazzo.png" alt="Selleria Galazzo" fill className="object-contain object-left" priority />
+           </Link>
+ 
+           <HeaderSearchBar />
+ 
+           <div className="flex items-center gap-4">
+             <button className="p-2 hover:text-red transition-colors md:hidden" onClick={() => setSearchOpen(true)}>
+               <Search size={20} />
+             </button>
+-            <button className="p-2 hover:text-red transition-colors">
++            <Link href="/wishlist" className="relative p-2 hover:text-red transition-colors">
+               <Heart size={20} />
+-            </button>
++              {wishlistIds.length > 0 && (
++                <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
++                  {wishlistIds.length}
++                </span>
++              )}
++            </Link>
+             <button className="relative p-2 hover:text-red transition-colors" onClick={openCart}>
+               <ShoppingCart size={20} />
+               {totalItems > 0 && (
+                 <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                   {totalItems}
+                 </span>
+               )}
+             </button>
+             <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+diff --git a/components/product/ProductInfo.tsx b/components/product/ProductInfo.tsx
+index 72398af..b637d10 100644
+--- a/components/product/ProductInfo.tsx
++++ b/components/product/ProductInfo.tsx
+@@ -1,29 +1,32 @@
+ 'use client'
+ import { useState } from 'react'
+ import Link from 'next/link'
+ import { Heart, Minus, Plus, ShoppingCart, Star } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
++import { useWishlistStore } from '@/lib/wishlist-store'
+ import { formatPrice } from '@/lib/utils'
+ import { findCategoryByPath } from '@/lib/category-tree'
+ import { getReviewSummary } from '@/lib/reviews'
+ import categoriesData from '@/data/categories.json'
+ import type { Product, Category } from '@/lib/types'
+ 
+ const categories = categoriesData as Category[]
+ 
+ interface ProductInfoProps { product: Product }
+ 
+ export default function ProductInfo({ product }: ProductInfoProps) {
+   const [qty, setQty] = useState(1)
+   const [added, setAdded] = useState(false)
+   const { addItem, openCart } = useCartStore()
++  const { toggleWishlist, isWishlisted } = useWishlistStore()
++  const wishlisted = isWishlisted(product.id)
+   const breadcrumbSlug = findCategoryByPath(categories, product.categoryPath)?.slug ?? []
+   const { rating, count } = getReviewSummary(product.id)
+ 
+   const discountPct = product.originalPrice
+     ? Math.round((1 - product.price / product.originalPrice) * 100)
+     : null
+ 
+   const handleAdd = () => {
+     addItem(product, qty)
+     openCart()
+@@ -103,23 +106,28 @@ export default function ProductInfo({ product }: ProductInfoProps) {
+       <div className="flex flex-col gap-3">
+         <button
+           onClick={handleAdd}
+           className={`w-full py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-colors ${
+             added ? 'bg-green-600 text-white' : 'bg-red text-white hover:bg-red-dark'
+           }`}
+         >
+           <ShoppingCart size={20} />
+           {added ? 'Aggiunto al carrello ✓' : 'Aggiungi al carrello'}
+         </button>
+-        <button className="w-full py-4 rounded-full font-bold border-2 border-black hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2">
+-          <Heart size={20} />
+-          Aggiungi alla wishlist
++        <button
++          onClick={() => toggleWishlist(product.id)}
++          className={`w-full py-4 rounded-full font-bold border-2 flex items-center justify-center gap-2 transition-colors ${
++            wishlisted ? 'border-red bg-red/5 text-red' : 'border-black hover:bg-black hover:text-white'
++          }`}
++        >
++          <Heart size={20} className={wishlisted ? 'fill-red' : ''} />
++          {wishlisted ? 'Nella tua wishlist ✓' : 'Aggiungi alla wishlist'}
+         </button>
+       </div>
+ 
+       {/* Trust mini */}
+       <div className="border-t border-gray-100 pt-4 grid grid-cols-3 gap-2 text-center text-xs text-gray-400">
+         <div>🚚 Spedizione gratuita<br/>sopra €80</div>
+         <div>↩️ Reso gratuito<br/>30 giorni</div>
+         <div>🔒 Pagamento<br/>sicuro</div>
+       </div>
+     </div>
+diff --git a/components/shop/ProductCard.tsx b/components/shop/ProductCard.tsx
+index a49f5b1..3b2870a 100644
+--- a/components/shop/ProductCard.tsx
++++ b/components/shop/ProductCard.tsx
+@@ -1,50 +1,68 @@
+ 'use client'
+ import { motion } from 'framer-motion'
+ import Image from 'next/image'
+ import Link from 'next/link'
+ import { Heart, ShoppingCart, Star } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
++import { useWishlistStore } from '@/lib/wishlist-store'
++import { getBadge } from '@/lib/badges'
+ import { formatPrice } from '@/lib/utils'
+ import { getReviewSummary } from '@/lib/reviews'
+ import type { Product } from '@/lib/types'
+ 
+ interface ProductCardProps { product: Product }
+ 
+ export default function ProductCard({ product }: ProductCardProps) {
+   const { addItem, openCart } = useCartStore()
++  const { toggleWishlist, isWishlisted } = useWishlistStore()
++  const wishlisted = isWishlisted(product.id)
++  const badge = getBadge(product.id)
+   const discountPct = product.originalPrice
+     ? Math.round((1 - product.price / product.originalPrice) * 100)
+     : null
+   const { rating, count } = getReviewSummary(product.id)
+ 
+   return (
+     <motion.div
+       initial={{ opacity: 0, y: 20 }}
+       whileInView={{ opacity: 1, y: 0 }}
+       viewport={{ once: true }}
+       className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+     >
+       <Link href={`/prodotto/${product.slug}`} className="block relative aspect-square overflow-hidden bg-gray-light">
+         <Image
+           src={product.images[0] ?? ''}
+           alt={product.name}
+           fill
+           className="object-cover group-hover:scale-105 transition-transform duration-500"
+         />
+-        {discountPct && (
+-          <span className="absolute top-3 left-3 bg-red text-white text-xs font-bold px-2 py-1 rounded-full">
+-            -{discountPct}%
+-          </span>
+-        )}
+-        <button className="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-red">
+-          <Heart size={16} />
++        <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
++          {discountPct && (
++            <span className="bg-red text-white text-xs font-bold px-2 py-1 rounded-full">
++              -{discountPct}%
++            </span>
++          )}
++          {badge === 'bestseller' && (
++            <span className="bg-black text-white text-xs font-bold px-2 py-1 rounded-full">Bestseller</span>
++          )}
++          {badge === 'novita' && (
++            <span className="bg-sand text-black text-xs font-bold px-2 py-1 rounded-full">Novità</span>
++          )}
++        </div>
++        <button
++          onClick={e => { e.preventDefault(); toggleWishlist(product.id) }}
++          className={`absolute top-3 right-3 p-2 bg-white/90 rounded-full transition-opacity hover:text-red ${
++            wishlisted ? 'opacity-100 text-red' : 'opacity-0 group-hover:opacity-100'
++          }`}
++        >
++          <Heart size={16} className={wishlisted ? 'fill-red' : ''} />
+         </button>
+         {/* Quick add */}
+         <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+           <button
+             onClick={e => { e.preventDefault(); addItem(product, 1); openCart() }}
+             className="w-full bg-red text-white py-3 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-red-dark transition-colors"
+           >
+             <ShoppingCart size={16} />
+             Aggiungi al carrello
+           </button>
+diff --git a/lib/badges.ts b/lib/badges.ts
+new file mode 100644
+index 0000000..71648cb
+--- /dev/null
++++ b/lib/badges.ts
+@@ -0,0 +1,20 @@
++import { getReviewSummary } from './reviews'
++
++export type Badge = 'novita' | 'bestseller' | null
++
++const NOVITA_MODULO = 12
++const BESTSELLER_COUNT_THRESHOLD = 110
++
++function hashOf(id: string): number {
++  const n = Number(id)
++  return Number.isFinite(n) ? n : id.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0)
++}
++
++export function getBadge(productId: string): Badge {
++  const { count } = getReviewSummary(productId)
++  if (count > BESTSELLER_COUNT_THRESHOLD) return 'bestseller'
++
++  if (hashOf(productId) % NOVITA_MODULO === 0) return 'novita'
++
++  return null
++}
+diff --git a/lib/wishlist-store.ts b/lib/wishlist-store.ts
+new file mode 100644
+index 0000000..fc5ac9f
+--- /dev/null
++++ b/lib/wishlist-store.ts
+@@ -0,0 +1,24 @@
++import { create } from 'zustand'
++import { persist } from 'zustand/middleware'
++
++interface WishlistState {
++  productIds: string[]
++  toggleWishlist: (productId: string) => void
++  isWishlisted: (productId: string) => boolean
++}
++
++export const useWishlistStore = create<WishlistState>()(
++  persist(
++    (set, get) => ({
++      productIds: [],
++      toggleWishlist: (productId) =>
++        set(s => ({
++          productIds: s.productIds.includes(productId)
++            ? s.productIds.filter(id => id !== productId)
++            : [...s.productIds, productId],
++        })),
++      isWishlisted: (productId) => get().productIds.includes(productId),
++    }),
++    { name: 'selleria-galazzo-wishlist' }
++  )
++)

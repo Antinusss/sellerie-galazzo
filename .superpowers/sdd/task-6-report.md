@@ -1,18 +1,37 @@
-# Task 6 Report
+# Task 6 Report: Cart and footer trust polish
 
-**Status:** Complete
+## What was done
 
-**Commit:** 3334a65
+Three additive UI edits, exactly per the brief (`.superpowers/sdd/task-6-brief.md`):
 
-**Build:** ✓ Compiled successfully — /shop route 5.56 kB, no errors or warnings
+1. **`components/cart/CartDrawer.tsx`** — Inserted a free-shipping progress message immediately before the subtotal row inside the footer block (`<div className="px-6 py-5 border-t border-gray-100">`). Shown only when `totalPrice < 8000`, using the already-imported `formatPrice` and already-destructured `totalPrice`.
 
-## Files Created
+2. **`app/cart/page.tsx`** — Replaced the `<h1>` + cart-items wrapper block with an updated version: `<h1>` margin reduced from `mb-10` to `mb-6`, and a new row added below it showing item count (`{items.length} articolo/articoli`) plus a "← Continua lo shopping" link to `/shop`, using the already-imported `Link`.
 
-- `components/shop/FilterSidebar.tsx` — sticky sidebar with category buttons (red when active) and price range slider
-- `components/shop/SortDropdown.tsx` — select with 4 sort options
-- `app/shop/page.tsx` — client page with Suspense wrapper around useSearchParams, filters/sorts products client-side, 2-col/3-col grid, empty state with reset button
+3. **`components/layout/Footer.tsx`** — Added `'use client'` as the first line of the file (required for the new `onClick` handler; the module-scope `topLevel = getChildren(...)` call still works fine in a client component, no change needed there). In the bottom bar, changed `flex gap-6` to `flex items-center gap-6` and added a "↑ Torna su" button that calls `window.scrollTo({ top: 0, behavior: 'smooth' })`.
 
-## Notes
+No logic changes to existing behavior; all edits were pure insertions/additive replacements as specified.
 
-- Wrapped `useSearchParams` usage in a `<Suspense>` boundary (required by Next.js 14 for static prerendering)
-- Shop page prerendered as static content with client-side interactivity
+## Build verification
+
+`npx tsc --noEmit` — completed with no output, no errors.
+
+`npm run build` — succeeded:
+```
+▲ Next.js 14.2.35
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+ ✓ Generating static pages (3264/3264)
+   Finalizing page optimization ...
+   Collecting build traces ...
+```
+All routes built, including `/cart` (4.63 kB) and the dynamic product/shop/brand routes. No warnings or errors related to the changed files.
+
+## Commit
+
+- `bd96c6a` — "feat: add free-shipping progress, continue-shopping link, and back-to-top"
+  - 3 files changed: `app/cart/page.tsx`, `components/cart/CartDrawer.tsx`, `components/layout/Footer.tsx`
+  - 20 insertions(+), 2 deletions(-)
+
+Only the three files in scope were staged and committed; other unrelated working-tree changes (docs, other task briefs/reports) were left untouched.

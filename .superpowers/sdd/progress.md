@@ -58,3 +58,23 @@ Plan: docs/superpowers/plans/2026-07-14-trust-conversion.md
 - [x] Task 8: homepage trust stat (commit 918645d, review clean)
 - [x] Task 9: payment methods at checkout (commit 44d2f43, review clean)
 - [x] Task 10: full build+test+manual verification (76/76 tests, 3263 pages, full interactive browser check incl. cart drawer animation + payment switching, zero bugs found)
+
+## CRO Checklist Batch (2026-07-14)
+Plan: docs/superpowers/plans/2026-07-14-cro-checklist.md
+
+- [x] Task 1: wishlist store (commit 52a3120, review clean; implemented inline by controller due to temporary Agent-tool outage)
+- [x] Task 2: badges module (commit 8483068, review clean; minor note: hashOf duplicated from lib/reviews.ts, accepted)
+- [x] Task 3: wishlist page + navbar entry point (commit 324e4a1, review clean)
+- [x] Task 4: ProductCard wishlist toggle + badge pill (commit 8de071f, review clean)
+- [x] Task 5: ProductInfo wishlist toggle (commit e08a4eb, review clean)
+- [x] Task 6: cart/footer trust polish (commit bd96c6a, review clean; Footer converted server->client for onClick, verified safe)
+- [x] Task 7: branded 404 page (commit 27a1e60, review clean)
+- [x] Task 8: cookie consent banner (commits 22b3291,96d0f9b, review clean after fix; z-index bumped CartDrawer above banner, verified no other z-[..] conflicts in codebase)
+- [x] Task 9: checkout input polish (commit a33d16a, review clean)
+- [x] Task 10: home bestsellers section (commit c49f31d, review clean)
+- [x] Task 11: distraction-free checkout layout (commit 2ee6a03, review clean; opus review confirmed no route/duplication/cart-drawer regressions)
+- [x] Task 12: full build+test+manual verification (86/86 tests, 3264 pages, curl+browser checks clean; footer back-to-top/console check skipped due to browser-tool flakiness, covered by clean code review instead)
+
+## Final whole-branch review (2026-07-14)
+- Ready to merge, 0 Critical/Important findings (opus review)
+- [x] Cleanup: extracted FREE_SHIPPING_THRESHOLD constant, shared hashOf helper (commit bc67d5b, 86/86 tests pass)

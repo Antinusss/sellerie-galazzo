@@ -1,20 +1,44 @@
-# Task 7 Report
+# Task 7 Report: Branded 404 Page
 
-**Status:** COMPLETE
+## Summary
+Created a branded 404 page (`app/not-found.tsx`) with Italian copy, styled with project colors (sand, red, red-dark), and a link back to the shop.
 
-**Commit:** `6e0dc36` — feat: product detail page with gallery, info, tabs, add-to-cart
+## Work Completed
 
-**Build:** `✓ Generating static pages (30/30)` — 24 product slugs pre-rendered, 0 errors
+### Step 1: Created the 404 Page
+- File: `app/not-found.tsx`
+- Component: `NotFound()` function
+- Features:
+  - "Errore 404" label in sand color
+  - Main heading with red italicized text
+  - Italian descriptive message
+  - Styled link to `/shop` with hover effects
 
-## Files Created
+### Step 2: Verification
 
-- `components/product/ProductGallery.tsx` — client component, main image + thumbnail strip, click swaps main
-- `components/product/ProductInfo.tsx` — client component, price/badge, qty stepper, add-to-cart (2s green feedback), wishlist, trust badges
-- `components/product/ProductTabs.tsx` — client component, Descrizione/Specifiche/Spedizione & Resi tabs with red active border
-- `app/shop/[slug]/page.tsx` — server component, generateStaticParams(), notFound() guard, 2-col lg grid
+**TypeScript Check:**
+```
+npx tsc --noEmit
+```
+Result: ✓ No errors
 
-## Key Decisions
+**Build Output:**
+```
+npm run build
+```
+Result: ✓ Build succeeded
+- Route `/_not-found` present in build output (138 B)
+- All 3264 static pages generated successfully
+- No warnings or errors
 
-- Used `const { addItem } = useCartStore()` (no selector) matching the store's non-selector export signature
-- Fixed unescaped apostrophe in ProductTabs (`dall&apos;acquisto`) to pass Next.js lint
-- All 24 slugs from `data/products.json` pre-rendered as SSG
+### Step 3: Commit
+```
+git commit -m "feat: add branded 404 page"
+```
+Commit hash: `27a1e60`
+
+## Files Modified
+- Created: `app/not-found.tsx` (22 lines)
+
+## Status
+✓ Complete - All requirements met, build verification passed, commit created.

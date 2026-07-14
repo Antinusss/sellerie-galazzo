@@ -1,0 +1,71 @@
+# Review package: 52a3120a1d39b052c11253062ec2c75f83c109ed..8483068
+
+## Commits
+8483068 feat: add deterministic product badge module
+
+## Files changed
+ __tests__/badges.test.ts | 28 ++++++++++++++++++++++++++++
+ lib/badges.ts            | 20 ++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
+
+## Diff
+diff --git a/__tests__/badges.test.ts b/__tests__/badges.test.ts
+new file mode 100644
+index 0000000..30dfc34
+--- /dev/null
++++ b/__tests__/badges.test.ts
+@@ -0,0 +1,28 @@
++import { getBadge } from '@/lib/badges'
++
++describe('getBadge', () => {
++  it('is deterministic for the same product id', () => {
++    expect(getBadge('67217')).toBe(getBadge('67217'))
++  })
++
++  it('returns "bestseller" for a product with a high review count', () => {
++    // id=108 -> reviewCount = 3 + (108 % 118) = 111, above the 110 threshold
++    expect(getBadge('108')).toBe('bestseller')
++  })
++
++  it('returns "novita" for a product whose id is a multiple of 12 and not a bestseller', () => {
++    // id=12 -> reviewCount = 3 + (12 % 118) = 15 (below threshold), 12 % 12 === 0
++    expect(getBadge('12')).toBe('novita')
++  })
++
++  it('returns null for a product matching neither rule', () => {
++    // id=1 -> reviewCount = 4 (below threshold), 1 % 12 !== 0
++    expect(getBadge('1')).toBeNull()
++  })
++
++  it('never returns both — every id yields exactly one of the three values', () => {
++    for (let id = 0; id < 300; id++) {
++      expect(['novita', 'bestseller', null]).toContain(getBadge(String(id)))
++    }
++  })
++})
+diff --git a/lib/badges.ts b/lib/badges.ts
+new file mode 100644
+index 0000000..71648cb
+--- /dev/null
++++ b/lib/badges.ts
+@@ -0,0 +1,20 @@
++import { getReviewSummary } from './reviews'
++
++export type Badge = 'novita' | 'bestseller' | null
++
++const NOVITA_MODULO = 12
++const BESTSELLER_COUNT_THRESHOLD = 110
++
++function hashOf(id: string): number {
++  const n = Number(id)
++  return Number.isFinite(n) ? n : id.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0)
++}
++
++export function getBadge(productId: string): Badge {
++  const { count } = getReviewSummary(productId)
++  if (count > BESTSELLER_COUNT_THRESHOLD) return 'bestseller'
++
++  if (hashOf(productId) % NOVITA_MODULO === 0) return 'novita'
++
++  return null
++}

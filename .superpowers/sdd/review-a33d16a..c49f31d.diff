@@ -1,0 +1,70 @@
+# Review package: a33d16a06e2d6046a0fa1358ad194fb86ff52fd7..c49f31d
+
+## Commits
+c49f31d feat: add best-sellers section to home page
+
+## Files changed
+ app/page.tsx                           |  2 ++
+ components/home/BestsellersSection.tsx | 29 +++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+
+## Diff
+diff --git a/app/page.tsx b/app/page.tsx
+index e1d4f6c..7e9a735 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,17 +1,19 @@
+ import HeroSection from '@/components/home/HeroSection'
+ import CategoryGrid from '@/components/home/CategoryGrid'
+ import NewArrivalsCarousel from '@/components/home/NewArrivalsCarousel'
++import BestsellersSection from '@/components/home/BestsellersSection'
+ import TrustSection from '@/components/home/TrustSection'
+ import BrandCarousel from '@/components/home/BrandCarousel'
+ 
+ export default function HomePage() {
+   return (
+     <>
+       <HeroSection />
+       <CategoryGrid />
+       <NewArrivalsCarousel />
++      <BestsellersSection />
+       <TrustSection />
+       <BrandCarousel />
+     </>
+   )
+ }
+diff --git a/components/home/BestsellersSection.tsx b/components/home/BestsellersSection.tsx
+new file mode 100644
+index 0000000..fef37a4
+--- /dev/null
++++ b/components/home/BestsellersSection.tsx
+@@ -0,0 +1,29 @@
++import Link from 'next/link'
++import ProductCard from '@/components/shop/ProductCard'
++import products from '@/data/products.json'
++import type { Product } from '@/lib/types'
++import { getReviewSummary } from '@/lib/reviews'
++
++export default function BestsellersSection() {
++  const ranked = [...(products as Product[])]
++    .sort((a, b) => getReviewSummary(b.id).count - getReviewSummary(a.id).count)
++    .slice(0, 8)
++
++  return (
++    <section className="py-20 bg-gray-light">
++      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
++        <div className="flex items-end justify-between mb-10">
++          <h2 className="text-4xl font-black">
++            I più <em className="text-red">venduti</em>
++          </h2>
++          <Link href="/shop" className="text-sm font-semibold text-red underline underline-offset-4 hover:text-red-dark">
++            Vedi tutti →
++          </Link>
++        </div>
++        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
++          {ranked.map(p => <ProductCard key={p.id} product={p} />)}
++        </div>
++      </div>
++    </section>
++  )
++}

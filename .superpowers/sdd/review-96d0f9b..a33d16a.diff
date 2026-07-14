@@ -1,0 +1,81 @@
+# Review package: 96d0f9b4493bb31aecb174e0dcb854fb161e03b8..a33d16a
+
+## Commits
+a33d16a feat: add autocomplete and input-mode attributes to checkout form
+
+## Files changed
+ app/checkout/page.tsx | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+## Diff
+diff --git a/app/checkout/page.tsx b/app/checkout/page.tsx
+index 332f1bb..f47b93c 100644
+--- a/app/checkout/page.tsx
++++ b/app/checkout/page.tsx
+@@ -20,29 +20,29 @@ export default function CheckoutPage() {
+ 
+   return (
+     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+       <CheckoutSteps currentStep={step} />
+       <div className="flex flex-col lg:flex-row gap-10">
+         {/* Form area */}
+         <div className="flex-1">
+           {step === 1 && (
+             <div className="space-y-5">
+               <h2 className="text-2xl font-black">Contatti e indirizzo</h2>
+-              <input placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
++              <input type="email" autoComplete="email" placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
+               <div className="grid grid-cols-2 gap-4">
+-                <input placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
+-                <input placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
++                <input autoComplete="given-name" placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
++                <input autoComplete="family-name" placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
+               </div>
+-              <input placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
++              <input autoComplete="street-address" placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
+               <div className="grid grid-cols-3 gap-4">
+-                <input placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
+-                <input placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
++                <input inputMode="numeric" autoComplete="postal-code" placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
++                <input autoComplete="address-level2" placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
+               </div>
+               <button onClick={() => setStep(2)} className="w-full bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors mt-4">
+                 Continua alla spedizione →
+               </button>
+             </div>
+           )}
+ 
+           {step === 2 && (
+             <div className="space-y-5">
+               <h2 className="text-2xl font-black">Metodo di spedizione</h2>
+@@ -112,26 +112,26 @@ export default function CheckoutPage() {
+                       onChange={() => setPayment(opt.id)}
+                       className="accent-red"
+                     />
+                     <span className="font-semibold text-sm">{opt.label}</span>
+                   </label>
+                 ))}
+               </div>
+ 
+               {payment === 'card' && (
+                 <>
+-                  <input placeholder="Numero carta *" className={inputClass} maxLength={19} />
++                  <input inputMode="numeric" autoComplete="cc-number" placeholder="Numero carta *" className={inputClass} maxLength={19} />
+                   <div className="grid grid-cols-2 gap-4">
+-                    <input placeholder="Scadenza MM/AA *" className={inputClass} />
+-                    <input placeholder="CVV *" className={inputClass} maxLength={4} />
++                    <input autoComplete="cc-exp" placeholder="Scadenza MM/AA *" className={inputClass} />
++                    <input inputMode="numeric" autoComplete="cc-csc" placeholder="CVV *" className={inputClass} maxLength={4} />
+                   </div>
+-                  <input placeholder="Nome sulla carta *" className={inputClass} />
++                  <input autoComplete="cc-name" placeholder="Nome sulla carta *" className={inputClass} />
+                 </>
+               )}
+               {payment === 'paypal' && (
+                 <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                   Verrai reindirizzato a PayPal per completare il pagamento in sicurezza.
+                 </p>
+               )}
+               {payment === 'klarna' && (
+                 <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                   Paga in 3 rate senza interessi o tra 30 giorni con Klarna. Verrai reindirizzato a Klarna per completare l&apos;acquisto.

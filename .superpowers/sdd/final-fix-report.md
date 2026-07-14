@@ -1,33 +1,51 @@
-# Final Fix Report
+# Final Code Review Fixes Report
 
-**Date:** 2026-06-29  
-**Commit:** a501999
+## Changes Made
 
-## Status: DONE
+### Finding 1: FREE_SHIPPING_THRESHOLD Constant
+- **Added**: `export const FREE_SHIPPING_THRESHOLD = 8000` to `lib/utils.ts` (line 3)
+- **Updated**: `components/cart/CartSummary.tsx`
+  - Imported `FREE_SHIPPING_THRESHOLD` from `@/lib/utils`
+  - Replaced hardcoded `8000` on line 10 (comparison: `totalPrice >= FREE_SHIPPING_THRESHOLD`)
+  - Replaced hardcoded `8000` on line 29 (calculation: `FREE_SHIPPING_THRESHOLD - totalPrice`)
+- **Updated**: `components/cart/CartDrawer.tsx`
+  - Imported `FREE_SHIPPING_THRESHOLD` from `@/lib/utils`
+  - Replaced hardcoded `8000` on line 77 (comparison: `totalPrice < FREE_SHIPPING_THRESHOLD`)
+  - Replaced hardcoded `8000` on line 79 (calculation: `FREE_SHIPPING_THRESHOLD - totalPrice`)
 
-## Fixes Applied
+### Finding 2: Shared hashOf Helper
+- **Exported**: `hashOf` function from `lib/reviews.ts` (added `export` keyword)
+- **Removed**: Local `hashOf` function duplicate from `lib/badges.ts` (lines 8-11)
+- **Updated**: Import statement in `lib/badges.ts` to include `hashOf` from `./reviews`
 
-### Fix 1 — Math.random() in SSG success page (Important)
-- **File:** `app/checkout/success/page.tsx`
-- **Change:** Added `'use client'` directive and `useState` import. Moved `Math.random()` call into a `useState(() => ...)` initializer so the order number is generated per-client mount, not baked at build time.
+## Verification Results
 
-### Fix 2 — images[0] guard (Important)
-- **Files:** 4 components
-  - `components/shop/ProductCard.tsx`: `product.images[0] ?? ''`
-  - `components/cart/CartItem.tsx`: `item.product.images[0] ?? ''`
-  - `components/checkout/OrderSummary.tsx`: `item.product.images[0] ?? ''`
-  - `components/product/ProductGallery.tsx`: `images[selected] ?? ''`
-- **Change:** Added `?? ''` fallback to prevent Next.js Image throws on empty arrays.
+### TypeScript Compilation
+```
+npx tsc --noEmit
+✓ No errors
+```
 
-### Minor A — NewArrivalsCarousel Link navigation
-- **File:** `components/home/NewArrivalsCarousel.tsx`
-- **Change:** Replaced `<a href="/shop">` with `<Link href="/shop">` (added `import Link from 'next/link'`).
+### Jest Test Results
+```
+Test Suites: 4 passed, 4 total
+Tests:       26 passed, 26 total
+Snapshots:   0 total
+Time:        0.594 s, estimated 1 s
+```
 
-### Minor B — antialiased body
-- **File:** `app/layout.tsx`
-- **Change:** Added `className="antialiased"` to `<body>` element.
+All affected test suites pass:
+- `__tests__/badges.test.ts` ✓
+- `__tests__/wishlist-store.test.ts` ✓
+- `__tests__/reviews.test.ts` ✓
+- `__tests__/offers.test.ts` ✓
 
-## Verification
-
-- **Build:** `npm run build` — ✓ Compiled successfully, 33/33 static pages generated
-- **Tests:** `npx jest` — ✓ 14 passed, 2 suites, 0 failures
+## Commit Details
+- **Hash**: `bc67d5b`
+- **Message**: `refactor: extract FREE_SHIPPING_THRESHOLD constant and share hashOf helper`
+- **Files Changed**: 5
+  - `lib/utils.ts`
+  - `lib/badges.ts`
+  - `lib/reviews.ts`
+  - `components/cart/CartSummary.tsx`
+  - `components/cart/CartDrawer.tsx`

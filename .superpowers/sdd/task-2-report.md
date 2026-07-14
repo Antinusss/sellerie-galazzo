@@ -1,102 +1,83 @@
-# Task 2: Types + Data Layer — Report
+# Task 2: Product Badge Data Layer — Report
 
 **Status:** DONE
 
-**Commit:** `0bae5e9`
+**Commit:** `8483068`
 
-**Tests:** All 8 tests passing
+**Tests:** All 5 tests passing
 
 ---
 
 ## Summary
 
-Task 2 successfully implemented the complete types, utilities, and static data layer for the Selleria Galazzo ecommerce mockup. All required files were created exactly as specified in the brief, and the test suite passes with 100% coverage.
+Implemented a deterministic product badge module (`lib/badges.ts`) that assigns "Novità" or "Bestseller" labels to products based on review counts and product ID modulo arithmetic. The implementation follows TDD and consumes the existing `getReviewSummary()` from `lib/reviews.ts`.
 
 ## Files Created
 
-### 1. **lib/types.ts**
-Defined four TypeScript interfaces:
-- `Product`: Core product entity with id, name, slug, pricing (cents-based), category, brand, images, description, specs, and stock status
-- `Category`: Category taxonomy with id, name, slug, image, and description
-- `Brand`: Brand metadata with id, name, and logo
-- `CartItem`: Shopping cart representation with product, quantity, and optional variant
+### 1. **lib/badges.ts**
+The badge module providing deterministic badge assignment:
+- Exports `Badge` type: `'novita' | 'bestseller' | null`
+- Exports `getBadge(productId: string): Badge` function
+- Uses `BESTSELLER_COUNT_THRESHOLD = 110` for review count check
+- Uses `NOVITA_MODULO = 12` for deterministic product ID check
+- Includes `hashOf()` helper for numeric or string ID parsing
+- Consumes `getReviewSummary()` from existing `lib/reviews.ts`
 
-### 2. **lib/utils.ts**
-Implemented three utility functions:
-- `formatPrice(cents: number)`: Converts cents to Euro format (e.g., 17000 → "€170,00") with comma as decimal separator per Italian locale
-- `slugify(name: string)`: Normalizes strings to URL-safe slugs by lowercasing, removing diacritics via NFD normalization, stripping special characters, and replacing spaces with hyphens
-- `getProductBySlug(slug: string, products: Product[])`: Performs array lookup to find products by slug
+### 2. **__tests__/badges.test.ts**
+Comprehensive test suite with 5 test cases:
+- **Deterministic behavior**: Verifies same product ID always returns same badge
+- **Bestseller logic**: Tests that product ID 108 (reviewCount=111, > threshold) returns "bestseller"
+- **Novita logic**: Tests that product ID 12 (reviewCount=15, 12 % 12 === 0) returns "novita"
+- **Null case**: Tests that product ID 1 (reviewCount=4, 1 % 12 !== 0) returns null
+- **Coverage test**: Verifies all 300 product IDs yield exactly one of the three values
 
-### 3. **data/products.json**
-Created a catalog of 24 products across four categories:
-- **Monta Inglese** (6 products): Helmets, leggings, jackets, boots, gloves, reins
-- **Monta Western** (6 products): Hats, shirts, boots, belts, spurs, ropes
-- **Scuderia** (6 products): Waterers, grooming tools, blankets, halters, supplements
-- **Cavaliere** (6 products): Sunglasses, saddle pads, protectors, gloves, socks, back protectors
+## Test Execution
 
-All products include realistic Italian descriptions, specifications, pricing (base and discounted), image arrays, and stock status.
+### Step 1: Initial Test Run (Expected Failure)
+```
+FAIL __tests__/badges.test.ts
+Configuration error: Could not locate module @/lib/badges
+```
+Status: ✓ Failed as expected (module did not exist)
 
-### 4. **data/categories.json**
-Defined four primary shopping categories with Unsplash images and Italian descriptions:
-- Monta Inglese (English riding)
-- Monta Western (Western riding)
-- Scuderia (Stable/care products)
-- Cavaliere (Rider gear)
+### Step 2: Implementation Created
+Created `lib/badges.ts` with exact specification from brief.
 
-### 5. **data/brands.json**
-Created a brand registry with 6 vendors (Acavallo, Equestro, Franceschini, ACME, Kerbl, Waldhausen) and placeholder logos.
-
-### 6. **__tests__/utils.test.ts**
-Implemented 8 test cases covering all utility functions:
-- `formatPrice`: 3 tests (integer euros, decimals, zero)
-- `slugify`: 3 tests (basic hyphenation, special characters, diacritics)
-- `getProductBySlug`: 2 tests (successful lookup, undefined fallback)
-
-## Test Results
-
+### Step 3: Final Test Run (Implementation Verification)
 ```
 Test Suites: 1 passed, 1 total
-Tests:       8 passed, 8 total
+Tests:       5 passed, 5 total
 Snapshots:   0 total
-Time:        0.455 s
-Ran all test suites matching __tests__/utils.test.ts.
+Time:        0.422 s
+```
+Status: ✓ All tests passing
+
+## Git Commit
+
+```
+Commit Hash: 8483068
+Author: Antinusss
+Message: feat: add deterministic product badge module
+Files Changed:
+  - __tests__/badges.test.ts (new, 28 lines)
+  - lib/badges.ts (new, 20 lines)
+Total: 2 files, 48 insertions
 ```
 
-All tests pass with no errors or warnings.
+## Implementation Notes
 
-## Key Implementation Details
+### Badge Assignment Logic
+1. **Bestseller**: If `reviewCount > 110`, return `'bestseller'`
+2. **Novita**: If `hashOf(productId) % 12 === 0` (and not bestseller), return `'novita'`
+3. **None**: Otherwise return `null`
 
-### formatPrice Logic
-- Divides cents by 100 and formats to 2 decimal places
-- Replaces `.` with `,` for Italian locale compliance
-- Prepends `€` symbol
+### Design Pattern
+- Follows established `lib/` module pattern from `lib/offers.ts`
+- Small, deterministic, hash-based logic
+- No side effects; pure function
+- TypeScript strict mode compliant
 
-### slugify Logic
-- Uses NFD Unicode normalization to decompose accented characters (à, é, ñ, etc.)
-- Removes combining diacritical marks via regex range `[̀-ͯ]` (U+0300–U+036F)
-- Strips all remaining non-alphanumeric characters except hyphens and spaces
-- Replaces whitespace sequences with single hyphens
-- Result: "Abbeveratoio a pressione" → "abbeveratoio-a-pressione"
-
-### Data Structure
-- Products use price in cents (e.g., 17000 = €170.00) for precision and to avoid float issues
-- `originalPrice` is null for non-discounted items
-- All products correctly map to valid categories
-- Images use mix of Unsplash and picsum.photos for variety
-
-## Verification
-
-- Jest configuration from Task 1 (`setupFilesAfterEnv: jest.setup.ts`) works correctly
-- Path alias `@/*` resolves properly in test imports
-- TypeScript strict mode enforced across all files
-- No linting or type errors
-
-## Next Steps
-
-These files serve as the data foundation for:
-- Product listing pages (Task 3)
-- Shopping cart implementation (Task 4)
-- Checkout flow (Task 5)
-- Admin dashboard (later tasks)
-
-All interfaces are exported and ready for downstream consumers to import and use.
+## Dependencies
+- Imports `getReviewSummary` from existing `lib/reviews.ts`
+- No modifications to existing files
+- Ready for consumption by Task 4 (ProductCard component)

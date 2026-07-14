@@ -1,39 +1,56 @@
-# Task 5 Report
+# Task 5: ProductInfo Wishlist Toggle - Report
 
-**Status:** COMPLETE
+## What Was Done
 
-**Commit:** `8501b3c`
+Applied two exact edits to `components/product/ProductInfo.tsx`:
 
-**Build:** ✓ Compiled successfully — static page `/` 47.6 kB, no errors or warnings.
+1. **Added import** (line 6):
+   ```tsx
+   import { useWishlistStore } from '@/lib/wishlist-store'
+   ```
 
-## Files created/modified
-- `components/home/HeroSection.tsx` — hero with Framer Motion, 2 pill CTAs, stats, Unsplash image
-- `components/home/CategoryGrid.tsx` — 2x2 / 4-col category grid with hover effects
-- `components/shop/ProductCard.tsx` — shared card with quick-add, SALE badge, wishlist button
-- `components/home/NewArrivalsCarousel.tsx` — 4-col grid of first 8 products
-- `components/home/TrustSection.tsx` — dark red trust badges (Truck, ShieldCheck, Headphones)
-- `components/home/BrandCarousel.tsx` — marquee of doubled brand names
-- `app/page.tsx` — composes all 5 sections
-- `next.config.mjs` — added remotePatterns for images.unsplash.com and picsum.photos
+2. **Added hook usage** (lines 20-21):
+   ```tsx
+   const { toggleWishlist, isWishlisted } = useWishlistStore()
+   const wishlisted = isWishlisted(product.id)
+   ```
 
-## Fix applied
-`useCartStore` does not accept a selector; changed `useCartStore(s => s.addItem)` → `const { addItem } = useCartStore()`.
+3. **Replaced wishlist button** (lines 113-119):
+   - Changed from static button to interactive wishlist toggle
+   - Added `onClick={() => toggleWishlist(product.id)}`
+   - Added conditional styling: red border/background when wishlisted, black border when not
+   - Updated text: "Nella tua wishlist ✓" when wishlisted, "Aggiungi alla wishlist" when not
+   - Added conditional fill on Heart icon when wishlisted
 
----
+## Verification Results
 
-## Follow-up Fixes (2026-06-29)
+### TypeScript Check
+```
+npx tsc --noEmit
+```
+✓ No errors
 
-**Commit:** `de61cfa`
+### Production Build
+```
+npm run build
+```
+✓ Build succeeded
+✓ 3264 static pages generated (including all 3066 product pages at `/prodotto/[slug]`)
 
-### Fix 1: Marquee CSS Animation
-- **Status:** Already present in `app/globals.css` (lines 14-20)
-- **Action:** None required — `.marquee` class and `@keyframes marquee` already defined in `@layer utilities`
+Key build output:
+- Compiled successfully
+- Linting and type checking passed
+- All static pages generated without errors
 
-### Fix 2: NewArrivalsCarousel Grid Breakpoints
-- **File:** `components/home/NewArrivalsCarousel.tsx:18`
-- **Change:** Removed intermediate breakpoint `md:grid-cols-3`
-- **Before:** `className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"`
-- **After:** `className="grid grid-cols-2 lg:grid-cols-4 gap-5"`
-- **Result:** Grid now uses 2 columns on mobile, 4 columns on desktop (lg+)
+## Commit
 
-**Build Result:** ✓ Compiled successfully — no errors, no warnings.
+```
+Commit: e08a4eb
+Message: feat: wire wishlist toggle into ProductInfo
+```
+
+## Files Modified
+- `components/product/ProductInfo.tsx` (+11 insertions, -3 deletions)
+
+## Status
+✓ Complete - All requirements met, builds verified, changes committed.

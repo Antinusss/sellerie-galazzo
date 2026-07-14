@@ -1,264 +1,93 @@
-### Task 4: Layout Components
+### Task 4: ProductCard wishlist toggle and badge pill
 
 **Files:**
-- Create: `components/layout/AnnouncementBar.tsx`
-- Create: `components/layout/Navbar.tsx`
-- Create: `components/layout/Footer.tsx`
-- Modify: `app/layout.tsx`
+- Modify: `components/shop/ProductCard.tsx`
 
 **Interfaces:**
-- `AnnouncementBar` — no props
-- `Navbar` — no props, reads `useCartStore().totalItems`
-- `Footer` — no props
+- Consumes: `useWishlistStore()` from `lib/wishlist-store.ts` (already exists, produces `{ productIds: string[]; toggleWishlist(id): void; isWishlisted(id): boolean }`).
+- Consumes: `getBadge(productId: string): 'novita' | 'bestseller' | null` from `lib/badges.ts` (already exists).
 
-- [ ] **Step 1: Create AnnouncementBar**
+- [ ] **Step 1: Add imports and hooks**
 
-Create `components/layout/AnnouncementBar.tsx`:
+In `components/shop/ProductCard.tsx`, add these imports alongside the existing ones:
 
-```typescript
-'use client'
-export default function AnnouncementBar() {
-  const items = [
-    '🚚 Spedizione gratuita su ordini superiori a €80',
-    '↩️ Reso garantito al 100%',
-    '🕐 Supporto clienti 24/7',
-    '⭐ Oltre 10.000 cavalieri soddisfatti',
-  ]
-  const repeated = [...items, ...items]
-  return (
-    <div className="bg-black text-white text-xs py-2 overflow-hidden">
-      <div className="flex whitespace-nowrap marquee">
-        {repeated.map((item, i) => (
-          <span key={i} className="mx-8">{item}</span>
-        ))}
-      </div>
-    </div>
-  )
-}
+```tsx
+import { useWishlistStore } from '@/lib/wishlist-store'
+import { getBadge } from '@/lib/badges'
 ```
 
-- [ ] **Step 2: Create Navbar**
+Inside the component, alongside the existing `const { addItem, openCart } = useCartStore()` line, add:
 
-Create `components/layout/Navbar.tsx`:
+```tsx
+  const { toggleWishlist, isWishlisted } = useWishlistStore()
+  const wishlisted = isWishlisted(product.id)
+  const badge = getBadge(product.id)
+```
 
-```typescript
-'use client'
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
-import { useCartStore } from '@/lib/store'
+- [ ] **Step 2: Replace the discount-badge span with a stacked badge column**
 
-const categories = [
-  { name: 'Monta Inglese', slug: 'monta-inglese' },
-  { name: 'Monta Western', slug: 'monta-western' },
-  { name: 'Scuderia', slug: 'scuderia' },
-  { name: 'Cavaliere', slug: 'cavaliere' },
-]
+Replace:
 
-export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const totalItems = useCartStore(s => s.totalItems)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  return (
-    <nav className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
-      scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <span className="text-2xl font-black text-black tracking-tight">
-              Selleria<span className="text-red">Galazzo</span>
-            </span>
-          </Link>
-
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {categories.map(cat => (
-              <Link
-                key={cat.slug}
-                href={`/shop?category=${cat.slug}`}
-                className="text-sm font-medium text-black hover:text-red transition-colors"
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </div>
-
-          {/* Icons */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:text-red transition-colors">
-              <Search size={20} />
-            </button>
-            <button className="p-2 hover:text-red transition-colors">
-              <Heart size={20} />
-            </button>
-            <Link href="/cart" className="relative p-2 hover:text-red transition-colors">
-              <ShoppingCart size={20} />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
-            <button
-              className="md:hidden p-2"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div className="md:hidden border-t border-gray-100 py-4">
-            {categories.map(cat => (
-              <Link
-                key={cat.slug}
-                href={`/shop?category=${cat.slug}`}
-                className="block py-3 text-sm font-medium text-black hover:text-red"
-                onClick={() => setMobileOpen(false)}
-              >
-                {cat.name}
-              </Link>
-            ))}
-          </div>
+```tsx
+        {discountPct && (
+          <span className="absolute top-3 left-3 bg-red text-white text-xs font-bold px-2 py-1 rounded-full">
+            -{discountPct}%
+          </span>
         )}
-      </div>
-    </nav>
-  )
-}
 ```
 
-- [ ] **Step 3: Create Footer**
+with:
 
-Create `components/layout/Footer.tsx`:
-
-```typescript
-import Link from 'next/link'
-import { Instagram, Facebook, Mail } from 'lucide-react'
-
-export default function Footer() {
-  return (
-    <footer className="bg-black text-white mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand */}
-          <div>
-            <div className="text-2xl font-black mb-3">
-              Selleria<span className="text-red">Galazzo</span>
-            </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Selleria online specializzata in articoli per equitazione e abbigliamento tecnico per cavallo e cavaliere.
-            </p>
-            <div className="flex gap-4 mt-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Instagram size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Facebook size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Mail size={20} /></a>
-            </div>
-          </div>
-          {/* Shop */}
-          <div>
-            <h4 className="font-bold mb-4 text-sand">Shop</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              {['Monta Inglese', 'Monta Western', 'Scuderia', 'Cavaliere', 'Offerte'].map(l => (
-                <li key={l}><Link href="/shop" className="hover:text-white transition-colors">{l}</Link></li>
-              ))}
-            </ul>
-          </div>
-          {/* Customer service */}
-          <div>
-            <h4 className="font-bold mb-4 text-sand">Assistenza</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              {['Contattaci', 'Spedizioni', 'Resi e rimborsi', 'FAQ', 'Guida alle taglie'].map(l => (
-                <li key={l}><a href="#" className="hover:text-white transition-colors">{l}</a></li>
-              ))}
-            </ul>
-          </div>
-          {/* Newsletter */}
-          <div>
-            <h4 className="font-bold mb-4 text-sand">Newsletter</h4>
-            <p className="text-sm text-gray-400 mb-4">Novità, offerte esclusive e consigli per cavalieri.</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="La tua email"
-                className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-sand"
-              />
-              <button className="bg-red text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-red-dark transition-colors">
-                OK
-              </button>
-            </div>
-          </div>
+```tsx
+        <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
+          {discountPct && (
+            <span className="bg-red text-white text-xs font-bold px-2 py-1 rounded-full">
+              -{discountPct}%
+            </span>
+          )}
+          {badge === 'bestseller' && (
+            <span className="bg-black text-white text-xs font-bold px-2 py-1 rounded-full">Bestseller</span>
+          )}
+          {badge === 'novita' && (
+            <span className="bg-sand text-black text-xs font-bold px-2 py-1 rounded-full">Novità</span>
+          )}
         </div>
-        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <p>© 2026 Selleria Galazzo di Biag Galazzo. Tutti i diritti riservati.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
-            <a href="#" className="hover:text-white transition-colors">P.IVA 00000000000</a>
-          </div>
-        </div>
-      </div>
-    </footer>
-  )
-}
 ```
 
-- [ ] **Step 4: Update root layout**
+- [ ] **Step 3: Wire the heart button to the wishlist toggle**
 
-Replace `app/layout.tsx`:
+Replace:
 
-```typescript
-import type { Metadata } from 'next'
-import './globals.css'
-import AnnouncementBar from '@/components/layout/AnnouncementBar'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
-
-export const metadata: Metadata = {
-  title: 'Selleria Galazzo — Articoli Equestri Online',
-  description: 'Selleria online specializzata in articoli per equitazione, monta inglese, western e prodotti per la scuderia.',
-}
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="it">
-      <body>
-        <div className="fixed top-0 left-0 right-0 z-50">
-          <AnnouncementBar />
-          <Navbar />
-        </div>
-        <main className="pt-24">{children}</main>
-        <Footer />
-      </body>
-    </html>
-  )
-}
+```tsx
+        <button className="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-red">
+          <Heart size={16} />
+        </button>
 ```
 
-- [ ] **Step 5: Verify in browser**
+with:
+
+```tsx
+        <button
+          onClick={e => { e.preventDefault(); toggleWishlist(product.id) }}
+          className={`absolute top-3 right-3 p-2 bg-white/90 rounded-full transition-opacity hover:text-red ${
+            wishlisted ? 'opacity-100 text-red' : 'opacity-0 group-hover:opacity-100'
+          }`}
+        >
+          <Heart size={16} className={wishlisted ? 'fill-red' : ''} />
+        </button>
+```
+
+- [ ] **Step 4: Verify the build**
+
+Run: `npx tsc --noEmit`
+Expected: no errors
+
+Run: `npm run build`
+Expected: build succeeds (no route count change — `ProductCard` is used across existing routes)
+
+- [ ] **Step 5: Commit**
 
 ```bash
-npm run dev
+git add components/shop/ProductCard.tsx
+git commit -m "feat: wire wishlist toggle and badges into ProductCard"
 ```
-
-Open `http://localhost:3000` — check: announcement bar scrolls, navbar visible, footer renders.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add .
-git commit -m "feat: layout components — AnnouncementBar, Navbar, Footer"
-```
-
----
-

@@ -1,151 +1,108 @@
-### Task 3: Zustand Cart Store
+### Task 3: Wishlist page and Navbar entry point
 
 **Files:**
-- Create: `lib/store.ts`
-- Create: `__tests__/store.test.ts`
+- Create: `app/wishlist/page.tsx`
+- Modify: `components/layout/Navbar.tsx`
 
-**Produces:**
-- `useCartStore()` hook with: `items: CartItem[]`, `addItem(product, quantity, variant?)`, `removeItem(productId)`, `updateQuantity(productId, quantity)`, `clearCart()`, `totalItems: number`, `totalPrice: number`
+**Interfaces:**
+- Consumes: `useWishlistStore()` from `lib/wishlist-store.ts` (already exists, produces `{ productIds: string[]; toggleWishlist(id): void; isWishlisted(id): boolean }`).
+- Consumes: `PaginatedProductGrid({ products: Product[] })` (existing, `components/shop/PaginatedProductGrid.tsx`).
 
-- [ ] **Step 1: Write failing tests**
+- [ ] **Step 1: Create the wishlist page**
 
-Create `__tests__/store.test.ts`:
+Create `app/wishlist/page.tsx`:
 
-```typescript
-import { act, renderHook } from '@testing-library/react'
-import { useCartStore } from '@/lib/store'
+```tsx
+'use client'
+import Link from 'next/link'
+import { Heart } from 'lucide-react'
+import allProducts from '@/data/products.json'
 import type { Product } from '@/lib/types'
+import { useWishlistStore } from '@/lib/wishlist-store'
+import PaginatedProductGrid from '@/components/shop/PaginatedProductGrid'
 
-const mockProduct: Product = {
-  id: '1', name: 'Test', slug: 'test', price: 5000, originalPrice: null,
-  category: 'Monta Inglese', brand: 'Test', images: [], description: '', specs: '', inStock: true,
-}
+const products = allProducts as Product[]
 
-beforeEach(() => {
-  const { result } = renderHook(() => useCartStore())
-  act(() => result.current.clearCart())
-})
+export default function WishlistPage() {
+  const { productIds } = useWishlistStore()
+  const wishlisted = products.filter(p => productIds.includes(p.id))
 
-describe('addItem', () => {
-  it('adds new item', () => {
-    const { result } = renderHook(() => useCartStore())
-    act(() => result.current.addItem(mockProduct, 1))
-    expect(result.current.items).toHaveLength(1)
-    expect(result.current.items[0].quantity).toBe(1)
-  })
-  it('increments existing item quantity', () => {
-    const { result } = renderHook(() => useCartStore())
-    act(() => result.current.addItem(mockProduct, 1))
-    act(() => result.current.addItem(mockProduct, 2))
-    expect(result.current.items).toHaveLength(1)
-    expect(result.current.items[0].quantity).toBe(3)
-  })
-})
+  if (wishlisted.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <Heart size={64} className="mx-auto text-gray-200 mb-6" />
+        <h1 className="text-3xl font-black mb-3">La tua wishlist è vuota</h1>
+        <p className="text-gray-400 mb-8">Salva i prodotti che ti piacciono per ritrovarli facilmente.</p>
+        <Link
+          href="/shop"
+          className="inline-block bg-red text-white px-8 py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
+        >
+          Vai allo shop
+        </Link>
+      </div>
+    )
+  }
 
-describe('removeItem', () => {
-  it('removes item by product id', () => {
-    const { result } = renderHook(() => useCartStore())
-    act(() => result.current.addItem(mockProduct, 1))
-    act(() => result.current.removeItem('1'))
-    expect(result.current.items).toHaveLength(0)
-  })
-})
-
-describe('updateQuantity', () => {
-  it('updates quantity', () => {
-    const { result } = renderHook(() => useCartStore())
-    act(() => result.current.addItem(mockProduct, 1))
-    act(() => result.current.updateQuantity('1', 5))
-    expect(result.current.items[0].quantity).toBe(5)
-  })
-})
-
-describe('computed values', () => {
-  it('totalItems counts all quantities', () => {
-    const { result } = renderHook(() => useCartStore())
-    act(() => result.current.addItem(mockProduct, 3))
-    expect(result.current.totalItems).toBe(3)
-  })
-  it('totalPrice sums prices in cents', () => {
-    const { result } = renderHook(() => useCartStore())
-    act(() => result.current.addItem(mockProduct, 2))
-    expect(result.current.totalPrice).toBe(10000)
-  })
-})
-```
-
-- [ ] **Step 2: Run tests — expect FAIL**
-
-```bash
-npx jest __tests__/store.test.ts
-```
-
-Expected: `Cannot find module '@/lib/store'`
-
-- [ ] **Step 3: Implement store**
-
-Create `lib/store.ts`:
-
-```typescript
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import type { CartItem, Product } from './types'
-
-interface CartStore {
-  items: CartItem[]
-  addItem: (product: Product, quantity: number, variant?: string) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
-  clearCart: () => void
-  totalItems: number
-  totalPrice: number
-}
-
-export const useCartStore = create<CartStore>()(
-  persist(
-    (set, get) => ({
-      items: [],
-      addItem: (product, quantity, variant) => {
-        const existing = get().items.find(i => i.product.id === product.id)
-        if (existing) {
-          set(s => ({
-            items: s.items.map(i =>
-              i.product.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
-            ),
-          }))
-        } else {
-          set(s => ({ items: [...s.items, { product, quantity, variant }] }))
-        }
-      },
-      removeItem: (productId) =>
-        set(s => ({ items: s.items.filter(i => i.product.id !== productId) })),
-      updateQuantity: (productId, quantity) =>
-        set(s => ({
-          items: s.items.map(i => i.product.id === productId ? { ...i, quantity } : i),
-        })),
-      clearCart: () => set({ items: [] }),
-      get totalItems() { return get().items.reduce((sum, i) => sum + i.quantity, 0) },
-      get totalPrice() { return get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0) },
-    }),
-    { name: 'selleria-galazzo-cart' }
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <h1 className="text-4xl font-black mb-2">
+        La tua <em className="text-red">wishlist</em>
+      </h1>
+      <p className="text-sm text-gray-400 mb-8">{wishlisted.length} prodotti salvati</p>
+      <PaginatedProductGrid products={wishlisted} />
+    </div>
   )
-)
+}
 ```
 
-- [ ] **Step 4: Run tests — expect PASS**
+- [ ] **Step 2: Wire the Navbar heart icon to the wishlist**
+
+In `components/layout/Navbar.tsx`, add the import (near the other `lib/` imports):
+
+```tsx
+import { useWishlistStore } from '@/lib/wishlist-store'
+```
+
+Inside the `Navbar` component body, alongside the existing `const { totalItems, openCart } = useCartStore()` line, add:
+
+```tsx
+const { productIds: wishlistIds } = useWishlistStore()
+```
+
+Replace this block:
+
+```tsx
+            <button className="p-2 hover:text-red transition-colors">
+              <Heart size={20} />
+            </button>
+```
+
+with:
+
+```tsx
+            <Link href="/wishlist" className="relative p-2 hover:text-red transition-colors">
+              <Heart size={20} />
+              {wishlistIds.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                  {wishlistIds.length}
+                </span>
+              )}
+            </Link>
+```
+
+(`Link` is already imported in this file.)
+
+- [ ] **Step 3: Verify the build**
+
+Run: `npx tsc --noEmit`
+Expected: no errors
+
+Run: `npm run build`
+Expected: build succeeds, new static route `○ /wishlist` appears in the route list
+
+- [ ] **Step 4: Commit**
 
 ```bash
-npx jest __tests__/store.test.ts
+git add app/wishlist/page.tsx components/layout/Navbar.tsx
+git commit -m "feat: add wishlist page and navbar entry point"
 ```
-
-Expected: 7 tests passing.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add .
-git commit -m "feat: Zustand cart store with persist middleware"
-```
-
----
-

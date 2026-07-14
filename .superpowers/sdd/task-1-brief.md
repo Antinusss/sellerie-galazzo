@@ -1,129 +1,107 @@
-### Task 1: Project Scaffold
+### Task 1: Wishlist data layer
 
 **Files:**
-- Create: `package.json` (via npx)
-- Create: `tailwind.config.ts`
-- Create: `app/globals.css`
-- Create: `next.config.ts`
-- Create: `jest.config.ts`
-- Create: `jest.setup.ts`
+- Create: `lib/wishlist-store.ts`
+- Test: `__tests__/wishlist-store.test.ts`
 
-- [ ] **Step 1: Init Next.js project**
+**Interfaces:**
+- Produces: `useWishlistStore(): { productIds: string[]; toggleWishlist(productId: string): void; isWishlisted(productId: string): boolean }` — a Zustand hook, imported by Task 3, 4, and 5.
 
-```bash
-cd "/Users/leonardoantinucci/claude_code/Sellerie Galazzo Mock Up"
-npx create-next-app@14 . --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*" --yes
+- [ ] **Step 1: Write the failing test**
+
+Create `__tests__/wishlist-store.test.ts`:
+
+```ts
+import { act, renderHook } from '@testing-library/react'
+import { useWishlistStore } from '@/lib/wishlist-store'
+
+beforeEach(() => {
+  const { result } = renderHook(() => useWishlistStore())
+  act(() => {
+    for (const id of [...result.current.productIds]) result.current.toggleWishlist(id)
+  })
+})
+
+describe('toggleWishlist', () => {
+  it('adds a product id when not present', () => {
+    const { result } = renderHook(() => useWishlistStore())
+    act(() => result.current.toggleWishlist('42'))
+    expect(result.current.productIds).toEqual(['42'])
+  })
+
+  it('removes a product id when already present', () => {
+    const { result } = renderHook(() => useWishlistStore())
+    act(() => result.current.toggleWishlist('42'))
+    act(() => result.current.toggleWishlist('42'))
+    expect(result.current.productIds).toEqual([])
+  })
+
+  it('supports multiple distinct ids', () => {
+    const { result } = renderHook(() => useWishlistStore())
+    act(() => result.current.toggleWishlist('1'))
+    act(() => result.current.toggleWishlist('2'))
+    expect(result.current.productIds).toEqual(['1', '2'])
+  })
+})
+
+describe('isWishlisted', () => {
+  it('returns false for an id never added', () => {
+    const { result } = renderHook(() => useWishlistStore())
+    expect(result.current.isWishlisted('999')).toBe(false)
+  })
+
+  it('returns true after toggling on', () => {
+    const { result } = renderHook(() => useWishlistStore())
+    act(() => result.current.toggleWishlist('7'))
+    expect(result.current.isWishlisted('7')).toBe(true)
+  })
+})
 ```
 
-Expected: project files created, `npm run dev` works.
+- [ ] **Step 2: Run test to verify it fails**
 
-- [ ] **Step 2: Install dependencies**
+Run: `npx jest __tests__/wishlist-store.test.ts`
+Expected: FAIL with `Cannot find module '@/lib/wishlist-store'`
 
-```bash
-npm install framer-motion zustand lucide-react
-npm install -D jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom @types/jest ts-jest
-```
+- [ ] **Step 3: Write minimal implementation**
 
-- [ ] **Step 3: Install Google Fonts**
+Create `lib/wishlist-store.ts`:
 
-```bash
-npm install @next/font
-```
+```ts
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-- [ ] **Step 4: Configure Tailwind**
-
-Replace `tailwind.config.ts` with:
-
-```typescript
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {
-      colors: {
-        red: { DEFAULT: '#CC0000', dark: '#8B0000' },
-        sand: '#C4A882',
-        black: '#1A1A1A',
-        'gray-light': '#F4F4F4',
-      },
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
-      },
-    },
-  },
-  plugins: [],
+interface WishlistState {
+  productIds: string[]
+  toggleWishlist: (productId: string) => void
+  isWishlisted: (productId: string) => boolean
 }
-export default config
+
+export const useWishlistStore = create<WishlistState>()(
+  persist(
+    (set, get) => ({
+      productIds: [],
+      toggleWishlist: (productId) =>
+        set(s => ({
+          productIds: s.productIds.includes(productId)
+            ? s.productIds.filter(id => id !== productId)
+            : [...s.productIds, productId],
+        })),
+      isWishlisted: (productId) => get().productIds.includes(productId),
+    }),
+    { name: 'selleria-galazzo-wishlist' }
+  )
+)
 ```
 
-- [ ] **Step 5: Configure app/globals.css**
+- [ ] **Step 4: Run test to verify it passes**
 
-```css
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+Run: `npx jest __tests__/wishlist-store.test.ts`
+Expected: PASS, 5/5 tests
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  body {
-    @apply font-sans text-black bg-white;
-  }
-}
-
-@layer utilities {
-  .marquee {
-    animation: marquee 30s linear infinite;
-  }
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-}
-```
-
-- [ ] **Step 6: Configure Jest**
-
-Create `jest.config.ts`:
-
-```typescript
-import type { Config } from 'jest'
-const config: Config = {
-  testEnvironment: 'jsdom',
-  setupFilesAfterFramework: ['<rootDir>/jest.setup.ts'],
-  moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1' },
-  transform: { '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx' } }] },
-}
-export default config
-```
-
-Create `jest.setup.ts`:
-
-```typescript
-import '@testing-library/jest-dom'
-```
-
-- [ ] **Step 7: Verify dev server**
+- [ ] **Step 5: Commit**
 
 ```bash
-npm run dev
+git add lib/wishlist-store.ts __tests__/wishlist-store.test.ts
+git commit -m "feat: add wishlist store"
 ```
-
-Expected: `http://localhost:3000` loads Next.js default page.
-
-- [ ] **Step 8: Commit**
-
-```bash
-git init
-git add .
-git commit -m "feat: scaffold Next.js 14 project with Tailwind, Zustand, Framer Motion"
-```
-
----
-

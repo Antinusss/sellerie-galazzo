@@ -1,0 +1,96 @@
+# Review package: c49f31d60d79b3584808be4fdb8ac46ba01568f9..2ee6a03e19d20c4df038943a401cc894c8ae8281
+
+## Commits
+2ee6a03 feat: hide full navbar/footer on checkout for a distraction-free layout
+
+## Files changed
+ app/layout.tsx                   | 11 ++--------
+ components/layout/ChromeGate.tsx | 45 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 47 insertions(+), 9 deletions(-)
+
+## Diff
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 1703013..f6c2454 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -1,27 +1,20 @@
+ import type { Metadata } from 'next'
+ import './globals.css'
+-import AnnouncementBar from '@/components/layout/AnnouncementBar'
+-import Navbar from '@/components/layout/Navbar'
+-import Footer from '@/components/layout/Footer'
++import ChromeGate from '@/components/layout/ChromeGate'
+ import CookieBanner from '@/components/layout/CookieBanner'
+ 
+ export const metadata: Metadata = {
+   title: 'Selleria Galazzo — Articoli Equestri Online',
+   description: 'Selleria online specializzata in articoli per equitazione, monta inglese, western e prodotti per la scuderia.',
+ }
+ 
+ export default function RootLayout({ children }: { children: React.ReactNode }) {
+   return (
+     <html lang="it">
+       <body className="antialiased">
+-        <div className="fixed top-0 left-0 right-0 z-50">
+-          <AnnouncementBar />
+-          <Navbar />
+-        </div>
+-        <main className="pt-24">{children}</main>
+-        <Footer />
++        <ChromeGate>{children}</ChromeGate>
+         <CookieBanner />
+       </body>
+     </html>
+   )
+ }
+diff --git a/components/layout/ChromeGate.tsx b/components/layout/ChromeGate.tsx
+new file mode 100644
+index 0000000..e2ea581
+--- /dev/null
++++ b/components/layout/ChromeGate.tsx
+@@ -0,0 +1,45 @@
++'use client'
++import { usePathname } from 'next/navigation'
++import Image from 'next/image'
++import Link from 'next/link'
++import { Lock } from 'lucide-react'
++import AnnouncementBar from './AnnouncementBar'
++import Navbar from './Navbar'
++import Footer from './Footer'
++
++const MINIMAL_CHROME_PATHS = ['/checkout', '/checkout/success']
++
++export default function ChromeGate({ children }: { children: React.ReactNode }) {
++  const pathname = usePathname()
++  const minimal = MINIMAL_CHROME_PATHS.includes(pathname)
++
++  if (minimal) {
++    return (
++      <>
++        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
++          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
++            <Link href="/" className="relative h-10 w-[93px]">
++              <Image src="/logo-selleria-galazzo.png" alt="Selleria Galazzo" fill className="object-contain object-left" priority />
++            </Link>
++            <span className="flex items-center gap-2 text-xs font-semibold text-gray-500">
++              <Lock size={14} />
++              Pagamento sicuro
++            </span>
++          </div>
++        </div>
++        <main className="pt-16">{children}</main>
++      </>
++    )
++  }
++
++  return (
++    <>
++      <div className="fixed top-0 left-0 right-0 z-50">
++        <AnnouncementBar />
++        <Navbar />
++      </div>
++      <main className="pt-24">{children}</main>
++      <Footer />
++    </>
++  )
++}

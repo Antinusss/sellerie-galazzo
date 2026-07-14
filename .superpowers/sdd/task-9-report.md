@@ -1,16 +1,53 @@
-# Task 9 Report
+# Task 9 Report: Checkout Input Polish
 
-**Status:** COMPLETE
+## Summary
+Added `type`, `inputMode`, and `autoComplete` HTML attributes to all input elements in the checkout form (`app/checkout/page.tsx`). Changes include:
 
-**Commit:** 9213919
+### Changes Made
 
-**Build:** ✓ Compiled successfully — 33 static pages generated, /checkout and /checkout/success both present in route table.
+**Step 1 - Contact & Address Fields:**
+- Email input: Added `type="email"` and `autoComplete="email"`
+- Nome (First Name): Added `autoComplete="given-name"`
+- Cognome (Last Name): Added `autoComplete="family-name"`
+- Indirizzo (Address): Added `autoComplete="street-address"`
+- CAP (Postal Code): Added `inputMode="numeric"` and `autoComplete="postal-code"`
+- Città (City): Added `autoComplete="address-level2"`
 
-## Files Created
-- `components/checkout/CheckoutSteps.tsx` — step indicator, done=green, active=red, future=gray
-- `components/checkout/OrderSummary.tsx` — 'use client', cart items + shipping calc + totals
-- `app/checkout/page.tsx` — 'use client', 3-step form with local state, clearCart() + router.push on confirm
-- `app/checkout/success/page.tsx` — server component, CheckCircle icon, random #SG-XXXXX order number, link to /shop
+**Step 3 - Payment Card Fields:**
+- Card Number: Added `inputMode="numeric"` and `autoComplete="cc-number"`
+- Expiry (MM/AA): Added `autoComplete="cc-exp"`
+- CVV: Added `inputMode="numeric"` and `autoComplete="cc-csc"`
+- Cardholder Name: Added `autoComplete="cc-name"`
 
-## Fix Applied
-The brief used `useCartStore(s => s.clearCart)` (selector pattern) which is not supported by the custom `useCartStore()` hook. Changed to `const { clearCart } = useCartStore()`.
+## Verification
+
+### TypeScript Check
+```
+npx tsc --noEmit
+```
+**Result:** ✓ No errors
+
+### Build Verification
+```
+npm run build
+```
+**Result:** ✓ Build succeeded
+
+Build output:
+- ✓ Compiled successfully
+- ✓ Generating static pages (3264/3264)
+- ✓ All routes generated without errors
+
+## Commit
+```
+git add app/checkout/page.tsx
+git commit -m "feat: add autocomplete and input-mode attributes to checkout form"
+```
+
+**Commit Hash:** `a33d16a`
+
+## Files Modified
+- `app/checkout/page.tsx` (1 file, 10 insertions, 10 deletions)
+
+## Status
+✅ All requirements met. No logic changes, only HTML attribute enhancements for improved UX and form autofill support.

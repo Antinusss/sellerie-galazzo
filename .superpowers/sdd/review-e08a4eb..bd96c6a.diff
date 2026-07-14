@@ -1,0 +1,121 @@
+# Review package: e08a4eb97d4b1ce22ac469212fb6685830101b42..bd96c6a
+
+## Commits
+bd96c6a feat: add free-shipping progress, continue-shopping link, and back-to-top
+
+## Files changed
+ app/cart/page.tsx              | 8 +++++++-
+ components/cart/CartDrawer.tsx | 5 +++++
+ components/layout/Footer.tsx   | 9 ++++++++-
+ 3 files changed, 20 insertions(+), 2 deletions(-)
+
+## Diff
+diff --git a/app/cart/page.tsx b/app/cart/page.tsx
+index 89e0c35..7c0ebcc 100644
+--- a/app/cart/page.tsx
++++ b/app/cart/page.tsx
+@@ -19,23 +19,29 @@ export default function CartPage() {
+           className="inline-block bg-red text-white px-8 py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
+         >
+           Vai allo shop
+         </Link>
+       </div>
+     )
+   }
+ 
+   return (
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+-      <h1 className="text-4xl font-black mb-10">
++      <h1 className="text-4xl font-black mb-6">
+         Il tuo <em className="text-red">carrello</em>
+       </h1>
++      <div className="flex items-center justify-between mb-6">
++        <p className="text-sm text-gray-400">{items.length} {items.length === 1 ? 'articolo' : 'articoli'}</p>
++        <Link href="/shop" className="text-sm font-semibold text-red hover:text-red-dark transition-colors">
++          ← Continua lo shopping
++        </Link>
++      </div>
+       <div className="flex flex-col lg:flex-row gap-10">
+         <div className="flex-1">
+           {items.map(item => <CartItem key={item.product.id} item={item} />)}
+         </div>
+         <div className="lg:w-80">
+           <CartSummary />
+         </div>
+       </div>
+     </div>
+   )
+diff --git a/components/cart/CartDrawer.tsx b/components/cart/CartDrawer.tsx
+index 69d248e..9e510fd 100644
+--- a/components/cart/CartDrawer.tsx
++++ b/components/cart/CartDrawer.tsx
+@@ -67,20 +67,25 @@ export default function CartDrawer() {
+                         <Trash2 size={14} />
+                       </button>
+                     </div>
+                   </div>
+                   <p className="text-sm font-black shrink-0">{formatPrice(item.product.price * item.quantity)}</p>
+                 </div>
+               ))}
+             </div>
+ 
+             <div className="px-6 py-5 border-t border-gray-100">
++              {totalPrice < 8000 && (
++                <p className="text-xs text-gray-400 mb-3">
++                  Aggiungi {formatPrice(8000 - totalPrice)} per la spedizione gratuita
++                </p>
++              )}
+               <div className="flex justify-between font-black text-lg mb-4">
+                 <span>Subtotale</span>
+                 <span>{formatPrice(totalPrice)}</span>
+               </div>
+               <div className="flex flex-col gap-2">
+                 <Link
+                   href="/cart"
+                   onClick={closeCart}
+                   className="w-full text-center border-2 border-black py-3 rounded-full font-bold text-sm hover:bg-black hover:text-white transition-colors"
+                 >
+diff --git a/components/layout/Footer.tsx b/components/layout/Footer.tsx
+index 907f931..52ba37b 100644
+--- a/components/layout/Footer.tsx
++++ b/components/layout/Footer.tsx
+@@ -1,10 +1,11 @@
++'use client'
+ import Link from 'next/link'
+ import Image from 'next/image'
+ import { Globe, Share2, Mail } from 'lucide-react'
+ import categoriesData from '@/data/categories.json'
+ import type { Category } from '@/lib/types'
+ import { getChildren } from '@/lib/category-tree'
+ 
+ const topLevel = getChildren(categoriesData as Category[], undefined)
+ 
+ export default function Footer() {
+@@ -53,20 +54,26 @@ export default function Footer() {
+                 className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-sand"
+               />
+               <button className="bg-red text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-red-dark transition-colors">
+                 OK
+               </button>
+             </div>
+           </div>
+         </div>
+         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+           <p>© 2026 Selleria Galazzo di Biag Galazzo. Tutti i diritti riservati.</p>
+-          <div className="flex gap-6">
++          <div className="flex items-center gap-6">
+             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+             <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
+             <a href="#" className="hover:text-white transition-colors">P.IVA 00000000000</a>
++            <button
++              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
++              className="hover:text-white transition-colors"
++            >
++              ↑ Torna su
++            </button>
+           </div>
+         </div>
+       </div>
+     </footer>
+   )
+ }
