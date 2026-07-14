@@ -16,13 +16,13 @@ export default function NewsletterSection() {
     <section className="mt-16 -mx-4 sm:-mx-6 lg:-mx-8 bg-black text-white rounded-3xl px-8 py-14 text-center">
       <Mail size={28} className="mx-auto mb-4 text-sand" />
       <h2 className="text-2xl lg:text-3xl font-black mb-2">
-        Resta <em className="text-red">aggiornato</em>
+        Ricevi il <em className="text-red">10% di sconto</em>
       </h2>
       <p className="text-white/70 text-sm mb-6 max-w-md mx-auto">
-        Novità, offerte esclusive e consigli per cavalieri, direttamente nella tua casella email.
+        Iscriviti alla newsletter e ricevi subito un codice sconto del 10% sul tuo primo ordine, più novità e offerte esclusive per cavalieri.
       </p>
       {subscribed ? (
-        <p className="text-sand font-semibold">Grazie! Controlla la tua casella email per la conferma.</p>
+        <p className="text-sand font-semibold">Grazie! Controlla la tua casella email per il codice sconto.</p>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
           <input

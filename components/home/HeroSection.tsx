@@ -29,7 +29,7 @@ export default function HeroSection() {
                 href="/shop"
                 className="bg-red text-white px-8 py-4 rounded-full font-semibold text-sm hover:bg-red-dark transition-colors"
               >
-                Scopri il Shop
+                Scopri lo Shop
               </Link>
               <Link
                 href="/shop?sort=newest"

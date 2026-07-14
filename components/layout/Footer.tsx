@@ -45,7 +45,7 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="font-bold mb-4 text-sand">Newsletter</h4>
-            <p className="text-sm text-gray-400 mb-4">Novità, offerte esclusive e consigli per cavalieri.</p>
+            <p className="text-sm text-gray-400 mb-4">Iscriviti e ricevi il 10% di sconto sul primo ordine.</p>
             <div className="flex gap-2">
               <input
                 type="email"
