@@ -84,7 +84,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-6 h-12 border-t border-gray-100 relative">
+        <div className="hidden md:flex items-center justify-between h-12 border-t border-gray-100 relative">
           {topLevel.map(cat => (
             <div
               key={cat.slug.join('/')}
@@ -105,13 +105,13 @@ export default function Navbar() {
               key={`panel-${cat.slug.join('/')}`}
               onMouseEnter={() => setOpenCategory(cat.name)}
               onMouseLeave={() => setOpenCategory(null)}
-              className={`absolute left-0 right-0 top-full bg-white shadow-lg border-t border-gray-100 z-50 ${
+              className={`absolute left-0 right-0 top-full bg-white shadow-lg border-t border-gray-100 rounded-b-xl z-50 ${
                 openCategory === cat.name ? 'block' : 'hidden'
               }`}
             >
               <div className="flex gap-10 p-8">
                 <div className="flex-1 flex gap-16">
-                  {getChildren(categories, cat).map(mid => (
+                  {getChildren(categories, cat).filter(mid => getChildren(categories, mid).length > 0).map(mid => (
                     <div key={mid.slug.join('/')} className="min-w-[160px]">
                       <Link
                         href={`/shop/${mid.slug.join('/')}`}
