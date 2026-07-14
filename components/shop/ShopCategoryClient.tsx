@@ -1,7 +1,7 @@
 'use client'
 import { useState, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import ProductCard from '@/components/shop/ProductCard'
+import PaginatedProductGrid from '@/components/shop/PaginatedProductGrid'
 import FilterSidebar from '@/components/shop/FilterSidebar'
 import SortDropdown from '@/components/shop/SortDropdown'
 import type { Product } from '@/lib/types'
@@ -40,9 +40,7 @@ export default function ShopCategoryClient({ products, currentPath }: ShopCatego
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map(p => <ProductCard key={p.id} product={p} />)}
-          </div>
+          <PaginatedProductGrid products={filtered} />
         )}
       </div>
     </div>
