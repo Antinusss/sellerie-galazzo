@@ -1,4 +1,8 @@
-import brands from '@/data/brands.json'
+import Image from 'next/image'
+import brandsData from '@/data/brands.json'
+import type { Brand } from '@/lib/types'
+
+const brands = brandsData as Brand[]
 
 export default function BrandCarousel() {
   const doubled = [...brands, ...brands]
@@ -10,7 +14,13 @@ export default function BrandCarousel() {
       <div className="flex whitespace-nowrap marquee">
         {doubled.map((brand, i) => (
           <div key={i} className="inline-flex items-center justify-center mx-12 opacity-50 hover:opacity-100 transition-opacity">
-            <span className="text-xl font-black text-black">{brand.name}</span>
+            {brand.logo ? (
+              <div className="relative w-24 h-12">
+                <Image src={brand.logo} alt={brand.name} fill className="object-contain" />
+              </div>
+            ) : (
+              <span className="text-xl font-black text-black">{brand.name}</span>
+            )}
           </div>
         ))}
       </div>
