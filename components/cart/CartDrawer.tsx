@@ -74,6 +74,11 @@ export default function CartDrawer() {
             </div>
 
             <div className="px-6 py-5 border-t border-gray-100">
+              {totalPrice < 8000 && (
+                <p className="text-xs text-gray-400 mb-3">
+                  Aggiungi {formatPrice(8000 - totalPrice)} per la spedizione gratuita
+                </p>
+              )}
               <div className="flex justify-between font-black text-lg mb-4">
                 <span>Subtotale</span>
                 <span>{formatPrice(totalPrice)}</span>

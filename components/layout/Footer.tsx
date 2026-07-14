@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Globe, Share2, Mail } from 'lucide-react'
@@ -60,10 +61,16 @@ export default function Footer() {
         </div>
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
           <p>© 2026 Selleria Galazzo di Biag Galazzo. Tutti i diritti riservati.</p>
-          <div className="flex gap-6">
+          <div className="flex items-center gap-6">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
             <a href="#" className="hover:text-white transition-colors">P.IVA 00000000000</a>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="hover:text-white transition-colors"
+            >
+              ↑ Torna su
+            </button>
           </div>
         </div>
       </div>

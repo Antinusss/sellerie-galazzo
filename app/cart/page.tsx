@@ -26,9 +26,15 @@ export default function CartPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <h1 className="text-4xl font-black mb-10">
+      <h1 className="text-4xl font-black mb-6">
         Il tuo <em className="text-red">carrello</em>
       </h1>
+      <div className="flex items-center justify-between mb-6">
+        <p className="text-sm text-gray-400">{items.length} {items.length === 1 ? 'articolo' : 'articoli'}</p>
+        <Link href="/shop" className="text-sm font-semibold text-red hover:text-red-dark transition-colors">
+          ← Continua lo shopping
+        </Link>
+      </div>
       <div className="flex flex-col lg:flex-row gap-10">
         <div className="flex-1">
           {items.map(item => <CartItem key={item.product.id} item={item} />)}
