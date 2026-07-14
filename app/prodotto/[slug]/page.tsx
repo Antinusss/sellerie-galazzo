@@ -6,6 +6,7 @@ import ProductInfo from '@/components/product/ProductInfo'
 import ProductTabs from '@/components/product/ProductTabs'
 import RelatedProducts from '@/components/product/RelatedProducts'
 import NewsletterSection from '@/components/product/NewsletterSection'
+import BrandSection from '@/components/product/BrandSection'
 
 interface Props { params: { slug: string } }
 
@@ -23,6 +24,7 @@ export default function ProductPage({ params }: Props) {
         <ProductGallery images={product.images} name={product.name} />
         <ProductInfo product={product} />
       </div>
+      <BrandSection product={product} />
       <ProductTabs description={product.description} specs={product.specs} />
       <RelatedProducts product={product} />
       <NewsletterSection />
