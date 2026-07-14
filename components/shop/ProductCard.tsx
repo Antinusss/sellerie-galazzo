@@ -4,6 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, ShoppingCart, Star } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
+import { useWishlistStore } from '@/lib/wishlist-store'
+import { getBadge } from '@/lib/badges'
 import { formatPrice } from '@/lib/utils'
 import { getReviewSummary } from '@/lib/reviews'
 import type { Product } from '@/lib/types'
@@ -12,6 +14,9 @@ interface ProductCardProps { product: Product }
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addItem, openCart } = useCartStore()
+  const { toggleWishlist, isWishlisted } = useWishlistStore()
+  const wishlisted = isWishlisted(product.id)
+  const badge = getBadge(product.id)
   const discountPct = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : null
@@ -31,13 +36,26 @@ export default function ProductCard({ product }: ProductCardProps) {
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        {discountPct && (
-          <span className="absolute top-3 left-3 bg-red text-white text-xs font-bold px-2 py-1 rounded-full">
-            -{discountPct}%
-          </span>
-        )}
-        <button className="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-red">
-          <Heart size={16} />
+        <div className="absolute top-3 left-3 flex flex-col gap-1 items-start">
+          {discountPct && (
+            <span className="bg-red text-white text-xs font-bold px-2 py-1 rounded-full">
+              -{discountPct}%
+            </span>
+          )}
+          {badge === 'bestseller' && (
+            <span className="bg-black text-white text-xs font-bold px-2 py-1 rounded-full">Bestseller</span>
+          )}
+          {badge === 'novita' && (
+            <span className="bg-sand text-black text-xs font-bold px-2 py-1 rounded-full">Novità</span>
+          )}
+        </div>
+        <button
+          onClick={e => { e.preventDefault(); toggleWishlist(product.id) }}
+          className={`absolute top-3 right-3 p-2 bg-white/90 rounded-full transition-opacity hover:text-red ${
+            wishlisted ? 'opacity-100 text-red' : 'opacity-0 group-hover:opacity-100'
+          }`}
+        >
+          <Heart size={16} className={wishlisted ? 'fill-red' : ''} />
         </button>
         {/* Quick add */}
         <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
