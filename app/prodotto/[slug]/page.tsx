@@ -25,7 +25,7 @@ export default function ProductPage({ params }: Props) {
         <ProductInfo product={product} />
       </div>
       <BrandSection product={product} />
-      <ProductTabs description={product.description} specs={product.specs} />
+      <ProductTabs description={product.description} specs={product.specs} productId={product.id} />
       <RelatedProducts product={product} />
       <NewsletterSection />
     </div>
