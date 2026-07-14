@@ -2,18 +2,20 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, ShoppingCart } from 'lucide-react'
+import { Heart, ShoppingCart, Star } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
 import { formatPrice } from '@/lib/utils'
+import { getReviewSummary } from '@/lib/reviews'
 import type { Product } from '@/lib/types'
 
 interface ProductCardProps { product: Product }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCartStore()
+  const { addItem, openCart } = useCartStore()
   const discountPct = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : null
+  const { rating, count } = getReviewSummary(product.id)
 
   return (
     <motion.div
@@ -40,7 +42,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Quick add */}
         <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
-            onClick={e => { e.preventDefault(); addItem(product, 1) }}
+            onClick={e => { e.preventDefault(); addItem(product, 1); openCart() }}
             className="w-full bg-red text-white py-3 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-red-dark transition-colors"
           >
             <ShoppingCart size={16} />
@@ -50,7 +52,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
       <div className="p-4">
         <p className="text-xs text-sand font-semibold uppercase tracking-wide mb-1">{product.category}</p>
-        <h3 className="font-semibold text-sm text-black leading-tight mb-2 line-clamp-2">{product.name}</h3>
+        <h3 className="font-semibold text-sm text-black leading-tight mb-1 line-clamp-2">{product.name}</h3>
+        <div className="flex items-center gap-1 mb-2">
+          <Star size={12} className="fill-sand text-sand" />
+          <span className="text-xs font-semibold text-gray-600">{rating.toFixed(1)}</span>
+          <span className="text-xs text-gray-400">({count})</span>
+        </div>
         <div className="flex items-baseline gap-2">
           <span className="font-black text-black">{formatPrice(product.price)}</span>
           {product.originalPrice && (
