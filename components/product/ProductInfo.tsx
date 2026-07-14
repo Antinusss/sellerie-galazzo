@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Heart, Minus, Plus, ShoppingCart, Star } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
+import { useWishlistStore } from '@/lib/wishlist-store'
 import { formatPrice } from '@/lib/utils'
 import { findCategoryByPath } from '@/lib/category-tree'
 import { getReviewSummary } from '@/lib/reviews'
@@ -17,6 +18,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
   const { addItem, openCart } = useCartStore()
+  const { toggleWishlist, isWishlisted } = useWishlistStore()
+  const wishlisted = isWishlisted(product.id)
   const breadcrumbSlug = findCategoryByPath(categories, product.categoryPath)?.slug ?? []
   const { rating, count } = getReviewSummary(product.id)
 
@@ -110,9 +113,14 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <ShoppingCart size={20} />
           {added ? 'Aggiunto al carrello ✓' : 'Aggiungi al carrello'}
         </button>
-        <button className="w-full py-4 rounded-full font-bold border-2 border-black hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2">
-          <Heart size={20} />
-          Aggiungi alla wishlist
+        <button
+          onClick={() => toggleWishlist(product.id)}
+          className={`w-full py-4 rounded-full font-bold border-2 flex items-center justify-center gap-2 transition-colors ${
+            wishlisted ? 'border-red bg-red/5 text-red' : 'border-black hover:bg-black hover:text-white'
+          }`}
+        >
+          <Heart size={20} className={wishlisted ? 'fill-red' : ''} />
+          {wishlisted ? 'Nella tua wishlist ✓' : 'Aggiungi alla wishlist'}
         </button>
       </div>
 
