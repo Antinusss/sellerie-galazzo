@@ -38,7 +38,7 @@ export default function HeroSection() {
                 Le Novità
               </Link>
             </div>
-            <div className="flex gap-8 mt-12 text-sm">
+            <div className="flex flex-wrap gap-8 mt-12 text-sm">
               <div>
                 <div className="font-black text-2xl">10k+</div>
                 <div className="text-gray-400">Cavalieri</div>
@@ -50,6 +50,10 @@ export default function HeroSection() {
               <div>
                 <div className="font-black text-2xl">40+</div>
                 <div className="text-gray-400">Anni di esperienza</div>
+              </div>
+              <div>
+                <div className="font-black text-2xl">4.8★</div>
+                <div className="text-gray-400">Recensioni verificate</div>
               </div>
             </div>
           </motion.div>
