@@ -27,15 +27,15 @@ export default function CheckoutPage() {
           {step === 1 && (
             <div className="space-y-5">
               <h2 className="text-2xl font-black">Contatti e indirizzo</h2>
-              <input placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
+              <input type="email" autoComplete="email" placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
               <div className="grid grid-cols-2 gap-4">
-                <input placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
-                <input placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
+                <input autoComplete="given-name" placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
+                <input autoComplete="family-name" placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
               </div>
-              <input placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
+              <input autoComplete="street-address" placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
               <div className="grid grid-cols-3 gap-4">
-                <input placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
-                <input placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
+                <input inputMode="numeric" autoComplete="postal-code" placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
+                <input autoComplete="address-level2" placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
               </div>
               <button onClick={() => setStep(2)} className="w-full bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors mt-4">
                 Continua alla spedizione →
@@ -119,12 +119,12 @@ export default function CheckoutPage() {
 
               {payment === 'card' && (
                 <>
-                  <input placeholder="Numero carta *" className={inputClass} maxLength={19} />
+                  <input inputMode="numeric" autoComplete="cc-number" placeholder="Numero carta *" className={inputClass} maxLength={19} />
                   <div className="grid grid-cols-2 gap-4">
-                    <input placeholder="Scadenza MM/AA *" className={inputClass} />
-                    <input placeholder="CVV *" className={inputClass} maxLength={4} />
+                    <input autoComplete="cc-exp" placeholder="Scadenza MM/AA *" className={inputClass} />
+                    <input inputMode="numeric" autoComplete="cc-csc" placeholder="CVV *" className={inputClass} maxLength={4} />
                   </div>
-                  <input placeholder="Nome sulla carta *" className={inputClass} />
+                  <input autoComplete="cc-name" placeholder="Nome sulla carta *" className={inputClass} />
                 </>
               )}
               {payment === 'paypal' && (
