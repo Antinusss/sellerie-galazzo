@@ -1,0 +1,133 @@
+# Review package: 5bd7bb0..HEAD
+
+## Commits
+e90aca7 feat: add cart-drawer open/close state to the cart store
+
+## Files changed
+ __tests__/store.test.ts | 19 +++++++++++++++++++
+ lib/store.ts            | 11 ++++++++++-
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/__tests__/store.test.ts b/__tests__/store.test.ts
+index 2dff9a2..f576536 100644
+--- a/__tests__/store.test.ts
++++ b/__tests__/store.test.ts
+@@ -4,20 +4,21 @@ import type { Product } from '@/lib/types'
+ 
+ const mockProduct: Product = {
+   id: '1', name: 'Test', slug: 'test', price: 5000, originalPrice: null,
+   category: 'Monta Inglese', categoryPath: ['Monta Inglese'], brand: 'Test', images: [],
+   description: '', specs: '', inStock: true,
+ }
+ 
+ beforeEach(() => {
+   const { result } = renderHook(() => useCartStore())
+   act(() => result.current.clearCart())
++  act(() => result.current.closeCart())
+ })
+ 
+ describe('addItem', () => {
+   it('adds new item', () => {
+     const { result } = renderHook(() => useCartStore())
+     act(() => result.current.addItem(mockProduct, 1))
+     expect(result.current.items).toHaveLength(1)
+     expect(result.current.items[0].quantity).toBe(1)
+   })
+   it('increments existing item quantity', () => {
+@@ -52,10 +53,28 @@ describe('computed values', () => {
+     const { result } = renderHook(() => useCartStore())
+     act(() => result.current.addItem(mockProduct, 3))
+     expect(result.current.totalItems).toBe(3)
+   })
+   it('totalPrice sums prices in cents', () => {
+     const { result } = renderHook(() => useCartStore())
+     act(() => result.current.addItem(mockProduct, 2))
+     expect(result.current.totalPrice).toBe(10000)
+   })
+ })
++
++describe('cart drawer state', () => {
++  it('starts closed', () => {
++    const { result } = renderHook(() => useCartStore())
++    expect(result.current.isCartOpen).toBe(false)
++  })
++  it('openCart sets isCartOpen to true', () => {
++    const { result } = renderHook(() => useCartStore())
++    act(() => result.current.openCart())
++    expect(result.current.isCartOpen).toBe(true)
++  })
++  it('closeCart sets isCartOpen to false', () => {
++    const { result } = renderHook(() => useCartStore())
++    act(() => result.current.openCart())
++    act(() => result.current.closeCart())
++    expect(result.current.isCartOpen).toBe(false)
++  })
++})
+diff --git a/lib/store.ts b/lib/store.ts
+index de3cf1c..45863f3 100644
+--- a/lib/store.ts
++++ b/lib/store.ts
+@@ -1,52 +1,61 @@
+ import { create } from 'zustand'
+ import { persist } from 'zustand/middleware'
+ import type { CartItem, Product } from './types'
+ 
+ interface InternalState {
+   items: CartItem[]
++  isCartOpen: boolean
+   addItem: (product: Product, quantity: number, variant?: string) => void
+   removeItem: (productId: string) => void
+   updateQuantity: (productId: string, quantity: number) => void
+   clearCart: () => void
++  openCart: () => void
++  closeCart: () => void
+ }
+ 
+ export interface CartStore extends InternalState {
+   totalItems: number
+   totalPrice: number
+ }
+ 
+ const useInternalStore = create<InternalState>()(
+   persist(
+     (set, get) => ({
+       items: [],
++      isCartOpen: false,
+       addItem: (product, quantity, variant) => {
+         const existing = get().items.find(i => i.product.id === product.id)
+         if (existing) {
+           set(s => ({
+             items: s.items.map(i =>
+               i.product.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
+             ),
+           }))
+         } else {
+           set(s => ({ items: [...s.items, { product, quantity, variant }] }))
+         }
+       },
+       removeItem: (productId) =>
+         set(s => ({ items: s.items.filter(i => i.product.id !== productId) })),
+       updateQuantity: (productId, quantity) =>
+         set(s => ({
+           items: s.items.map(i => i.product.id === productId ? { ...i, quantity } : i),
+         })),
+       clearCart: () => set({ items: [] }),
++      openCart: () => set({ isCartOpen: true }),
++      closeCart: () => set({ isCartOpen: false }),
+     }),
+-    { name: 'selleria-galazzo-cart' }
++    {
++      name: 'selleria-galazzo-cart',
++      partialize: (state) => ({ items: state.items }),
++    }
+   )
+ )
+ 
+ export function useCartStore(): CartStore {
+   const store = useInternalStore()
+   const { items } = store
+   return {
+     ...store,
+     totalItems: items.reduce((sum, i) => sum + i.quantity, 0),
+     totalPrice: items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),

@@ -1,0 +1,102 @@
+### Task 5: Reviews + cart-drawer trigger on ProductCard
+
+**Files:**
+- Modify: `components/shop/ProductCard.tsx`
+
+**Interfaces:**
+- Consumes: `getReviewSummary` (Task 3), `openCart` from `useCartStore` (Task 1)
+
+- [ ] **Step 1: Rewrite `components/shop/ProductCard.tsx`**
+
+```tsx
+'use client'
+import { motion } from 'framer-motion'
+import Image from 'next/image'
+import Link from 'next/link'
+import { Heart, ShoppingCart, Star } from 'lucide-react'
+import { useCartStore } from '@/lib/store'
+import { formatPrice } from '@/lib/utils'
+import { getReviewSummary } from '@/lib/reviews'
+import type { Product } from '@/lib/types'
+
+interface ProductCardProps { product: Product }
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const { addItem, openCart } = useCartStore()
+  const discountPct = product.originalPrice
+    ? Math.round((1 - product.price / product.originalPrice) * 100)
+    : null
+  const { rating, count } = getReviewSummary(product.id)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+    >
+      <Link href={`/prodotto/${product.slug}`} className="block relative aspect-square overflow-hidden bg-gray-light">
+        <Image
+          src={product.images[0] ?? ''}
+          alt={product.name}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        {discountPct && (
+          <span className="absolute top-3 left-3 bg-red text-white text-xs font-bold px-2 py-1 rounded-full">
+            -{discountPct}%
+          </span>
+        )}
+        <button className="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-red">
+          <Heart size={16} />
+        </button>
+        {/* Quick add */}
+        <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+          <button
+            onClick={e => { e.preventDefault(); addItem(product, 1); openCart() }}
+            className="w-full bg-red text-white py-3 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-red-dark transition-colors"
+          >
+            <ShoppingCart size={16} />
+            Aggiungi al carrello
+          </button>
+        </div>
+      </Link>
+      <div className="p-4">
+        <p className="text-xs text-sand font-semibold uppercase tracking-wide mb-1">{product.category}</p>
+        <h3 className="font-semibold text-sm text-black leading-tight mb-1 line-clamp-2">{product.name}</h3>
+        <div className="flex items-center gap-1 mb-2">
+          <Star size={12} className="fill-sand text-sand" />
+          <span className="text-xs font-semibold text-gray-600">{rating.toFixed(1)}</span>
+          <span className="text-xs text-gray-400">({count})</span>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="font-black text-black">{formatPrice(product.price)}</span>
+          {product.originalPrice && (
+            <span className="text-gray-400 text-sm line-through">{formatPrice(product.originalPrice)}</span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+```
+
+- [ ] **Step 2: Typecheck**
+
+Run: `npx tsc --noEmit`
+Expected: zero errors
+
+- [ ] **Step 3: Run the full suite**
+
+Run: `npm test`
+Expected: PASS (no test covers this component directly, confirms no regressions)
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add components/shop/ProductCard.tsx
+git commit -m "feat: review stars and cart-drawer trigger on ProductCard"
+```
+
+---
+

@@ -44,3 +44,17 @@ Plan: docs/superpowers/plans/2026-07-13-mega-menu-brands-pagination.md
 - [x] Task 9: brand section on product page (commit 43eef9b, review clean)
 - [x] Task 10: clickable breadcrumbs in ProductInfo (commit e648ade, review clean)
 - [x] Task 11: full build+test+manual verification (60/60 tests, 3263 pages, full interactive browser check, zero bugs found)
+
+## Trust & Conversion (2026-07-14)
+Plan: docs/superpowers/plans/2026-07-14-trust-conversion.md
+
+- [x] Task 1: cart-drawer state in store (commit e90aca7, review clean)
+- [x] Task 2: shared search logic (commit 3e834fa, review clean)
+- [x] Task 3: fake reviews (commit f435989, review clean)
+- [x] Task 4: CartDrawer + Navbar restructure (commit 159876d, review clean)
+- [x] Task 5: reviews + cart trigger on ProductCard (commit 46ebc71, review clean)
+- [x] Task 6: reviews + Klarna badge + cart trigger on ProductInfo (commit b5d9ae5, review clean; first attempt died mid-task from connection error, no code touched, clean retry)
+- [x] Task 7: Recensioni tab on ProductTabs (commit f1aa2b1, review clean)
+- [x] Task 8: homepage trust stat (commit 918645d, review clean)
+- [x] Task 9: payment methods at checkout (commit 44d2f43, review clean)
+- [x] Task 10: full build+test+manual verification (76/76 tests, 3263 pages, full interactive browser check incl. cart drawer animation + payment switching, zero bugs found)

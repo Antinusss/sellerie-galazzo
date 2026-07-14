@@ -1,0 +1,53 @@
+# Review package: f1aa2b1..HEAD
+
+## Commits
+918645d feat: add reviews trust stat to homepage hero
+
+## Files changed
+ components/home/HeroSection.tsx | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/components/home/HeroSection.tsx b/components/home/HeroSection.tsx
+index 9af5f43..5d01ff9 100644
+--- a/components/home/HeroSection.tsx
++++ b/components/home/HeroSection.tsx
+@@ -31,33 +31,37 @@ export default function HeroSection() {
+               >
+                 Scopri lo Shop
+               </Link>
+               <Link
+                 href="/shop?sort=newest"
+                 className="border-2 border-black text-black px-8 py-4 rounded-full font-semibold text-sm hover:bg-black hover:text-white transition-colors"
+               >
+                 Le Novità
+               </Link>
+             </div>
+-            <div className="flex gap-8 mt-12 text-sm">
++            <div className="flex flex-wrap gap-8 mt-12 text-sm">
+               <div>
+                 <div className="font-black text-2xl">10k+</div>
+                 <div className="text-gray-400">Cavalieri</div>
+               </div>
+               <div>
+                 <div className="font-black text-2xl">200+</div>
+                 <div className="text-gray-400">Brand selezionati</div>
+               </div>
+               <div>
+                 <div className="font-black text-2xl">40+</div>
+                 <div className="text-gray-400">Anni di esperienza</div>
+               </div>
++              <div>
++                <div className="font-black text-2xl">4.8★</div>
++                <div className="text-gray-400">Recensioni verificate</div>
++              </div>
+             </div>
+           </motion.div>
+           {/* Image */}
+           <motion.div
+             initial={{ opacity: 0, scale: 0.95 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+             className="relative h-[500px] lg:h-[650px] rounded-3xl overflow-hidden"
+           >
+             <Image

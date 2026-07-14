@@ -1,0 +1,111 @@
+# Review package: 46ebc71..HEAD
+
+## Commits
+b5d9ae5 feat: review stars, Klarna badge, cart-drawer trigger on ProductInfo
+
+## Files changed
+ components/product/ProductInfo.tsx | 38 ++++++++++++++++++++++++++++----------
+ 1 file changed, 28 insertions(+), 10 deletions(-)
+
+## Diff
+diff --git a/components/product/ProductInfo.tsx b/components/product/ProductInfo.tsx
+index 1cad652..72398af 100644
+--- a/components/product/ProductInfo.tsx
++++ b/components/product/ProductInfo.tsx
+@@ -1,36 +1,39 @@
+ 'use client'
+ import { useState } from 'react'
+ import Link from 'next/link'
+-import { Heart, Minus, Plus, ShoppingCart } from 'lucide-react'
++import { Heart, Minus, Plus, ShoppingCart, Star } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
+ import { formatPrice } from '@/lib/utils'
+ import { findCategoryByPath } from '@/lib/category-tree'
++import { getReviewSummary } from '@/lib/reviews'
+ import categoriesData from '@/data/categories.json'
+ import type { Product, Category } from '@/lib/types'
+ 
+ const categories = categoriesData as Category[]
+ 
+ interface ProductInfoProps { product: Product }
+ 
+ export default function ProductInfo({ product }: ProductInfoProps) {
+   const [qty, setQty] = useState(1)
+   const [added, setAdded] = useState(false)
+-  const { addItem } = useCartStore()
++  const { addItem, openCart } = useCartStore()
+   const breadcrumbSlug = findCategoryByPath(categories, product.categoryPath)?.slug ?? []
++  const { rating, count } = getReviewSummary(product.id)
+ 
+   const discountPct = product.originalPrice
+     ? Math.round((1 - product.price / product.originalPrice) * 100)
+     : null
+ 
+   const handleAdd = () => {
+     addItem(product, qty)
++    openCart()
+     setAdded(true)
+     setTimeout(() => setAdded(false), 2000)
+   }
+ 
+   return (
+     <div className="flex flex-col gap-6">
+       <div>
+         <nav className="text-sand font-bold uppercase text-xs tracking-widest mb-2 flex flex-wrap items-center gap-1">
+           {product.categoryPath.map((segment, i) => (
+             <span key={segment} className="flex items-center gap-1">
+@@ -39,31 +42,46 @@ export default function ProductInfo({ product }: ProductInfoProps) {
+                 <Link href={`/shop/${breadcrumbSlug.slice(0, i + 1).join('/')}`} className="hover:text-red transition-colors">
+                   {segment}
+                 </Link>
+               ) : (
+                 <span>{segment}</span>
+               )}
+             </span>
+           ))}
+         </nav>
+         <h1 className="text-3xl lg:text-4xl font-black text-black leading-tight">{product.name}</h1>
++        <div className="flex items-center gap-2 mt-2">
++          <div className="flex items-center gap-0.5">
++            {Array.from({ length: 5 }, (_, i) => (
++              <Star key={i} size={16} className={i < Math.round(rating) ? 'fill-sand text-sand' : 'text-gray-200'} />
++            ))}
++          </div>
++          <span className="text-sm font-semibold text-gray-600">{rating.toFixed(1)}</span>
++          <span className="text-sm text-gray-400">({count} recensioni)</span>
++        </div>
+         {product.brand && <p className="text-gray-400 text-sm mt-1">{product.brand}</p>}
+       </div>
+ 
+-      <div className="flex items-baseline gap-3">
+-        <span className="text-3xl font-black">{formatPrice(product.price)}</span>
+-        {product.originalPrice && (
+-          <>
+-            <span className="text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
+-            <span className="bg-red text-white text-xs font-bold px-2 py-0.5 rounded-full">-{discountPct}%</span>
+-          </>
+-        )}
++      <div>
++        <div className="flex items-baseline gap-3">
++          <span className="text-3xl font-black">{formatPrice(product.price)}</span>
++          {product.originalPrice && (
++            <>
++              <span className="text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
++              <span className="bg-red text-white text-xs font-bold px-2 py-0.5 rounded-full">-{discountPct}%</span>
++            </>
++          )}
++        </div>
++        <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
++          <span className="bg-[#FFB3C7] text-black font-black text-[10px] px-1.5 py-0.5 rounded">Klarna</span>
++          <span>Paga in 3 rate da {formatPrice(Math.round(product.price / 3))} senza interessi</span>
++        </div>
+       </div>
+ 
+       {/* Qty */}
+       <div>
+         <p className="text-sm font-semibold mb-3">Quantità</p>
+         <div className="flex items-center gap-4">
+           <div className="flex items-center border-2 border-gray-200 rounded-full overflow-hidden">
+             <button
+               onClick={() => setQty(Math.max(1, qty - 1))}
+               className="px-4 py-2 hover:bg-gray-light transition-colors"
