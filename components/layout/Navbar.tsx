@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
+import { ShoppingCart, Heart, Search, User, Menu, X } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
 import { useWishlistStore } from '@/lib/wishlist-store'
+import { useAuthStore } from '@/lib/auth-store'
 import categoriesData from '@/data/categories.json'
 import brandsData from '@/data/brands.json'
 import type { Category, Brand } from '@/lib/types'
@@ -39,6 +40,7 @@ export default function Navbar() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
   const { totalItems, openCart } = useCartStore()
   const { productIds: wishlistIds } = useWishlistStore()
+  const { user } = useAuthStore()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -69,6 +71,9 @@ export default function Navbar() {
                   {wishlistIds.length}
                 </span>
               )}
+            </Link>
+            <Link href={user ? '/account' : '/account/login'} className="p-2 hover:text-red transition-colors">
+              <User size={20} />
             </Link>
             <button className="relative p-2 hover:text-red transition-colors" onClick={openCart}>
               <ShoppingCart size={20} />
