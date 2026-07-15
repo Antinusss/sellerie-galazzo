@@ -78,3 +78,17 @@ Plan: docs/superpowers/plans/2026-07-14-cro-checklist.md
 ## Final whole-branch review (2026-07-14)
 - Ready to merge, 0 Critical/Important findings (opus review)
 - [x] Cleanup: extracted FREE_SHIPPING_THRESHOLD constant, shared hashOf helper (commit bc67d5b, 86/86 tests pass)
+
+## Account Emulation + Testimonials Carousel (2026-07-15)
+Plan: docs/superpowers/plans/2026-07-15-account-and-testimonials.md
+
+- [x] Task 1: auth store (commit 750094c, review clean)
+- [x] Task 2: login + register pages (commit 4262de3, review clean; Important note resolved by controller — .eslintrc.json argsIgnorePattern addition was a necessary, correct fix for Task 1's `_password` convention tripping next build's default lint, not a scope violation)
+- [x] Task 3: account dashboard (commit e3f2ba1, review clean; minor note on persist-hydration flicker, same accepted pattern as wishlist store)
+- [x] Task 4: Navbar account entry point (commit e995cb6, review clean)
+- [x] Task 5: home testimonials carousel (commit ea65fad, review clean; first attempt died mid-task from connection error, no files touched, clean retry)
+- [x] Task 6: full build+test+manual verification (90/90 tests, 3267 pages, curl+browser checks clean; investigated a logout-click issue that turned out to be browser-automation tool flakiness, not an app bug — confirmed via direct JS .click() that the real onClick wiring works)
+
+## Final whole-branch review (2026-07-15)
+- Ready to merge, 0 Critical/Important findings (opus review)
+- Minor notes accepted as-is: uniform 5-star testimonials (reviews[0] always rating=5.0), no aria-labels on icon-only buttons (pre-existing codebase pattern) — not worth a fix pass

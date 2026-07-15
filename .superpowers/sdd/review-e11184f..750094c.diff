@@ -1,0 +1,88 @@
+# Review package: e11184f..750094c
+
+## Commits
+750094c feat: add auth store
+
+## Files changed
+ __tests__/auth-store.test.ts | 39 +++++++++++++++++++++++++++++++++++++++
+ lib/auth-store.ts            | 26 ++++++++++++++++++++++++++
+ 2 files changed, 65 insertions(+)
+
+## Diff
+diff --git a/__tests__/auth-store.test.ts b/__tests__/auth-store.test.ts
+new file mode 100644
+index 0000000..21f7755
+--- /dev/null
++++ b/__tests__/auth-store.test.ts
+@@ -0,0 +1,39 @@
++import { act, renderHook } from '@testing-library/react'
++import { useAuthStore } from '@/lib/auth-store'
++
++beforeEach(() => {
++  const { result } = renderHook(() => useAuthStore())
++  act(() => result.current.logout())
++})
++
++describe('initial state', () => {
++  it('starts with no user', () => {
++    const { result } = renderHook(() => useAuthStore())
++    expect(result.current.user).toBeNull()
++  })
++})
++
++describe('login', () => {
++  it('sets a user with a name derived from the email local-part', () => {
++    const { result } = renderHook(() => useAuthStore())
++    act(() => result.current.login('mario.rossi@example.com', 'anything'))
++    expect(result.current.user).toEqual({ name: 'mario.rossi', email: 'mario.rossi@example.com' })
++  })
++})
++
++describe('register', () => {
++  it('sets a user with the combined name and given email', () => {
++    const { result } = renderHook(() => useAuthStore())
++    act(() => result.current.register('Mario', 'Rossi', 'mario@example.com', 'anything'))
++    expect(result.current.user).toEqual({ name: 'Mario Rossi', email: 'mario@example.com' })
++  })
++})
++
++describe('logout', () => {
++  it('clears the user', () => {
++    const { result } = renderHook(() => useAuthStore())
++    act(() => result.current.login('a@b.com', 'x'))
++    act(() => result.current.logout())
++    expect(result.current.user).toBeNull()
++  })
++})
+diff --git a/lib/auth-store.ts b/lib/auth-store.ts
+new file mode 100644
+index 0000000..30e5a68
+--- /dev/null
++++ b/lib/auth-store.ts
+@@ -0,0 +1,26 @@
++import { create } from 'zustand'
++import { persist } from 'zustand/middleware'
++
++export interface AuthUser {
++  name: string
++  email: string
++}
++
++interface AuthState {
++  user: AuthUser | null
++  login: (email: string, password: string) => void
++  register: (nome: string, cognome: string, email: string, password: string) => void
++  logout: () => void
++}
++
++export const useAuthStore = create<AuthState>()(
++  persist(
++    (set) => ({
++      user: null,
++      login: (email, _password) => set({ user: { name: email.split('@')[0], email } }),
++      register: (nome, cognome, email, _password) => set({ user: { name: `${nome} ${cognome}`, email } }),
++      logout: () => set({ user: null }),
++    }),
++    { name: 'selleria-galazzo-auth' }
++  )
++)

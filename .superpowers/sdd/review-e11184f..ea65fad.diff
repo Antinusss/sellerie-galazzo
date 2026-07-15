@@ -1,0 +1,438 @@
+# Review package: e11184f..ea65fad
+
+## Commits
+ea65fad feat: add testimonials carousel to home page
+e995cb6 feat: add account entry point to Navbar
+e3f2ba1 feat: add account dashboard page
+4262de3 feat: add login and register pages
+750094c feat: add auth store
+
+## Files changed
+ .eslintrc.json                           |  8 +++-
+ __tests__/auth-store.test.ts             | 39 +++++++++++++++++++
+ app/account/login/page.tsx               | 38 ++++++++++++++++++
+ app/account/page.tsx                     | 66 ++++++++++++++++++++++++++++++++
+ app/account/register/page.tsx            | 44 +++++++++++++++++++++
+ app/page.tsx                             |  2 +
+ components/home/TestimonialsCarousel.tsx | 55 ++++++++++++++++++++++++++
+ components/layout/Navbar.tsx             |  7 +++-
+ lib/auth-store.ts                        | 26 +++++++++++++
+ 9 files changed, 283 insertions(+), 2 deletions(-)
+
+## Diff
+diff --git a/.eslintrc.json b/.eslintrc.json
+index 3722418..b560928 100644
+--- a/.eslintrc.json
++++ b/.eslintrc.json
+@@ -1,3 +1,9 @@
+ {
+-  "extends": ["next/core-web-vitals", "next/typescript"]
++  "extends": ["next/core-web-vitals", "next/typescript"],
++  "rules": {
++    "@typescript-eslint/no-unused-vars": [
++      "error",
++      { "argsIgnorePattern": "^_" }
++    ]
++  }
+ }
+diff --git a/__tests__/auth-store.test.ts b/__tests__/auth-store.test.ts
+new file mode 100644
+index 0000000..21f7755
+--- /dev/null
++++ b/__tests__/auth-store.test.ts
+@@ -0,0 +1,39 @@
++import { act, renderHook } from '@testing-library/react'
++import { useAuthStore } from '@/lib/auth-store'
++
++beforeEach(() => {
++  const { result } = renderHook(() => useAuthStore())
++  act(() => result.current.logout())
++})
++
++describe('initial state', () => {
++  it('starts with no user', () => {
++    const { result } = renderHook(() => useAuthStore())
++    expect(result.current.user).toBeNull()
++  })
++})
++
++describe('login', () => {
++  it('sets a user with a name derived from the email local-part', () => {
++    const { result } = renderHook(() => useAuthStore())
++    act(() => result.current.login('mario.rossi@example.com', 'anything'))
++    expect(result.current.user).toEqual({ name: 'mario.rossi', email: 'mario.rossi@example.com' })
++  })
++})
++
++describe('register', () => {
++  it('sets a user with the combined name and given email', () => {
++    const { result } = renderHook(() => useAuthStore())
++    act(() => result.current.register('Mario', 'Rossi', 'mario@example.com', 'anything'))
++    expect(result.current.user).toEqual({ name: 'Mario Rossi', email: 'mario@example.com' })
++  })
++})
++
++describe('logout', () => {
++  it('clears the user', () => {
++    const { result } = renderHook(() => useAuthStore())
++    act(() => result.current.login('a@b.com', 'x'))
++    act(() => result.current.logout())
++    expect(result.current.user).toBeNull()
++  })
++})
+diff --git a/app/account/login/page.tsx b/app/account/login/page.tsx
+new file mode 100644
+index 0000000..8a6635f
+--- /dev/null
++++ b/app/account/login/page.tsx
+@@ -0,0 +1,38 @@
++'use client'
++import { useState } from 'react'
++import Link from 'next/link'
++import { useRouter } from 'next/navigation'
++import { useAuthStore } from '@/lib/auth-store'
++
++export default function LoginPage() {
++  const [email, setEmail] = useState('')
++  const [password, setPassword] = useState('')
++  const { login } = useAuthStore()
++  const router = useRouter()
++
++  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sand transition-colors"
++
++  const handleSubmit = (e: React.FormEvent) => {
++    e.preventDefault()
++    login(email, password)
++    router.push('/account')
++  }
++
++  return (
++    <div className="max-w-md mx-auto px-4 py-20">
++      <h1 className="text-3xl font-black mb-8 text-center">
++        Accedi al tuo <em className="text-red">account</em>
++      </h1>
++      <form onSubmit={handleSubmit} className="space-y-5">
++        <input type="email" required autoComplete="email" placeholder="Email *" value={email} onChange={e => setEmail(e.target.value)} className={inputClass} />
++        <input type="password" required autoComplete="current-password" placeholder="Password *" value={password} onChange={e => setPassword(e.target.value)} className={inputClass} />
++        <button type="submit" className="w-full bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors">
++          Accedi
++        </button>
++      </form>
++      <p className="text-center text-sm text-gray-400 mt-6">
++        Non hai un account? <Link href="/account/register" className="text-red font-semibold hover:text-red-dark">Registrati</Link>
++      </p>
++    </div>
++  )
++}
+diff --git a/app/account/page.tsx b/app/account/page.tsx
+new file mode 100644
+index 0000000..89b2f74
+--- /dev/null
++++ b/app/account/page.tsx
+@@ -0,0 +1,66 @@
++'use client'
++import { useEffect } from 'react'
++import Link from 'next/link'
++import { useRouter } from 'next/navigation'
++import { Package, Heart } from 'lucide-react'
++import { useAuthStore } from '@/lib/auth-store'
++
++export default function AccountPage() {
++  const { user, logout } = useAuthStore()
++  const router = useRouter()
++
++  useEffect(() => {
++    if (!user) router.push('/account/login')
++  }, [user, router])
++
++  if (!user) return null
++
++  const handleLogout = () => {
++    logout()
++    router.push('/')
++  }
++
++  return (
++    <div className="max-w-3xl mx-auto px-4 py-16">
++      <h1 className="text-4xl font-black mb-2">
++        Ciao, <em className="text-red">{user.name}</em>
++      </h1>
++      <p className="text-gray-400 mb-10">{user.email}</p>
++
++      <div className="grid gap-6 sm:grid-cols-2">
++        <div className="bg-gray-light rounded-2xl p-6">
++          <h2 className="font-black text-lg mb-4">I tuoi dati</h2>
++          <p className="text-sm text-gray-600 mb-1"><span className="text-gray-400">Nome:</span> {user.name}</p>
++          <p className="text-sm text-gray-600"><span className="text-gray-400">Email:</span> {user.email}</p>
++        </div>
++
++        <div className="bg-gray-light rounded-2xl p-6">
++          <h2 className="font-black text-lg mb-4">I tuoi ordini</h2>
++          <div className="text-center py-6">
++            <Package size={40} className="mx-auto text-gray-300 mb-3" />
++            <p className="text-sm text-gray-400 mb-4">Non hai ancora effettuato ordini.</p>
++            <Link href="/shop" className="text-sm font-semibold text-red hover:text-red-dark">
++              Vai allo shop →
++            </Link>
++          </div>
++        </div>
++      </div>
++
++      <div className="flex flex-col sm:flex-row gap-3 mt-8">
++        <Link
++          href="/wishlist"
++          className="flex-1 flex items-center justify-center gap-2 border-2 border-black py-3 rounded-full font-bold hover:bg-black hover:text-white transition-colors"
++        >
++          <Heart size={18} />
++          La tua wishlist
++        </Link>
++        <button
++          onClick={handleLogout}
++          className="flex-1 border-2 border-gray-200 py-3 rounded-full font-bold text-gray-500 hover:border-red hover:text-red transition-colors"
++        >
++          Esci
++        </button>
++      </div>
++    </div>
++  )
++}
+diff --git a/app/account/register/page.tsx b/app/account/register/page.tsx
+new file mode 100644
+index 0000000..67c3072
+--- /dev/null
++++ b/app/account/register/page.tsx
+@@ -0,0 +1,44 @@
++'use client'
++import { useState } from 'react'
++import Link from 'next/link'
++import { useRouter } from 'next/navigation'
++import { useAuthStore } from '@/lib/auth-store'
++
++export default function RegisterPage() {
++  const [nome, setNome] = useState('')
++  const [cognome, setCognome] = useState('')
++  const [email, setEmail] = useState('')
++  const [password, setPassword] = useState('')
++  const { register } = useAuthStore()
++  const router = useRouter()
++
++  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sand transition-colors"
++
++  const handleSubmit = (e: React.FormEvent) => {
++    e.preventDefault()
++    register(nome, cognome, email, password)
++    router.push('/account')
++  }
++
++  return (
++    <div className="max-w-md mx-auto px-4 py-20">
++      <h1 className="text-3xl font-black mb-8 text-center">
++        Crea il tuo <em className="text-red">account</em>
++      </h1>
++      <form onSubmit={handleSubmit} className="space-y-5">
++        <div className="grid grid-cols-2 gap-4">
++          <input required autoComplete="given-name" placeholder="Nome *" value={nome} onChange={e => setNome(e.target.value)} className={inputClass} />
++          <input required autoComplete="family-name" placeholder="Cognome *" value={cognome} onChange={e => setCognome(e.target.value)} className={inputClass} />
++        </div>
++        <input type="email" required autoComplete="email" placeholder="Email *" value={email} onChange={e => setEmail(e.target.value)} className={inputClass} />
++        <input type="password" required autoComplete="new-password" placeholder="Password *" value={password} onChange={e => setPassword(e.target.value)} className={inputClass} />
++        <button type="submit" className="w-full bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors">
++          Crea account
++        </button>
++      </form>
++      <p className="text-center text-sm text-gray-400 mt-6">
++        Hai già un account? <Link href="/account/login" className="text-red font-semibold hover:text-red-dark">Accedi</Link>
++      </p>
++    </div>
++  )
++}
+diff --git a/app/page.tsx b/app/page.tsx
+index 7e9a735..37a85c1 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,19 +1,21 @@
+ import HeroSection from '@/components/home/HeroSection'
+ import CategoryGrid from '@/components/home/CategoryGrid'
+ import NewArrivalsCarousel from '@/components/home/NewArrivalsCarousel'
+ import BestsellersSection from '@/components/home/BestsellersSection'
+ import TrustSection from '@/components/home/TrustSection'
++import TestimonialsCarousel from '@/components/home/TestimonialsCarousel'
+ import BrandCarousel from '@/components/home/BrandCarousel'
+ 
+ export default function HomePage() {
+   return (
+     <>
+       <HeroSection />
+       <CategoryGrid />
+       <NewArrivalsCarousel />
+       <BestsellersSection />
+       <TrustSection />
++      <TestimonialsCarousel />
+       <BrandCarousel />
+     </>
+   )
+ }
+diff --git a/components/home/TestimonialsCarousel.tsx b/components/home/TestimonialsCarousel.tsx
+new file mode 100644
+index 0000000..1f4b6f7
+--- /dev/null
++++ b/components/home/TestimonialsCarousel.tsx
+@@ -0,0 +1,55 @@
++'use client'
++import { useEffect, useState } from 'react'
++import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
++import products from '@/data/products.json'
++import type { Product } from '@/lib/types'
++import { getReviewSummary } from '@/lib/reviews'
++
++const testimonials = [...(products as Product[])]
++  .sort((a, b) => getReviewSummary(b.id).count - getReviewSummary(a.id).count)
++  .slice(0, 8)
++  .map(p => getReviewSummary(p.id).reviews[0])
++
++export default function TestimonialsCarousel() {
++  const [index, setIndex] = useState(0)
++
++  useEffect(() => {
++    const timer = setInterval(() => {
++      setIndex(i => (i + 1) % testimonials.length)
++    }, 5000)
++    return () => clearInterval(timer)
++  }, [])
++
++  const testimonial = testimonials[index]
++
++  const prev = () => setIndex(i => (i - 1 + testimonials.length) % testimonials.length)
++  const next = () => setIndex(i => (i + 1) % testimonials.length)
++
++  return (
++    <section className="py-20 bg-white">
++      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
++        <h2 className="text-4xl font-black mb-10">
++          Cosa dicono i nostri <em className="text-red">cavalieri</em>
++        </h2>
++        <div className="flex items-center justify-between gap-4">
++          <button onClick={prev} className="p-2 rounded-full border-2 border-gray-200 hover:border-red hover:text-red transition-colors shrink-0">
++            <ChevronLeft size={20} />
++          </button>
++          <div className="flex-1">
++            <div className="flex items-center justify-center gap-0.5 mb-4">
++              {Array.from({ length: 5 }, (_, i) => (
++                <Star key={i} size={18} className={i < Math.round(testimonial.rating) ? 'fill-sand text-sand' : 'text-gray-200'} />
++              ))}
++            </div>
++            <p className="text-lg text-gray-700 mb-4">&ldquo;{testimonial.text}&rdquo;</p>
++            <p className="font-bold">{testimonial.author}</p>
++            <p className="text-sm text-gray-400">{testimonial.date}</p>
++          </div>
++          <button onClick={next} className="p-2 rounded-full border-2 border-gray-200 hover:border-red hover:text-red transition-colors shrink-0">
++            <ChevronRight size={20} />
++          </button>
++        </div>
++      </div>
++    </section>
++  )
++}
+diff --git a/components/layout/Navbar.tsx b/components/layout/Navbar.tsx
+index 0574c77..5868e2b 100644
+--- a/components/layout/Navbar.tsx
++++ b/components/layout/Navbar.tsx
+@@ -1,18 +1,19 @@
+ 'use client'
+ import { useState, useEffect } from 'react'
+ import dynamic from 'next/dynamic'
+ import Image from 'next/image'
+ import Link from 'next/link'
+-import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
++import { ShoppingCart, Heart, Search, User, Menu, X } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
+ import { useWishlistStore } from '@/lib/wishlist-store'
++import { useAuthStore } from '@/lib/auth-store'
+ import categoriesData from '@/data/categories.json'
+ import brandsData from '@/data/brands.json'
+ import type { Category, Brand } from '@/lib/types'
+ import { getChildren } from '@/lib/category-tree'
+ import { BRANCH_IMAGES } from '@/lib/branch-images'
+ import HeaderSearchBar from './HeaderSearchBar'
+ import CartDrawer from '@/components/cart/CartDrawer'
+ 
+ const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
+ 
+@@ -32,20 +33,21 @@ const GUIDE_LINKS = [
+   { label: 'Briglie e accessori', href: '/shop/monta-inglese/cavallo/briglie-e-accessori' },
+ ]
+ 
+ export default function Navbar() {
+   const [scrolled, setScrolled] = useState(false)
+   const [mobileOpen, setMobileOpen] = useState(false)
+   const [searchOpen, setSearchOpen] = useState(false)
+   const [openCategory, setOpenCategory] = useState<string | null>(null)
+   const { totalItems, openCart } = useCartStore()
+   const { productIds: wishlistIds } = useWishlistStore()
++  const { user } = useAuthStore()
+ 
+   useEffect(() => {
+     const onScroll = () => setScrolled(window.scrollY > 10)
+     window.addEventListener('scroll', onScroll)
+     return () => window.removeEventListener('scroll', onScroll)
+   }, [])
+ 
+   return (
+     <nav className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
+       scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
+@@ -63,20 +65,23 @@ export default function Navbar() {
+               <Search size={20} />
+             </button>
+             <Link href="/wishlist" className="relative p-2 hover:text-red transition-colors">
+               <Heart size={20} />
+               {wishlistIds.length > 0 && (
+                 <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                   {wishlistIds.length}
+                 </span>
+               )}
+             </Link>
++            <Link href={user ? '/account' : '/account/login'} className="p-2 hover:text-red transition-colors">
++              <User size={20} />
++            </Link>
+             <button className="relative p-2 hover:text-red transition-colors" onClick={openCart}>
+               <ShoppingCart size={20} />
+               {totalItems > 0 && (
+                 <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                   {totalItems}
+                 </span>
+               )}
+             </button>
+             <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+diff --git a/lib/auth-store.ts b/lib/auth-store.ts
+new file mode 100644
+index 0000000..30e5a68
+--- /dev/null
++++ b/lib/auth-store.ts
+@@ -0,0 +1,26 @@
++import { create } from 'zustand'
++import { persist } from 'zustand/middleware'
++
++export interface AuthUser {
++  name: string
++  email: string
++}
++
++interface AuthState {
++  user: AuthUser | null
++  login: (email: string, password: string) => void
++  register: (nome: string, cognome: string, email: string, password: string) => void
++  logout: () => void
++}
++
++export const useAuthStore = create<AuthState>()(
++  persist(
++    (set) => ({
++      user: null,
++      login: (email, _password) => set({ user: { name: email.split('@')[0], email } }),
++      register: (nome, cognome, email, _password) => set({ user: { name: `${nome} ${cognome}`, email } }),
++      logout: () => set({ user: null }),
++    }),
++    { name: 'selleria-galazzo-auth' }
++  )
++)

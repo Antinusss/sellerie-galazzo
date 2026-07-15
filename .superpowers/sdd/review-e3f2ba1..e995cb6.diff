@@ -1,0 +1,81 @@
+# Review package: e3f2ba1de466ad0faa6d9fa9f9a4b35843bfee3d..e995cb6
+
+## Commits
+e995cb6 feat: add account entry point to Navbar
+
+## Files changed
+ components/layout/Navbar.tsx | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/components/layout/Navbar.tsx b/components/layout/Navbar.tsx
+index 0574c77..5868e2b 100644
+--- a/components/layout/Navbar.tsx
++++ b/components/layout/Navbar.tsx
+@@ -1,18 +1,19 @@
+ 'use client'
+ import { useState, useEffect } from 'react'
+ import dynamic from 'next/dynamic'
+ import Image from 'next/image'
+ import Link from 'next/link'
+-import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react'
++import { ShoppingCart, Heart, Search, User, Menu, X } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
+ import { useWishlistStore } from '@/lib/wishlist-store'
++import { useAuthStore } from '@/lib/auth-store'
+ import categoriesData from '@/data/categories.json'
+ import brandsData from '@/data/brands.json'
+ import type { Category, Brand } from '@/lib/types'
+ import { getChildren } from '@/lib/category-tree'
+ import { BRANCH_IMAGES } from '@/lib/branch-images'
+ import HeaderSearchBar from './HeaderSearchBar'
+ import CartDrawer from '@/components/cart/CartDrawer'
+ 
+ const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
+ 
+@@ -32,20 +33,21 @@ const GUIDE_LINKS = [
+   { label: 'Briglie e accessori', href: '/shop/monta-inglese/cavallo/briglie-e-accessori' },
+ ]
+ 
+ export default function Navbar() {
+   const [scrolled, setScrolled] = useState(false)
+   const [mobileOpen, setMobileOpen] = useState(false)
+   const [searchOpen, setSearchOpen] = useState(false)
+   const [openCategory, setOpenCategory] = useState<string | null>(null)
+   const { totalItems, openCart } = useCartStore()
+   const { productIds: wishlistIds } = useWishlistStore()
++  const { user } = useAuthStore()
+ 
+   useEffect(() => {
+     const onScroll = () => setScrolled(window.scrollY > 10)
+     window.addEventListener('scroll', onScroll)
+     return () => window.removeEventListener('scroll', onScroll)
+   }, [])
+ 
+   return (
+     <nav className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
+       scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
+@@ -63,20 +65,23 @@ export default function Navbar() {
+               <Search size={20} />
+             </button>
+             <Link href="/wishlist" className="relative p-2 hover:text-red transition-colors">
+               <Heart size={20} />
+               {wishlistIds.length > 0 && (
+                 <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                   {wishlistIds.length}
+                 </span>
+               )}
+             </Link>
++            <Link href={user ? '/account' : '/account/login'} className="p-2 hover:text-red transition-colors">
++              <User size={20} />
++            </Link>
+             <button className="relative p-2 hover:text-red transition-colors" onClick={openCart}>
+               <ShoppingCart size={20} />
+               {totalItems > 0 && (
+                 <span className="absolute -top-1 -right-1 bg-red text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                   {totalItems}
+                 </span>
+               )}
+             </button>
+             <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
