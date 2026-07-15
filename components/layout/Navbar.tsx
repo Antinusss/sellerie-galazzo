@@ -13,7 +13,6 @@ import type { Category, Brand } from '@/lib/types'
 import { getChildren } from '@/lib/category-tree'
 import { BRANCH_IMAGES } from '@/lib/branch-images'
 import HeaderSearchBar from './HeaderSearchBar'
-import CartDrawer from '@/components/cart/CartDrawer'
 
 const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
 
@@ -49,9 +48,14 @@ export default function Navbar() {
   }, [])
 
   return (
-    <nav className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
-      scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
-    }`}>
+    <nav className="fixed top-8 left-0 right-0 z-40">
+      {/* Visual background lives on this inner wrapper, not on <nav> itself:
+          backdrop-filter on an ancestor creates a new containing block for
+          position:fixed descendants (SearchOverlay, and formerly CartDrawer),
+          which would silently break their viewport-relative positioning. */}
+      <div className={`transition-all duration-300 ${
+        scrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex-shrink-0 relative h-10 w-[93px]">
@@ -234,9 +238,9 @@ export default function Navbar() {
           </div>
         )}
       </div>
+      </div>
 
       {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
-      <CartDrawer />
     </nav>
   )
 }

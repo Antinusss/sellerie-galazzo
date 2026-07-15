@@ -6,6 +6,7 @@ import { Lock } from 'lucide-react'
 import AnnouncementBar from './AnnouncementBar'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import CartDrawer from '@/components/cart/CartDrawer'
 
 const MINIMAL_CHROME_PATHS = ['/checkout', '/checkout/success']
 
@@ -38,6 +39,7 @@ export default function ChromeGate({ children }: { children: React.ReactNode }) 
         <AnnouncementBar />
         <Navbar />
       </div>
+      <CartDrawer />
       <main className="pt-24 md:pt-36">{children}</main>
       <Footer />
     </>
