@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Search } from 'lucide-react'
 import allProducts from '@/data/products.json'
 import type { Product } from '@/lib/types'
@@ -14,6 +15,7 @@ export default function HeaderSearchBar() {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
@@ -36,8 +38,18 @@ export default function HeaderSearchBar() {
 
   return (
     <div ref={containerRef} className="relative flex-1 max-w-md mx-6 hidden md:block">
-      <div className="flex items-center gap-2 bg-gray-light rounded-full px-4 py-2">
-        <Search size={16} className="text-gray-400 shrink-0" />
+      <form
+        onSubmit={e => {
+          e.preventDefault()
+          if (!query.trim()) return
+          setOpen(false)
+          router.push(`/cerca?q=${encodeURIComponent(query)}`)
+        }}
+        className="flex items-center gap-2 bg-gray-light rounded-full px-4 py-2"
+      >
+        <button type="submit" className="text-gray-400 shrink-0 hover:text-red transition-colors">
+          <Search size={16} />
+        </button>
         <input
           type="text"
           value={query}
@@ -46,7 +58,7 @@ export default function HeaderSearchBar() {
           placeholder="Cerca un prodotto..."
           className="flex-1 bg-transparent outline-none text-sm"
         />
-      </div>
+      </form>
 
       {open && query.trim() && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl overflow-hidden max-h-[60vh] overflow-y-auto z-50">
