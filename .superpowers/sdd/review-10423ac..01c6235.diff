@@ -1,0 +1,41 @@
+# Review package: 10423ac4cb4ee490953c0b693686f92e2564758b..01c6235
+
+## Commits
+01c6235 feat: add guida ai prodotti landing page
+
+## Files changed
+ app/guida-ai-prodotti/page.tsx | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+## Diff
+diff --git a/app/guida-ai-prodotti/page.tsx b/app/guida-ai-prodotti/page.tsx
+new file mode 100644
+index 0000000..b061185
+--- /dev/null
++++ b/app/guida-ai-prodotti/page.tsx
+@@ -0,0 +1,25 @@
++import Link from 'next/link'
++import { GUIDE_LINKS } from '@/lib/guide-links'
++
++export const metadata = { title: 'Guida ai prodotti — Selleria Galazzo' }
++
++export default function GuidaAiProdottiPage() {
++  return (
++    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
++      <h1 className="text-4xl font-black mb-8">
++        Guida ai <em className="text-red">prodotti</em>
++      </h1>
++      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
++        {GUIDE_LINKS.map(link => (
++          <Link
++            key={link.href}
++            href={link.href}
++            className="flex items-center justify-center text-center bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow font-semibold text-black hover:text-red"
++          >
++            {link.label}
++          </Link>
++        ))}
++      </div>
++    </div>
++  )
++}

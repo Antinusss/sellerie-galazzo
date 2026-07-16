@@ -1,0 +1,524 @@
+# Review package: 3720fd631f83d6e83d6b4cbe18dc464b7a1d9f37..65f384d
+
+## Commits
+65f384d feat: add search results page and wire search bar submit
+f1de86a feat: full-screen background photo for home hero
+01c6235 feat: add guida ai prodotti landing page
+10423ac feat: extract GUIDE_LINKS and make Guida ai prodotti a real link
+92408de feat: word-based multi-field product search matching
+
+## Files changed
+ __tests__/search.test.ts              |  69 ++++++++++++++++---
+ app/cerca/page.tsx                    |  37 ++++++++++
+ app/guida-ai-prodotti/page.tsx        |  25 +++++++
+ components/home/HeroSection.tsx       | 124 ++++++++++++++++------------------
+ components/layout/HeaderSearchBar.tsx |  18 ++++-
+ components/layout/Navbar.tsx          |  16 +----
+ lib/guide-links.ts                    |  15 ++++
+ lib/search.ts                         |  12 +++-
+ 8 files changed, 221 insertions(+), 95 deletions(-)
+
+## Diff
+diff --git a/__tests__/search.test.ts b/__tests__/search.test.ts
+index c53c5e2..7b21ca3 100644
+--- a/__tests__/search.test.ts
++++ b/__tests__/search.test.ts
+@@ -1,30 +1,81 @@
+ import { searchProducts } from '@/lib/search'
+ import type { Product } from '@/lib/types'
+ 
+-function product(id: string, name: string): Product {
++function product(id: string, overrides: Partial<Product> = {}): Product {
+   return {
+-    id, name, slug: `p${id}`, price: 100, originalPrice: null,
++    id, name: 'Prodotto generico', slug: `p${id}`, price: 100, originalPrice: null,
+     category: 'Scuderia', categoryPath: ['Scuderia'], brand: 'X', images: [],
+     description: '', specs: '', inStock: true,
++    ...overrides,
+   }
+ }
+ 
+-const products = [product('1', 'Cavezza corda'), product('2', 'Cavezza nylon'), product('3', 'Sella inglese')]
+-
+ describe('searchProducts', () => {
+   it('returns [] for an empty query', () => {
+-    expect(searchProducts(products, '')).toEqual([])
++    expect(searchProducts([product('1')], '')).toEqual([])
+   })
++
+   it('returns [] for a whitespace-only query', () => {
+-    expect(searchProducts(products, '   ')).toEqual([])
++    expect(searchProducts([product('1')], '   ')).toEqual([])
+   })
++
+   it('matches case-insensitively on product name', () => {
++    const products = [
++      product('1', { name: 'Cavezza corda' }),
++      product('2', { name: 'Cavezza nylon' }),
++      product('3', { name: 'Sella inglese' }),
++    ]
+     expect(searchProducts(products, 'CAVEZZA').map(p => p.id)).toEqual(['1', '2'])
+   })
+-  it('respects the limit', () => {
+-    expect(searchProducts(products, 'cavezza', 1).map(p => p.id)).toEqual(['1'])
++
++  it('matches on the brand field', () => {
++    const products = [
++      product('1', { name: 'Sapone per il cuoio', brand: 'Acavallo' }),
++      product('2', { name: 'Sapone neutro', brand: 'Equestro' }),
++    ]
++    expect(searchProducts(products, 'acavallo').map(p => p.id)).toEqual(['1'])
+   })
++
++  it('matches on the category field', () => {
++    const products = [
++      product('1', { category: 'Monta Western' }),
++      product('2', { category: 'Scuderia' }),
++    ]
++    expect(searchProducts(products, 'western').map(p => p.id)).toEqual(['1'])
++  })
++
++  it('matches on the description field', () => {
++    const products = [
++      product('1', { description: 'Ideale per il freddo invernale' }),
++      product('2', { description: 'Prodotto estivo traspirante' }),
++    ]
++    expect(searchProducts(products, 'invernale').map(p => p.id)).toEqual(['1'])
++  })
++
++  it('requires every query word to match, in any field', () => {
++    const products = [
++      product('1', { name: 'Guanti da equitazione', brand: 'Acavallo' }),
++      product('2', { name: 'Guanti da giardinaggio', brand: 'Equestro' }),
++    ]
++    expect(searchProducts(products, 'guanti acavallo').map(p => p.id)).toEqual(['1'])
++  })
++
+   it('returns [] when nothing matches', () => {
+-    expect(searchProducts(products, 'zzz')).toEqual([])
++    expect(searchProducts([product('1', { name: 'Sella' })], 'zzz')).toEqual([])
++  })
++
++  it('defaults to a limit of 8 results', () => {
++    const products = Array.from({ length: 10 }, (_, i) => product(String(i), { name: 'Cavezza' }))
++    expect(searchProducts(products, 'cavezza')).toHaveLength(8)
++  })
++
++  it('respects an explicit limit', () => {
++    const products = [product('1', { name: 'Cavezza corda' }), product('2', { name: 'Cavezza nylon' })]
++    expect(searchProducts(products, 'cavezza', 1).map(p => p.id)).toEqual(['1'])
++  })
++
++  it('returns all matches uncapped when limit is Infinity', () => {
++    const products = Array.from({ length: 10 }, (_, i) => product(String(i), { name: 'Cavezza' }))
++    expect(searchProducts(products, 'cavezza', Infinity)).toHaveLength(10)
+   })
+ })
+diff --git a/app/cerca/page.tsx b/app/cerca/page.tsx
+new file mode 100644
+index 0000000..9276a14
+--- /dev/null
++++ b/app/cerca/page.tsx
+@@ -0,0 +1,37 @@
++'use client'
++import { Suspense } from 'react'
++import { useSearchParams } from 'next/navigation'
++import allProducts from '@/data/products.json'
++import type { Product } from '@/lib/types'
++import { searchProducts } from '@/lib/search'
++import PaginatedProductGrid from '@/components/shop/PaginatedProductGrid'
++
++const products = allProducts as Product[]
++
++function CercaResults() {
++  const searchParams = useSearchParams()
++  const q = searchParams.get('q') ?? ''
++  const results = searchProducts(products, q, Infinity)
++
++  return (
++    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
++      <h1 className="text-4xl font-black mb-2">
++        Risultati per <em className="text-red">&quot;{q}&quot;</em>
++      </h1>
++      <p className="text-sm text-gray-400 mb-8">{results.length} prodotti trovati</p>
++      {results.length === 0 ? (
++        <p className="text-gray-400">Nessun prodotto corrisponde alla tua ricerca.</p>
++      ) : (
++        <PaginatedProductGrid products={results} />
++      )}
++    </div>
++  )
++}
++
++export default function CercaPage() {
++  return (
++    <Suspense fallback={null}>
++      <CercaResults />
++    </Suspense>
++  )
++}
+diff --git a/app/guida-ai-prodotti/page.tsx b/app/guida-ai-prodotti/page.tsx
+new file mode 100644
+index 0000000..b061185
+--- /dev/null
++++ b/app/guida-ai-prodotti/page.tsx
+@@ -0,0 +1,25 @@
++import Link from 'next/link'
++import { GUIDE_LINKS } from '@/lib/guide-links'
++
++export const metadata = { title: 'Guida ai prodotti — Selleria Galazzo' }
++
++export default function GuidaAiProdottiPage() {
++  return (
++    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
++      <h1 className="text-4xl font-black mb-8">
++        Guida ai <em className="text-red">prodotti</em>
++      </h1>
++      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
++        {GUIDE_LINKS.map(link => (
++          <Link
++            key={link.href}
++            href={link.href}
++            className="flex items-center justify-center text-center bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow font-semibold text-black hover:text-red"
++          >
++            {link.label}
++          </Link>
++        ))}
++      </div>
++    </div>
++  )
++}
+diff --git a/components/home/HeroSection.tsx b/components/home/HeroSection.tsx
+index 5d01ff9..a339dfc 100644
+--- a/components/home/HeroSection.tsx
++++ b/components/home/HeroSection.tsx
+@@ -1,80 +1,70 @@
+ 'use client'
+ import { motion } from 'framer-motion'
+ import Link from 'next/link'
+ import Image from 'next/image'
+ 
+ export default function HeroSection() {
+   return (
+-    <section className="min-h-[90vh] flex items-center bg-white overflow-hidden">
+-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+-          {/* Text */}
+-          <motion.div
+-            initial={{ opacity: 0, y: 30 }}
+-            animate={{ opacity: 1, y: 0 }}
+-            transition={{ duration: 0.7, ease: 'easeOut' }}
+-          >
+-            <p className="text-sand font-semibold tracking-widest uppercase text-sm mb-4">
+-              Dal 1985 · Selleria Italiana
+-            </p>
+-            <h1 className="text-5xl lg:text-7xl font-black text-black leading-tight mb-6">
+-              Equipaggiati per{' '}
+-              <em className="text-red">vincere</em>
+-            </h1>
+-            <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-md">
+-              Prodotti selezionati per monta inglese, western e scuderia. Qualità professionale per ogni cavaliere.
+-            </p>
+-            <div className="flex flex-wrap gap-4">
+-              <Link
+-                href="/shop"
+-                className="bg-red text-white px-8 py-4 rounded-full font-semibold text-sm hover:bg-red-dark transition-colors"
+-              >
+-                Scopri lo Shop
+-              </Link>
+-              <Link
+-                href="/shop?sort=newest"
+-                className="border-2 border-black text-black px-8 py-4 rounded-full font-semibold text-sm hover:bg-black hover:text-white transition-colors"
+-              >
+-                Le Novità
+-              </Link>
++    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
++      <Image
++        src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1600&q=85"
++        alt="Cavaliere in azione"
++        fill
++        className="object-cover"
++        priority
++      />
++      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/10" />
++      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
++        <motion.div
++          initial={{ opacity: 0, y: 30 }}
++          animate={{ opacity: 1, y: 0 }}
++          transition={{ duration: 0.7, ease: 'easeOut' }}
++          className="max-w-xl"
++        >
++          <p className="text-sand font-semibold tracking-widest uppercase text-sm mb-4">
++            Dal 1985 · Selleria Italiana
++          </p>
++          <h1 className="text-5xl lg:text-7xl font-black text-white leading-tight mb-6">
++            Equipaggiati per{' '}
++            <em className="text-red">vincere</em>
++          </h1>
++          <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
++            Prodotti selezionati per monta inglese, western e scuderia. Qualità professionale per ogni cavaliere.
++          </p>
++          <div className="flex flex-wrap gap-4">
++            <Link
++              href="/shop"
++              className="bg-red text-white px-8 py-4 rounded-full font-semibold text-sm hover:bg-red-dark transition-colors"
++            >
++              Scopri lo Shop
++            </Link>
++            <Link
++              href="/shop?sort=newest"
++              className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-sm hover:bg-white hover:text-black transition-colors"
++            >
++              Le Novità
++            </Link>
++          </div>
++          <div className="flex flex-wrap gap-8 mt-12 text-sm">
++            <div>
++              <div className="font-black text-2xl text-white">10k+</div>
++              <div className="text-white/60">Cavalieri</div>
+             </div>
+-            <div className="flex flex-wrap gap-8 mt-12 text-sm">
+-              <div>
+-                <div className="font-black text-2xl">10k+</div>
+-                <div className="text-gray-400">Cavalieri</div>
+-              </div>
+-              <div>
+-                <div className="font-black text-2xl">200+</div>
+-                <div className="text-gray-400">Brand selezionati</div>
+-              </div>
+-              <div>
+-                <div className="font-black text-2xl">40+</div>
+-                <div className="text-gray-400">Anni di esperienza</div>
+-              </div>
+-              <div>
+-                <div className="font-black text-2xl">4.8★</div>
+-                <div className="text-gray-400">Recensioni verificate</div>
+-              </div>
++            <div>
++              <div className="font-black text-2xl text-white">200+</div>
++              <div className="text-white/60">Brand selezionati</div>
+             </div>
+-          </motion.div>
+-          {/* Image */}
+-          <motion.div
+-            initial={{ opacity: 0, scale: 0.95 }}
+-            animate={{ opacity: 1, scale: 1 }}
+-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+-            className="relative h-[500px] lg:h-[650px] rounded-3xl overflow-hidden"
+-          >
+-            <Image
+-              src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=1200&q=85"
+-              alt="Cavaliere in azione"
+-              fill
+-              className="object-cover"
+-              priority
+-            />
+-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+-          </motion.div>
+-        </div>
++            <div>
++              <div className="font-black text-2xl text-white">40+</div>
++              <div className="text-white/60">Anni di esperienza</div>
++            </div>
++            <div>
++              <div className="font-black text-2xl text-white">4.8★</div>
++              <div className="text-white/60">Recensioni verificate</div>
++            </div>
++          </div>
++        </motion.div>
+       </div>
+     </section>
+   )
+ }
+diff --git a/components/layout/HeaderSearchBar.tsx b/components/layout/HeaderSearchBar.tsx
+index a2cf4d2..f36efb3 100644
+--- a/components/layout/HeaderSearchBar.tsx
++++ b/components/layout/HeaderSearchBar.tsx
+@@ -1,26 +1,28 @@
+ 'use client'
+ import { useEffect, useRef, useState } from 'react'
+ import Image from 'next/image'
+ import Link from 'next/link'
++import { useRouter } from 'next/navigation'
+ import { Search } from 'lucide-react'
+ import allProducts from '@/data/products.json'
+ import type { Product } from '@/lib/types'
+ import { formatPrice } from '@/lib/utils'
+ import { searchProducts } from '@/lib/search'
+ 
+ const products = allProducts as Product[]
+ 
+ export default function HeaderSearchBar() {
+   const [query, setQuery] = useState('')
+   const [open, setOpen] = useState(false)
+   const containerRef = useRef<HTMLDivElement>(null)
++  const router = useRouter()
+ 
+   useEffect(() => {
+     const onMouseDown = (e: MouseEvent) => {
+       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+         setOpen(false)
+       }
+     }
+     const onKeyDown = (e: KeyboardEvent) => {
+       if (e.key === 'Escape') setOpen(false)
+     }
+@@ -29,31 +31,41 @@ export default function HeaderSearchBar() {
+     return () => {
+       document.removeEventListener('mousedown', onMouseDown)
+       window.removeEventListener('keydown', onKeyDown)
+     }
+   }, [])
+ 
+   const results = searchProducts(products, query)
+ 
+   return (
+     <div ref={containerRef} className="relative flex-1 max-w-md mx-6 hidden md:block">
+-      <div className="flex items-center gap-2 bg-gray-light rounded-full px-4 py-2">
+-        <Search size={16} className="text-gray-400 shrink-0" />
++      <form
++        onSubmit={e => {
++          e.preventDefault()
++          if (!query.trim()) return
++          setOpen(false)
++          router.push(`/cerca?q=${encodeURIComponent(query)}`)
++        }}
++        className="flex items-center gap-2 bg-gray-light rounded-full px-4 py-2"
++      >
++        <button type="submit" className="text-gray-400 shrink-0 hover:text-red transition-colors">
++          <Search size={16} />
++        </button>
+         <input
+           type="text"
+           value={query}
+           onChange={e => { setQuery(e.target.value); setOpen(true) }}
+           onFocus={() => setOpen(true)}
+           placeholder="Cerca un prodotto..."
+           className="flex-1 bg-transparent outline-none text-sm"
+         />
+-      </div>
++      </form>
+ 
+       {open && query.trim() && (
+         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl overflow-hidden max-h-[60vh] overflow-y-auto z-50">
+           {results.length === 0 ? (
+             <p className="px-5 py-6 text-center text-sm text-gray-400">
+               Nessun prodotto trovato per &quot;{query}&quot;
+             </p>
+           ) : (
+             results.map(p => (
+               <Link
+diff --git a/components/layout/Navbar.tsx b/components/layout/Navbar.tsx
+index fe090ed..3c662e1 100644
+--- a/components/layout/Navbar.tsx
++++ b/components/layout/Navbar.tsx
+@@ -5,40 +5,30 @@ import Image from 'next/image'
+ import Link from 'next/link'
+ import { ShoppingCart, Heart, Search, User, Menu, X } from 'lucide-react'
+ import { useCartStore } from '@/lib/store'
+ import { useWishlistStore } from '@/lib/wishlist-store'
+ import { useAuthStore } from '@/lib/auth-store'
+ import categoriesData from '@/data/categories.json'
+ import brandsData from '@/data/brands.json'
+ import type { Category, Brand } from '@/lib/types'
+ import { getChildren } from '@/lib/category-tree'
+ import { BRANCH_IMAGES } from '@/lib/branch-images'
++import { GUIDE_LINKS } from '@/lib/guide-links'
+ import HeaderSearchBar from './HeaderSearchBar'
+ 
+ const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
+ 
+ const categories = categoriesData as Category[]
+ const brands = brandsData as Brand[]
+ const topLevel = getChildren(categories, undefined)
+ const topBrands = [...brands].sort((a, b) => b.productCount - a.productCount).slice(0, 12)
+ 
+-const GUIDE_LINKS = [
+-  { label: 'Cura del cavallo', href: '/shop/scuderia/cura-del-cavallo' },
+-  { label: 'Cura del cuoio', href: '/shop/scuderia/cura-del-cuoio' },
+-  { label: 'Attrezzatura da scuderia', href: '/shop/scuderia/attrezzatura-da-scuderia' },
+-  { label: 'Selle e accessori (Inglese)', href: '/shop/monta-inglese/cavallo/selle-e-accessori' },
+-  { label: 'Coperte', href: '/shop/monta-inglese/cavallo/coperte' },
+-  { label: 'Protezioni', href: '/shop/monta-inglese/cavallo/protezioni' },
+-  { label: 'Selle e accessori (Western)', href: '/shop/monta-western/cavallo/selle-e-accessori' },
+-  { label: 'Briglie e accessori', href: '/shop/monta-inglese/cavallo/briglie-e-accessori' },
+-]
+-
+ export default function Navbar() {
+   const [scrolled, setScrolled] = useState(false)
+   const [mobileOpen, setMobileOpen] = useState(false)
+   const [searchOpen, setSearchOpen] = useState(false)
+   const [openCategory, setOpenCategory] = useState<string | null>(null)
+   const { totalItems, openCart } = useCartStore()
+   const { productIds: wishlistIds } = useWishlistStore()
+   const { user } = useAuthStore()
+ 
+   useEffect(() => {
+@@ -191,23 +181,23 @@ export default function Navbar() {
+                 Vedi tutti i marchi →
+               </Link>
+             </div>
+           </div>
+ 
+           <Link href="/offerte" className="text-sm font-medium text-red hover:text-red-dark transition-colors h-12 inline-flex items-center">
+             Offerte
+           </Link>
+ 
+           <div className="group relative">
+-            <span className="text-sm font-medium text-black h-12 inline-flex items-center cursor-default">
++            <Link href="/guida-ai-prodotti" className="text-sm font-medium text-black hover:text-red transition-colors h-12 inline-flex items-center">
+               Guida ai prodotti
+-            </span>
++            </Link>
+             <div className="absolute right-0 top-full hidden group-hover:block bg-white shadow-lg rounded-xl p-6 z-50 w-64">
+               <div className="flex flex-col gap-2">
+                 {GUIDE_LINKS.map(link => (
+                   <Link
+                     key={link.href}
+                     href={link.href}
+                     className="text-sm text-black hover:text-red transition-colors"
+                   >
+                     {link.label}
+                   </Link>
+diff --git a/lib/guide-links.ts b/lib/guide-links.ts
+new file mode 100644
+index 0000000..50c55e7
+--- /dev/null
++++ b/lib/guide-links.ts
+@@ -0,0 +1,15 @@
++export interface GuideLink {
++  label: string
++  href: string
++}
++
++export const GUIDE_LINKS: GuideLink[] = [
++  { label: 'Cura del cavallo', href: '/shop/scuderia/cura-del-cavallo' },
++  { label: 'Cura del cuoio', href: '/shop/scuderia/cura-del-cuoio' },
++  { label: 'Attrezzatura da scuderia', href: '/shop/scuderia/attrezzatura-da-scuderia' },
++  { label: 'Selle e accessori (Inglese)', href: '/shop/monta-inglese/cavallo/selle-e-accessori' },
++  { label: 'Coperte', href: '/shop/monta-inglese/cavallo/coperte' },
++  { label: 'Protezioni', href: '/shop/monta-inglese/cavallo/protezioni' },
++  { label: 'Selle e accessori (Western)', href: '/shop/monta-western/cavallo/selle-e-accessori' },
++  { label: 'Briglie e accessori', href: '/shop/monta-inglese/cavallo/briglie-e-accessori' },
++]
+diff --git a/lib/search.ts b/lib/search.ts
+index a148200..c028cc1 100644
+--- a/lib/search.ts
++++ b/lib/search.ts
+@@ -1,7 +1,13 @@
+ import type { Product } from './types'
+ 
+ export function searchProducts(products: Product[], query: string, limit = 8): Product[] {
+-  const q = query.trim().toLowerCase()
+-  if (!q) return []
+-  return products.filter(p => p.name.toLowerCase().includes(q)).slice(0, limit)
++  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
++  if (words.length === 0) return []
++
++  return products
++    .filter(p => {
++      const haystacks = [p.name, p.brand, p.category, p.description].map(s => s.toLowerCase())
++      return words.every(word => haystacks.some(h => h.includes(word)))
++    })
++    .slice(0, limit)
+ }

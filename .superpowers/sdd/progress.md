@@ -92,3 +92,17 @@ Plan: docs/superpowers/plans/2026-07-15-account-and-testimonials.md
 ## Final whole-branch review (2026-07-15)
 - Ready to merge, 0 Critical/Important findings (opus review)
 - Minor notes accepted as-is: uniform 5-star testimonials (reviews[0] always rating=5.0), no aria-labels on icon-only buttons (pre-existing codebase pattern) — not worth a fix pass
+
+## Menu/Hero/Search fixes (2026-07-16)
+Plan: docs/superpowers/plans/2026-07-16-menu-hero-search.md
+
+- [x] Task 1: word-based multi-field search matching (commit 92408de, review clean)
+- [x] Task 2: extract GUIDE_LINKS + fix Guida ai prodotti link (commit 10423ac, review clean)
+- [x] Task 3: guida ai prodotti landing page (commit 01c6235, review clean; first attempt stalled from infra issue, no files touched, clean retry)
+- [x] Task 4: full-screen hero (commit f1de86a, review clean)
+- [x] Task 5: search results page + search bar submit wiring (commit 65f384d, review clean; necessary Suspense-boundary deviation for useSearchParams under static prerendering, verified as the standard Next.js fix)
+- [x] Task 6: full build+test+manual verification (96/96 tests, 3269 pages, curl+browser checks clean; cross-field multi-word matching confirmed 112->1 result narrowing)
+
+## Final whole-branch review (2026-07-16)
+- Ready to merge, 0 Critical/Important findings (opus review)
+- [x] Cleanup: trim search query before URL push (commit follows, tests pass)
