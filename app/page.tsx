@@ -1,5 +1,6 @@
 import HeroSection from '@/components/home/HeroSection'
 import CategoryGrid from '@/components/home/CategoryGrid'
+import GuideLinksSection from '@/components/home/GuideLinksSection'
 import NewArrivalsCarousel from '@/components/home/NewArrivalsCarousel'
 import BestsellersSection from '@/components/home/BestsellersSection'
 import TrustSection from '@/components/home/TrustSection'
@@ -11,6 +12,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <CategoryGrid />
+      <GuideLinksSection />
       <NewArrivalsCarousel />
       <BestsellersSection />
       <TrustSection />
