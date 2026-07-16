@@ -1,0 +1,97 @@
+### Task 3: Resi e rimborsi page
+
+**Files:**
+- Create: `app/resi-e-rimborsi/page.tsx`
+
+**Interfaces:**
+- None — standalone static page.
+
+- [ ] **Step 1: Create the page**
+
+Create `app/resi-e-rimborsi/page.tsx`:
+
+```tsx
+import { RotateCcw, PackageCheck, Clock, Truck } from 'lucide-react'
+
+export const metadata = { title: 'Resi e rimborsi — Selleria Galazzo' }
+
+export default function ResiERimborsiPage() {
+  return (
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h1 className="text-4xl font-black mb-2">
+        Resi e <em className="text-red">rimborsi</em>
+      </h1>
+      <p className="text-gray-400 mb-10">
+        Hai 14 giorni di tempo dalla ricezione dell&apos;ordine per cambiare idea.
+      </p>
+
+      <div className="space-y-6">
+        <div className="flex gap-4 bg-gray-light rounded-2xl p-6">
+          <RotateCcw className="text-red shrink-0" size={28} />
+          <div>
+            <h2 className="font-black mb-1">Diritto di recesso</h2>
+            <p className="text-sm text-gray-600">
+              Puoi recedere dall&apos;acquisto entro 14 giorni dalla ricezione dei
+              prodotti. Per esercitare il diritto di recesso scrivi a{' '}
+              <a href="mailto:info@selleriagalazzo.com" className="text-red font-semibold hover:text-red-dark">
+                info@selleriagalazzo.com
+              </a>{' '}
+              indicando il numero d&apos;ordine entro il termine previsto.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-4 bg-gray-light rounded-2xl p-6">
+          <PackageCheck className="text-red shrink-0" size={28} />
+          <div>
+            <h2 className="font-black mb-1">Condizioni del reso</h2>
+            <p className="text-sm text-gray-600">
+              L&apos;articolo deve essere integro, mai utilizzato e restituito con
+              etichette e confezione originale. Prodotti su misura o personalizzati non
+              sono rimborsabili.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-4 bg-gray-light rounded-2xl p-6">
+          <Truck className="text-red shrink-0" size={28} />
+          <div>
+            <h2 className="font-black mb-1">Spese di spedizione del reso</h2>
+            <p className="text-sm text-gray-600">
+              Le spese di spedizione per il reso sono a carico del cliente, salvo il caso
+              in cui l&apos;articolo ricevuto sia difettoso o diverso da quanto ordinato.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-4 bg-gray-light rounded-2xl p-6">
+          <Clock className="text-red shrink-0" size={28} />
+          <div>
+            <h2 className="font-black mb-1">Tempi di rimborso</h2>
+            <p className="text-sm text-gray-600">
+              Una volta ricevuto e controllato il reso, il rimborso viene elaborato entro
+              5-10 giorni lavorativi con lo stesso metodo di pagamento utilizzato per
+              l&apos;acquisto.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 2: Verify the build**
+
+Run: `npx tsc --noEmit`
+Expected: no errors
+
+Run: `npm run build`
+Expected: build succeeds, new static route `○ /resi-e-rimborsi` appears in the route list
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add app/resi-e-rimborsi/page.tsx
+git commit -m "feat: add resi e rimborsi page"
+```

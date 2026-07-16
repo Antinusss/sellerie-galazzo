@@ -1,0 +1,110 @@
+### Task 4: FAQ page
+
+**Files:**
+- Create: `app/faq/page.tsx`
+
+**Interfaces:**
+- None — standalone client page (no other file consumes anything from it).
+
+- [ ] **Step 1: Create the page**
+
+Create `app/faq/page.tsx`:
+
+```tsx
+'use client'
+import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
+
+interface FaqItem {
+  question: string
+  answer: string
+}
+
+interface FaqCategory {
+  title: string
+  items: FaqItem[]
+}
+
+const FAQ_CATEGORIES: FaqCategory[] = [
+  {
+    title: 'Ordini',
+    items: [
+      { question: 'Quali metodi di pagamento accettate?', answer: 'Accettiamo carta di credito/debito, PayPal, Klarna (pagamento a rate) e bonifico bancario.' },
+      { question: 'Come posso tracciare il mio ordine?', answer: 'Riceverai un’email con il link di tracciamento non appena il tuo ordine viene spedito.' },
+      { question: 'Posso modificare o annullare un ordine dopo averlo effettuato?', answer: 'Contattaci il prima possibile via email o WhatsApp: se l’ordine non è ancora stato spedito possiamo modificarlo o annullarlo.' },
+    ],
+  },
+  {
+    title: 'Spedizioni e resi',
+    items: [
+      { question: 'Quanto costa la spedizione?', answer: 'La spedizione standard è gratuita per ordini superiori a €80, altrimenti costa €5,90. La spedizione express costa €9,90.' },
+      { question: 'Spedite anche all’estero?', answer: 'Al momento spediamo solo in Italia. Per richieste internazionali contattaci direttamente.' },
+      { question: 'Come faccio un reso?', answer: 'Hai 14 giorni dalla ricezione per richiedere un reso scrivendo a info@selleriagalazzo.com con il numero d’ordine.' },
+    ],
+  },
+  {
+    title: 'Prodotti',
+    items: [
+      { question: 'I prodotti sono originali?', answer: 'Sì, vendiamo esclusivamente prodotti originali dei marchi che trovi in negozio, senza intermediari non autorizzati.' },
+      { question: 'Come scelgo la taglia giusta?', answer: 'Consulta la nostra guida alle taglie, disponibile per abbigliamento, stivali e coperte da cavallo.' },
+      { question: 'Vendete anche ad aziende o maneggi?', answer: 'Sì, per ordini all’ingrosso o forniture per maneggi scrivici a info@selleriagalazzo.com per un preventivo dedicato.' },
+    ],
+  },
+]
+
+export default function FaqPage() {
+  const [openIndex, setOpenIndex] = useState<string | null>(null)
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h1 className="text-4xl font-black mb-2">
+        Domande <em className="text-red">frequenti</em>
+      </h1>
+      <p className="text-gray-400 mb-10">Le risposte alle domande che ci fate più spesso.</p>
+
+      <div className="space-y-10">
+        {FAQ_CATEGORIES.map(category => (
+          <div key={category.title}>
+            <h2 className="font-black text-sm mb-4 text-sand uppercase tracking-wide">{category.title}</h2>
+            <div className="space-y-2">
+              {category.items.map((item, i) => {
+                const key = `${category.title}-${i}`
+                const isOpen = openIndex === key
+                return (
+                  <div key={key} className="border border-gray-200 rounded-xl overflow-hidden">
+                    <button
+                      onClick={() => setOpenIndex(isOpen ? null : key)}
+                      className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-semibold text-sm hover:bg-gray-light transition-colors"
+                    >
+                      {item.question}
+                      <ChevronDown size={18} className={`shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isOpen && (
+                      <p className="px-5 pb-4 text-sm text-gray-600">{item.answer}</p>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 2: Verify the build**
+
+Run: `npx tsc --noEmit`
+Expected: no errors
+
+Run: `npm run build`
+Expected: build succeeds, new static route `○ /faq` appears in the route list
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add app/faq/page.tsx
+git commit -m "feat: add faq page with accordion"
+```

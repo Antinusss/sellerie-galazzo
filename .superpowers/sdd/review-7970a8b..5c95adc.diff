@@ -1,0 +1,68 @@
+# Review package: 7970a8b54c9a73cf1559f0cdf352f92c3741124c..5c95adc
+
+## Commits
+5c95adc feat: wire footer assistenza links to real pages, fix placeholder P.IVA
+
+## Files changed
+ components/layout/Footer.tsx | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+## Diff
+diff --git a/components/layout/Footer.tsx b/components/layout/Footer.tsx
+index 52ba37b..7ee730e 100644
+--- a/components/layout/Footer.tsx
++++ b/components/layout/Footer.tsx
+@@ -32,22 +32,28 @@ export default function Footer() {
+               {topLevel.map(cat => (
+                 <li key={cat.slug.join('/')}>
+                   <Link href={`/shop/${cat.slug.join('/')}`} className="hover:text-white transition-colors">{cat.name}</Link>
+                 </li>
+               ))}
+             </ul>
+           </div>
+           <div>
+             <h4 className="font-bold mb-4 text-sand">Assistenza</h4>
+             <ul className="space-y-2 text-sm text-gray-400">
+-              {['Contattaci', 'Spedizioni', 'Resi e rimborsi', 'FAQ', 'Guida alle taglie'].map(l => (
+-                <li key={l}><a href="#" className="hover:text-white transition-colors">{l}</a></li>
++              {[
++                { label: 'Contattaci', href: '/contattaci' },
++                { label: 'Spedizioni', href: '/spedizioni' },
++                { label: 'Resi e rimborsi', href: '/resi-e-rimborsi' },
++                { label: 'FAQ', href: '/faq' },
++                { label: 'Guida alle taglie', href: '/guida-alle-taglie' },
++              ].map(l => (
++                <li key={l.href}><Link href={l.href} className="hover:text-white transition-colors">{l.label}</Link></li>
+               ))}
+             </ul>
+           </div>
+           <div>
+             <h4 className="font-bold mb-4 text-sand">Newsletter</h4>
+             <p className="text-sm text-gray-400 mb-4">Iscriviti e ricevi il 10% di sconto sul primo ordine.</p>
+             <div className="flex gap-2">
+               <input
+                 type="email"
+                 placeholder="La tua email"
+@@ -57,21 +63,21 @@ export default function Footer() {
+                 OK
+               </button>
+             </div>
+           </div>
+         </div>
+         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+           <p>© 2026 Selleria Galazzo di Biag Galazzo. Tutti i diritti riservati.</p>
+           <div className="flex items-center gap-6">
+             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+             <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
+-            <a href="#" className="hover:text-white transition-colors">P.IVA 00000000000</a>
++            <span>P.IVA 02144600893</span>
+             <button
+               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+               className="hover:text-white transition-colors"
+             >
+               ↑ Torna su
+             </button>
+           </div>
+         </div>
+       </div>
+     </footer>

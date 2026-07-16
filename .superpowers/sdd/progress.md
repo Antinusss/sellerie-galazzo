@@ -119,3 +119,19 @@ Plan: docs/superpowers/plans/2026-07-16-guide-photo-cards.md
 - Ready to merge, 0 Critical/Important findings (opus review)
 - [x] Cleanup: guard imageForHref against unresolvable category (commit follows, tests pass)
 - Accepted as-is: minor card-JSX duplication between guida-ai-prodotti page and home section (per reviewer's own YAGNI call — extract if a 3rd consumer appears)
+
+## Secondary Pages (2026-07-16)
+Plan: docs/superpowers/plans/2026-07-16-secondary-pages.md
+
+- [x] Task 1: contattaci page (commit b0d0f10, review clean; all contact data verified byte-for-byte correct)
+- [x] Task 2: spedizioni page (commit aeb0311, review clean; shipping numbers cross-verified against CartSummary/checkout/utils.ts, all consistent)
+- [x] Task 3: resi e rimborsi page (commit 4996bd6, review clean; real 14-day/email data verified byte-exact and consistent with contattaci page)
+- [x] Task 4: faq page with accordion (commit 8e81975, review clean; embedded shipping/return figures cross-verified consistent with Task 2/3 pages)
+- [x] Task 5: guida alle taglie page (commit 7970a8b, review clean; all 22 table rows verified transcribed exactly)
+- [x] Task 6: wire footer assistenza links + fix P.IVA (commit 5c95adc, review clean; all 5 hrefs and P.IVA verified byte-exact)
+- [x] Task 7: full build+test+manual verification (99/99 tests, 3275 pages, all 5 new routes verified rendering; social button hrefs/target/rel confirmed via DOM inspection; FAQ accordion single-open behavior confirmed; guida-alle-taglie tables confirmed no overflow)
+
+## Final whole-branch review (2026-07-16)
+- Ready to merge, 0 Critical/Important findings (opus review); shipping/return figures cross-verified against CartSummary.tsx/checkout code, all consistent
+- [x] Cleanup: fixed pre-existing footer copyright typo "Biag Galazzo" -> "Biagio Galazzo" (commit 11e8e48, tests pass)
+- Accepted as-is: phone/WhatsApp not tel:/wa.me links, m.facebook.com host, pre-existing Privacy/Cookie Policy dead links (out of scope) — minor polish, not blocking
