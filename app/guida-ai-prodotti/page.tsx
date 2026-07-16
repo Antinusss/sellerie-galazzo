@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { GUIDE_LINKS } from '@/lib/guide-links'
 
 export const metadata = { title: 'Guida ai prodotti — Selleria Galazzo' }
@@ -14,9 +15,18 @@ export default function GuidaAiProdottiPage() {
           <Link
             key={link.href}
             href={link.href}
-            className="flex items-center justify-center text-center bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow font-semibold text-black hover:text-red"
+            className="group relative block aspect-[4/3] rounded-2xl overflow-hidden border-2 border-transparent hover:border-sand transition-all duration-300"
           >
-            {link.label}
+            <Image
+              src={link.image}
+              alt={link.label}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <h3 className="text-white font-black">{link.label}</h3>
+            </div>
           </Link>
         ))}
       </div>
