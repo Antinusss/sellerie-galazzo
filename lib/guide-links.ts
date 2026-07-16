@@ -31,6 +31,7 @@ const products = productsData as Product[]
 function imageForHref(href: string): string {
   const slugPath = href.replace('/shop/', '').split('/')
   const category = findCategoryBySlugPath(categories, slugPath)
+  if (!category) return ''
   const match = productsUnderCategory(products, category).find(p => p.images[0])
   return match?.images[0] ?? ''
 }
