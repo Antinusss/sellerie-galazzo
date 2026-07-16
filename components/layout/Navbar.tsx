@@ -12,6 +12,7 @@ import brandsData from '@/data/brands.json'
 import type { Category, Brand } from '@/lib/types'
 import { getChildren } from '@/lib/category-tree'
 import { BRANCH_IMAGES } from '@/lib/branch-images'
+import { GUIDE_LINKS } from '@/lib/guide-links'
 import HeaderSearchBar from './HeaderSearchBar'
 
 const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false })
@@ -20,17 +21,6 @@ const categories = categoriesData as Category[]
 const brands = brandsData as Brand[]
 const topLevel = getChildren(categories, undefined)
 const topBrands = [...brands].sort((a, b) => b.productCount - a.productCount).slice(0, 12)
-
-const GUIDE_LINKS = [
-  { label: 'Cura del cavallo', href: '/shop/scuderia/cura-del-cavallo' },
-  { label: 'Cura del cuoio', href: '/shop/scuderia/cura-del-cuoio' },
-  { label: 'Attrezzatura da scuderia', href: '/shop/scuderia/attrezzatura-da-scuderia' },
-  { label: 'Selle e accessori (Inglese)', href: '/shop/monta-inglese/cavallo/selle-e-accessori' },
-  { label: 'Coperte', href: '/shop/monta-inglese/cavallo/coperte' },
-  { label: 'Protezioni', href: '/shop/monta-inglese/cavallo/protezioni' },
-  { label: 'Selle e accessori (Western)', href: '/shop/monta-western/cavallo/selle-e-accessori' },
-  { label: 'Briglie e accessori', href: '/shop/monta-inglese/cavallo/briglie-e-accessori' },
-]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -198,9 +188,9 @@ export default function Navbar() {
           </Link>
 
           <div className="group relative">
-            <span className="text-sm font-medium text-black h-12 inline-flex items-center cursor-default">
+            <Link href="/guida-ai-prodotti" className="text-sm font-medium text-black hover:text-red transition-colors h-12 inline-flex items-center">
               Guida ai prodotti
-            </span>
+            </Link>
             <div className="absolute right-0 top-full hidden group-hover:block bg-white shadow-lg rounded-xl p-6 z-50 w-64">
               <div className="flex flex-col gap-2">
                 {GUIDE_LINKS.map(link => (
