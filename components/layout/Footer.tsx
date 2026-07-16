@@ -66,7 +66,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <p>© 2026 Selleria Galazzo di Biag Galazzo. Tutti i diritti riservati.</p>
+          <p>© 2026 Selleria Galazzo di Biagio Galazzo. Tutti i diritti riservati.</p>
           <div className="flex items-center gap-6">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
