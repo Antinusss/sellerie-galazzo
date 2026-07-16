@@ -39,8 +39,14 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-4 text-sand">Assistenza</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              {['Contattaci', 'Spedizioni', 'Resi e rimborsi', 'FAQ', 'Guida alle taglie'].map(l => (
-                <li key={l}><a href="#" className="hover:text-white transition-colors">{l}</a></li>
+              {[
+                { label: 'Contattaci', href: '/contattaci' },
+                { label: 'Spedizioni', href: '/spedizioni' },
+                { label: 'Resi e rimborsi', href: '/resi-e-rimborsi' },
+                { label: 'FAQ', href: '/faq' },
+                { label: 'Guida alle taglie', href: '/guida-alle-taglie' },
+              ].map(l => (
+                <li key={l.href}><Link href={l.href} className="hover:text-white transition-colors">{l.label}</Link></li>
               ))}
             </ul>
           </div>
@@ -64,7 +70,7 @@ export default function Footer() {
           <div className="flex items-center gap-6">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
-            <a href="#" className="hover:text-white transition-colors">P.IVA 00000000000</a>
+            <span>P.IVA 02144600893</span>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="hover:text-white transition-colors"
