@@ -43,7 +43,7 @@ export default function HeaderSearchBar() {
           e.preventDefault()
           if (!query.trim()) return
           setOpen(false)
-          router.push(`/cerca?q=${encodeURIComponent(query)}`)
+          router.push(`/cerca?q=${encodeURIComponent(query.trim())}`)
         }}
         className="flex items-center gap-2 bg-gray-light rounded-full px-4 py-2"
       >
