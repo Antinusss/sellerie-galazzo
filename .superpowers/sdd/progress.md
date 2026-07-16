@@ -106,3 +106,16 @@ Plan: docs/superpowers/plans/2026-07-16-menu-hero-search.md
 ## Final whole-branch review (2026-07-16)
 - Ready to merge, 0 Critical/Important findings (opus review)
 - [x] Cleanup: trim search query before URL push (commit follows, tests pass)
+
+## Guide Photo Cards (2026-07-16)
+Plan: docs/superpowers/plans/2026-07-16-guide-photo-cards.md
+
+- [x] Task 1: real product image per guide link (commit a990d0c, review clean; minor note on undefined-category fallback returning all products instead of empty, latent footgun not a current bug)
+- [x] Task 2: restyle guida ai prodotti page with photo cards (commit d1dbfaf, review clean)
+- [x] Task 3: home guide-links shortcut section (commit 27c80e4, review clean)
+- [x] Task 4: full build+test+manual verification (99/99 tests, 3269 pages, curl+browser checks clean, all 8 real product photos verified rendering + click-through)
+
+## Final whole-branch review (2026-07-16)
+- Ready to merge, 0 Critical/Important findings (opus review)
+- [x] Cleanup: guard imageForHref against unresolvable category (commit follows, tests pass)
+- Accepted as-is: minor card-JSX duplication between guida-ai-prodotti page and home section (per reviewer's own YAGNI call — extract if a 3rd consumer appears)

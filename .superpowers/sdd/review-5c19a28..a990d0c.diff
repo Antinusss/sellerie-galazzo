@@ -1,0 +1,85 @@
+# Review package: 5c19a2847de97823188d6dc6333648a6da62e93d..a990d0c
+
+## Commits
+a990d0c feat: resolve a real product image per guide link category
+
+## Files changed
+ __tests__/guide-links.test.ts | 21 +++++++++++++++++++++
+ lib/guide-links.ts            | 28 +++++++++++++++++++++++++++-
+ 2 files changed, 48 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/__tests__/guide-links.test.ts b/__tests__/guide-links.test.ts
+new file mode 100644
+index 0000000..cd226d2
+--- /dev/null
++++ b/__tests__/guide-links.test.ts
+@@ -0,0 +1,21 @@
++import { GUIDE_LINKS } from '@/lib/guide-links'
++
++describe('GUIDE_LINKS', () => {
++  it('has 8 entries', () => {
++    expect(GUIDE_LINKS).toHaveLength(8)
++  })
++
++  it('every entry has a non-empty label, href, and image', () => {
++    for (const link of GUIDE_LINKS) {
++      expect(link.label.length).toBeGreaterThan(0)
++      expect(link.href.startsWith('/shop/')).toBe(true)
++      expect(link.image.length).toBeGreaterThan(0)
++    }
++  })
++
++  it('resolves a real product image for a known category', () => {
++    const cureDelCavallo = GUIDE_LINKS.find(l => l.href === '/shop/scuderia/cura-del-cavallo')
++    expect(cureDelCavallo).toBeDefined()
++    expect(cureDelCavallo!.image).toMatch(/^https:\/\/selleriagalazzo\.com\//)
++  })
++})
+diff --git a/lib/guide-links.ts b/lib/guide-links.ts
+index 50c55e7..2a16e8b 100644
+--- a/lib/guide-links.ts
++++ b/lib/guide-links.ts
+@@ -1,15 +1,41 @@
++import categoriesData from '@/data/categories.json'
++import productsData from '@/data/products.json'
++import type { Category, Product } from './types'
++import { findCategoryBySlugPath, productsUnderCategory } from './category-tree'
++
+ export interface GuideLink {
+   label: string
+   href: string
++  image: string
++}
++
++interface RawGuideLink {
++  label: string
++  href: string
+ }
+ 
+-export const GUIDE_LINKS: GuideLink[] = [
++const RAW_GUIDE_LINKS: RawGuideLink[] = [
+   { label: 'Cura del cavallo', href: '/shop/scuderia/cura-del-cavallo' },
+   { label: 'Cura del cuoio', href: '/shop/scuderia/cura-del-cuoio' },
+   { label: 'Attrezzatura da scuderia', href: '/shop/scuderia/attrezzatura-da-scuderia' },
+   { label: 'Selle e accessori (Inglese)', href: '/shop/monta-inglese/cavallo/selle-e-accessori' },
+   { label: 'Coperte', href: '/shop/monta-inglese/cavallo/coperte' },
+   { label: 'Protezioni', href: '/shop/monta-inglese/cavallo/protezioni' },
+   { label: 'Selle e accessori (Western)', href: '/shop/monta-western/cavallo/selle-e-accessori' },
+   { label: 'Briglie e accessori', href: '/shop/monta-inglese/cavallo/briglie-e-accessori' },
+ ]
++
++const categories = categoriesData as Category[]
++const products = productsData as Product[]
++
++function imageForHref(href: string): string {
++  const slugPath = href.replace('/shop/', '').split('/')
++  const category = findCategoryBySlugPath(categories, slugPath)
++  const match = productsUnderCategory(products, category).find(p => p.images[0])
++  return match?.images[0] ?? ''
++}
++
++export const GUIDE_LINKS: GuideLink[] = RAW_GUIDE_LINKS.map(link => ({
++  ...link,
++  image: imageForHref(link.href),
++}))

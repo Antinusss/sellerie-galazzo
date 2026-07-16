@@ -1,0 +1,52 @@
+# Review package: a990d0c1a9d0f8cc1751fc238dde3f9dbe4d17df..d1dbfaf
+
+## Commits
+d1dbfaf feat: restyle guida ai prodotti page with photo cards
+
+## Files changed
+ app/guida-ai-prodotti/page.tsx | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+## Diff
+diff --git a/app/guida-ai-prodotti/page.tsx b/app/guida-ai-prodotti/page.tsx
+index b061185..f981d04 100644
+--- a/app/guida-ai-prodotti/page.tsx
++++ b/app/guida-ai-prodotti/page.tsx
+@@ -1,25 +1,35 @@
+ import Link from 'next/link'
++import Image from 'next/image'
+ import { GUIDE_LINKS } from '@/lib/guide-links'
+ 
+ export const metadata = { title: 'Guida ai prodotti — Selleria Galazzo' }
+ 
+ export default function GuidaAiProdottiPage() {
+   return (
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+       <h1 className="text-4xl font-black mb-8">
+         Guida ai <em className="text-red">prodotti</em>
+       </h1>
+       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+         {GUIDE_LINKS.map(link => (
+           <Link
+             key={link.href}
+             href={link.href}
+-            className="flex items-center justify-center text-center bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow font-semibold text-black hover:text-red"
++            className="group relative block aspect-[4/3] rounded-2xl overflow-hidden border-2 border-transparent hover:border-sand transition-all duration-300"
+           >
+-            {link.label}
++            <Image
++              src={link.image}
++              alt={link.label}
++              fill
++              className="object-cover group-hover:scale-105 transition-transform duration-500"
++            />
++            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
++            <div className="absolute bottom-0 left-0 right-0 p-4">
++              <h3 className="text-white font-black">{link.label}</h3>
++            </div>
+           </Link>
+         ))}
+       </div>
+     </div>
+   )
+ }
