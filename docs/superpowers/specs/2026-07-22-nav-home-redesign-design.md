@@ -14,6 +14,7 @@ Restyle the mega menu, home hero, and home category section to reference layouts
 - Hero switches from the current full-screen background photo (added 2026-07-16) to a contained banner + sidebar layout. This explicitly reverses that prior decision per client's new reference.
 - Home category section replaces `CategoryGrid.tsx` entirely (not additive).
 - Home category rows and hero's quick-category cards both reuse `GUIDE_LINKS` (8 curated categories, already has real product photos via `lib/guide-links.ts`) rather than inventing new curation.
+- The existing `GuideLinksSection` (a static 8-item `GUIDE_LINKS` photo grid, currently sitting directly below `CategoryGrid` on the home page) is deleted entirely. `app/page.tsx` is its only consumer — `/guida-ai-prodotti` has its own separate inline page component (also built on `GUIDE_LINKS`, but not this component), so nothing else breaks. The new category-showcase rows (below) already cover the first 4 `GUIDE_LINKS` entries with real product data, making the old static grid redundant immediately adjacent to it.
 
 ## 1. Mega Menu (`components/layout/Navbar.tsx`)
 
