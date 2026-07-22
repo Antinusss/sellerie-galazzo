@@ -1,3 +1,6 @@
+import type { Category, Product } from './types'
+import { productsUnderCategory } from './category-tree'
+
 export interface Review {
   author: string
   rating: number
@@ -62,4 +65,11 @@ export function getReviewSummary(productId: string): ReviewSummary {
   })
 
   return { rating, count, reviews }
+}
+
+export function topBestsellers(products: Product[], category: Category | undefined, limit: number): Product[] {
+  return productsUnderCategory(products, category)
+    .slice()
+    .sort((a, b) => getReviewSummary(b.id).count - getReviewSummary(a.id).count)
+    .slice(0, limit)
 }

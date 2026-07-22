@@ -1,4 +1,5 @@
-import { getReviewSummary } from '@/lib/reviews'
+import { getReviewSummary, topBestsellers } from '@/lib/reviews'
+import type { Category, Product } from '@/lib/types'
 
 describe('getReviewSummary', () => {
   it('is deterministic for the same product id', () => {
@@ -48,5 +49,38 @@ describe('getReviewSummary', () => {
   it('does not throw for a non-numeric id and stays deterministic', () => {
     expect(() => getReviewSummary('abc')).not.toThrow()
     expect(getReviewSummary('abc')).toEqual(getReviewSummary('abc'))
+  })
+})
+
+const categories: Category[] = [
+  { path: ['Monta Inglese'], slug: ['monta-inglese'], name: 'Monta Inglese', depth: 1, productCount: 3 },
+]
+
+function product(id: string, categoryPath: string[]): Product {
+  return {
+    id, name: `P${id}`, slug: `p${id}`, price: 100, originalPrice: null,
+    category: categoryPath[0], categoryPath, brand: 'X', images: [],
+    description: '', specs: '', inStock: true,
+  }
+}
+
+const products: Product[] = [
+  product('1', ['Monta Inglese']),
+  product('2', ['Monta Inglese']),
+  product('3', ['Monta Inglese']),
+  product('4', ['Scuderia']),
+]
+
+describe('topBestsellers', () => {
+  it('ranks products by review count descending', () => {
+    expect(topBestsellers(products, undefined, 4).map(p => p.id)).toEqual(['4', '3', '2', '1'])
+  })
+
+  it('filters to the given category before ranking', () => {
+    expect(topBestsellers(products, categories[0], 4).map(p => p.id)).toEqual(['3', '2', '1'])
+  })
+
+  it('respects the limit', () => {
+    expect(topBestsellers(products, undefined, 2)).toHaveLength(2)
   })
 })
