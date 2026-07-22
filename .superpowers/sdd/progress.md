@@ -149,3 +149,13 @@ Plan: docs/superpowers/plans/2026-07-22-nav-home-redesign.md
 - Ready to merge, 0 Critical findings (opus review); topBestsellers/formatPrice/lucide-icon usage cross-verified consistent, zero dangling references to deleted files
 - [x] Cleanup: hoisted mega menu featured-products computation to module load instead of per-render (was re-sorting 3066 products on every scroll tick) (commit 240c9d3, tests pass)
 - Minor accepted as-is: categoryForHref in CategoryShowcase.tsx duplicates lib/guide-links.ts's imageForHref lookup logic — cosmetic DRY nit, not worth extracting for a single duplicate use
+
+## Category Page SEO Description (2026-07-23)
+Plan: docs/superpowers/plans/2026-07-23-category-seo-description.md
+
+- [x] Task 1: categoryDescription template helper (commit 300292e, review clean)
+- [x] Task 2: wire visible description + meta description into category page (commit f9f8e34, review clean)
+- [x] Task 3: full build+test+manual verification (105/105 tests, 3274 pages, branch/deep-category descriptions confirmed real, root /shop no-description + spacing confirmed, meta tag confirmed matching visible text)
+
+## Final whole-branch review (2026-07-23)
+- Ready to merge, 0 Critical/Important/Minor findings (opus review); single-source-of-truth confirmed (visible paragraph + meta tag call same helper on same resolved category), depth-2 parent-lookup edge case confirmed intentional and correct, scope confirmed exactly 3 files touched
