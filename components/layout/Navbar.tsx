@@ -24,6 +24,7 @@ const brands = brandsData as Brand[]
 const products = productsData as Product[]
 const topLevel = getChildren(categories, undefined)
 const topBrands = [...brands].sort((a, b) => b.productCount - a.productCount).slice(0, 12)
+const featuredByBranch = new Map(topLevel.map(cat => [cat.name, topBestsellers(products, cat, 4)]))
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -107,7 +108,7 @@ export default function Navbar() {
             const midCats = getChildren(categories, cat).filter(mid => getChildren(categories, mid).length > 0)
             const activeMidSlug = activeMid[cat.name] ?? midCats[0]?.slug.join('/')
             const activeMidCat = midCats.find(m => m.slug.join('/') === activeMidSlug)
-            const featured = topBestsellers(products, cat, 4)
+            const featured = featuredByBranch.get(cat.name) ?? []
 
             return (
               <div
