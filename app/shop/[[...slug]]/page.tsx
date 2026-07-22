@@ -1,9 +1,11 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import allProducts from '@/data/products.json'
 import allCategories from '@/data/categories.json'
 import type { Product, Category } from '@/lib/types'
 import { findCategoryBySlugPath, productsUnderCategory, breadcrumbFor } from '@/lib/category-tree'
+import { categoryDescription } from '@/lib/category-description'
 import ShopCategoryClient from '@/components/shop/ShopCategoryClient'
 
 interface Props { params: { slug?: string[] } }
@@ -11,6 +13,20 @@ interface Props { params: { slug?: string[] } }
 export async function generateStaticParams() {
   const nodes = (allCategories as Category[]).map(c => ({ slug: c.slug }))
   return [{ slug: [] }, ...nodes]
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const slugPath = params.slug ?? []
+  const category = slugPath.length > 0
+    ? findCategoryBySlugPath(allCategories as Category[], slugPath)
+    : undefined
+
+  if (!category) return { title: 'Shop — Selleria Galazzo' }
+
+  return {
+    title: `${category.name} — Selleria Galazzo`,
+    description: categoryDescription(category),
+  }
 }
 
 export default function ShopPage({ params }: Props) {
@@ -27,9 +43,12 @@ export default function ShopPage({ params }: Props) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <p className="text-xs text-gray-400 mb-2">{breadcrumbFor(category)}</p>
-      <h1 className="text-4xl font-black mb-8">
+      <h1 className={`text-4xl font-black ${category ? 'mb-3' : 'mb-8'}`}>
         {title} <em className="text-red">Shop</em>
       </h1>
+      {category && (
+        <p className="text-sm text-gray-500 max-w-2xl mb-8">{categoryDescription(category)}</p>
+      )}
       <Suspense fallback={<div>Caricamento...</div>}>
         <ShopCategoryClient products={products} currentPath={slugPath} />
       </Suspense>
