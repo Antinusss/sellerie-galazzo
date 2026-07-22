@@ -135,3 +135,17 @@ Plan: docs/superpowers/plans/2026-07-16-secondary-pages.md
 - Ready to merge, 0 Critical/Important findings (opus review); shipping/return figures cross-verified against CartSummary.tsx/checkout code, all consistent
 - [x] Cleanup: fixed pre-existing footer copyright typo "Biag Galazzo" -> "Biagio Galazzo" (commit 11e8e48, tests pass)
 - Accepted as-is: phone/WhatsApp not tel:/wa.me links, m.facebook.com host, pre-existing Privacy/Cookie Policy dead links (out of scope) — minor polish, not blocking
+
+## Nav & Home Redesign (2026-07-22)
+Plan: docs/superpowers/plans/2026-07-22-nav-home-redesign.md
+
+- [x] Task 1: topBestsellers ranking helper (commit e21c12a, review clean)
+- [x] Task 2: mega menu 3-column interactive panel (commit f7ca4ad, review clean; minor note accepted — topBestsellers recomputed per render loop iteration, no perf complaint, useMemo candidate if needed later)
+- [x] Task 3: hero rewrite as product-conversion banner (commit d948e42, review clean; exact byte match to brief, old brand-story content fully removed)
+- [x] Task 4: CategoryShowcase (promo tile + bestseller rows), delete CategoryGrid/GuideLinksSection/branch-images (commit 223813f, review clean; grep confirms zero dangling references)
+- [x] Task 5: full build+test+manual verification (102/102 tests, 3274 pages, mega menu interactive hover confirmed, home category showcase + add-to-cart confirmed, zero console errors)
+
+## Final whole-branch review (2026-07-22)
+- Ready to merge, 0 Critical findings (opus review); topBestsellers/formatPrice/lucide-icon usage cross-verified consistent, zero dangling references to deleted files
+- [x] Cleanup: hoisted mega menu featured-products computation to module load instead of per-render (was re-sorting 3066 products on every scroll tick) (commit 240c9d3, tests pass)
+- Minor accepted as-is: categoryForHref in CategoryShowcase.tsx duplicates lib/guide-links.ts's imageForHref lookup logic — cosmetic DRY nit, not worth extracting for a single duplicate use
