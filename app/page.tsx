@@ -1,6 +1,5 @@
 import HeroSection from '@/components/home/HeroSection'
-import CategoryGrid from '@/components/home/CategoryGrid'
-import GuideLinksSection from '@/components/home/GuideLinksSection'
+import CategoryShowcase from '@/components/home/CategoryShowcase'
 import NewArrivalsCarousel from '@/components/home/NewArrivalsCarousel'
 import BestsellersSection from '@/components/home/BestsellersSection'
 import TrustSection from '@/components/home/TrustSection'
@@ -11,8 +10,7 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <CategoryGrid />
-      <GuideLinksSection />
+      <CategoryShowcase />
       <NewArrivalsCarousel />
       <BestsellersSection />
       <TrustSection />
