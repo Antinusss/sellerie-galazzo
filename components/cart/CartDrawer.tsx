@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
 import { formatPrice, FREE_SHIPPING_THRESHOLD } from '@/lib/utils'
+import PaymentBadges from '@/components/shared/PaymentBadges'
 
 export default function CartDrawer() {
   const { items, totalItems, totalPrice, isCartOpen, closeCart, removeItem, updateQuantity } = useCartStore()
@@ -98,6 +99,9 @@ export default function CartDrawer() {
                 >
                   Vai al checkout
                 </Link>
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-center">
+                <PaymentBadges methods={['visa', 'mastercard', 'paypal', 'amex', 'maestro']} />
               </div>
             </div>
           </>

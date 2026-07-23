@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/lib/store'
 import { formatPrice, FREE_SHIPPING_THRESHOLD } from '@/lib/utils'
+import PaymentBadges from '@/components/shared/PaymentBadges'
 
 export default function CartSummary() {
   const { totalPrice } = useCartStore()
@@ -49,12 +50,23 @@ export default function CartSummary() {
         </div>
       </div>
 
+      <ul className="space-y-2 text-xs text-gray-500 mb-4">
+        <li>Consegna a domicilio disponibile</li>
+        <li>Pagamento sicuro SSL</li>
+        <li>Reso entro 14 giorni</li>
+      </ul>
+
       <Link
         href="/checkout"
         className="block w-full bg-red text-white text-center py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
       >
         Procedi al checkout
       </Link>
+
+      <div className="mt-4 pt-4 border-t border-gray-300">
+        <p className="text-xs text-gray-400 mb-2">Pagamento sicuro e protetto</p>
+        <PaymentBadges methods={['visa', 'mastercard', 'paypal', 'amex', 'maestro']} />
+      </div>
     </div>
   )
 }
