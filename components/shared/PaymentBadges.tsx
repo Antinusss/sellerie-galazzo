@@ -7,7 +7,7 @@ const STYLES: Record<string, string> = {
   amex: 'bg-[#006FCF] text-white',
   maestro: 'bg-[#0099DF] text-white',
   klarna: 'bg-[#FFB3C7] text-black',
-  applepay: 'bg-black text-white',
+  applepay: 'bg-zinc-800 text-white',
   googlepay: 'bg-white text-black border border-gray-200',
 }
 
