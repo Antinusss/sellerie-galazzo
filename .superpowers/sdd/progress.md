@@ -159,3 +159,16 @@ Plan: docs/superpowers/plans/2026-07-23-category-seo-description.md
 
 ## Final whole-branch review (2026-07-23)
 - Ready to merge, 0 Critical/Important/Minor findings (opus review); single-source-of-truth confirmed (visible paragraph + meta tag call same helper on same resolved category), depth-2 parent-lookup edge case confirmed intentional and correct, scope confirmed exactly 3 files touched
+
+## Cart & Checkout Trust Redesign (2026-07-23)
+Plan: docs/superpowers/plans/2026-07-23-cart-checkout-trust.md
+
+- [x] Task 1: PaymentBadges component + payment-methods data (commit 7903cea, review clean; Tailwind-purge risk verified avoided — zero classes in lib/, all in components/)
+- [x] Task 2: cart trust wiring in CartSummary + CartDrawer (commit 0c4b2e9, review clean)
+- [x] Task 3: checkout one-page conversion, delete CheckoutSteps (commit a6a4da8, review clean; zero remaining references confirmed)
+- [x] Task 4: OrderSummary trust wiring (commit ef4a81e, review clean; correct 6-method list confirmed distinct from cart 5-method set)
+- [x] Task 5: full build+test+manual verification (105/105 tests, 3274 pages, cart+drawer payment badges confirmed correctly colored no purge, checkout one-page confirmed no stepper + conditional payment fields still switch, single Conferma ordine button confirmed)
+
+## Final whole-branch review (2026-07-23)
+- Ready to merge, 0 Critical/Important findings (opus review); Tailwind-purge constraint independently re-verified across all commits, checkout field/handler preservation confirmed byte-identical, trust copy cross-checked against real site facts (resi-e-rimborsi, faq, hero, ProductInfo)
+- [x] Cleanup: distinguished Apple Pay badge from Mastercard (both were bg-black) (commit 4c7fb06, tests pass)

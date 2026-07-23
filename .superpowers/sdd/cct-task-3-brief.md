@@ -1,0 +1,184 @@
+### Task 3: Checkout one-page conversion
+
+**Files:**
+- Modify: `app/checkout/page.tsx`
+- Delete: `components/checkout/CheckoutSteps.tsx`
+
+**Interfaces:**
+- None new — this task removes the `CheckoutSteps` import/render and the `step` state, keeping every existing form field, radio option, and the final submit handler unchanged.
+
+- [ ] **Step 1: Replace the full file**
+
+Replace the entire contents of `app/checkout/page.tsx` with:
+
+```tsx
+'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCartStore } from '@/lib/store'
+import OrderSummary from '@/components/checkout/OrderSummary'
+
+export default function CheckoutPage() {
+  const [form, setForm] = useState({ email: '', nome: '', cognome: '', indirizzo: '', cap: '', citta: '', shipping: 'standard' })
+  const [payment, setPayment] = useState('card')
+  const router = useRouter()
+  const { clearCart } = useCartStore()
+
+  const updateForm = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }))
+
+  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sand transition-colors"
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <h1 className="text-3xl font-black mb-8">Checkout</h1>
+      <div className="flex flex-col lg:flex-row gap-10">
+        {/* Form area */}
+        <div className="flex-1 space-y-10">
+          <div className="space-y-5">
+            <h2 className="text-2xl font-black">Contatti e indirizzo</h2>
+            <input type="email" autoComplete="email" placeholder="Email *" value={form.email} onChange={e => updateForm('email', e.target.value)} className={inputClass} />
+            <div className="grid grid-cols-2 gap-4">
+              <input autoComplete="given-name" placeholder="Nome *" value={form.nome} onChange={e => updateForm('nome', e.target.value)} className={inputClass} />
+              <input autoComplete="family-name" placeholder="Cognome *" value={form.cognome} onChange={e => updateForm('cognome', e.target.value)} className={inputClass} />
+            </div>
+            <input autoComplete="street-address" placeholder="Indirizzo *" value={form.indirizzo} onChange={e => updateForm('indirizzo', e.target.value)} className={inputClass} />
+            <div className="grid grid-cols-3 gap-4">
+              <input inputMode="numeric" autoComplete="postal-code" placeholder="CAP *" value={form.cap} onChange={e => updateForm('cap', e.target.value)} className={inputClass} />
+              <input autoComplete="address-level2" placeholder="Città *" value={form.citta} onChange={e => updateForm('citta', e.target.value)} className={`${inputClass} col-span-2`} />
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            <h2 className="text-2xl font-black">Metodo di spedizione</h2>
+            {[
+              { id: 'standard', label: 'Standard', desc: '3-5 giorni lavorativi', price: 'Gratuita sopra €80, altrimenti €5,90' },
+              { id: 'express', label: 'Express', desc: '1-2 giorni lavorativi', price: '€9,90' },
+            ].map(opt => (
+              <label
+                key={opt.id}
+                className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                  form.shipping === opt.id ? 'border-red bg-red/5' : 'border-gray-200 hover:border-sand'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="shipping"
+                    value={opt.id}
+                    checked={form.shipping === opt.id}
+                    onChange={() => updateForm('shipping', opt.id)}
+                    className="accent-red"
+                  />
+                  <div>
+                    <p className="font-bold text-sm">{opt.label}</p>
+                    <p className="text-xs text-gray-400">{opt.desc}</p>
+                  </div>
+                </div>
+                <p className="text-sm font-semibold">{opt.price}</p>
+              </label>
+            ))}
+          </div>
+
+          <div className="space-y-5">
+            <h2 className="text-2xl font-black">Pagamento</h2>
+            <div className="bg-gray-light rounded-xl p-4 text-xs text-gray-400 flex items-center gap-2">
+              🔒 Connessione sicura — I tuoi dati sono protetti con crittografia SSL
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { id: 'card', label: 'Carta di credito/debito' },
+                { id: 'paypal', label: 'PayPal' },
+                { id: 'klarna', label: 'Klarna — Paga a rate' },
+                { id: 'bonifico', label: 'Bonifico bancario' },
+              ].map(opt => (
+                <label
+                  key={opt.id}
+                  className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                    payment === opt.id ? 'border-red bg-red/5' : 'border-gray-200 hover:border-sand'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payment"
+                    value={opt.id}
+                    checked={payment === opt.id}
+                    onChange={() => setPayment(opt.id)}
+                    className="accent-red"
+                  />
+                  <span className="font-semibold text-sm">{opt.label}</span>
+                </label>
+              ))}
+            </div>
+
+            {payment === 'card' && (
+              <>
+                <input inputMode="numeric" autoComplete="cc-number" placeholder="Numero carta *" className={inputClass} maxLength={19} />
+                <div className="grid grid-cols-2 gap-4">
+                  <input autoComplete="cc-exp" placeholder="Scadenza MM/AA *" className={inputClass} />
+                  <input inputMode="numeric" autoComplete="cc-csc" placeholder="CVV *" className={inputClass} maxLength={4} />
+                </div>
+                <input autoComplete="cc-name" placeholder="Nome sulla carta *" className={inputClass} />
+              </>
+            )}
+            {payment === 'paypal' && (
+              <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                Verrai reindirizzato a PayPal per completare il pagamento in sicurezza.
+              </p>
+            )}
+            {payment === 'klarna' && (
+              <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                Paga in 3 rate senza interessi o tra 30 giorni con Klarna. Verrai reindirizzato a Klarna per completare l&apos;acquisto.
+              </p>
+            )}
+            {payment === 'bonifico' && (
+              <p className="text-sm text-gray-600 bg-gray-light rounded-xl p-4">
+                Riceverai le coordinate bancarie via email per completare il bonifico. L&apos;ordine sarà spedito alla ricezione del pagamento.
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={() => { clearCart(); router.push('/checkout/success') }}
+            className="w-full bg-red text-white py-4 rounded-full font-bold hover:bg-red-dark transition-colors"
+          >
+            Conferma ordine
+          </button>
+        </div>
+
+        {/* Order summary sidebar */}
+        <div className="lg:w-80">
+          <OrderSummary />
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+- [ ] **Step 2: Delete `CheckoutSteps.tsx`**
+
+```bash
+git rm components/checkout/CheckoutSteps.tsx
+```
+
+- [ ] **Step 3: Verify the build**
+
+Run: `npx tsc --noEmit`
+Expected: no errors — in particular, no "unused import" or "cannot find module" errors referencing `CheckoutSteps`.
+
+Run: `grep -rn "CheckoutSteps" --include="*.tsx" --include="*.ts" . | grep -v node_modules`
+Expected: no output (zero remaining references anywhere in the repo).
+
+Run: `npm run build`
+Expected: build succeeds, `/checkout` route still generates.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add "app/checkout/page.tsx" components/checkout/CheckoutSteps.tsx
+git commit -m "feat: convert checkout from 3-step wizard to single page"
+```
+
+---
+
