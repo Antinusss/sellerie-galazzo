@@ -2,6 +2,7 @@
 import Image from 'next/image'
 import { useCartStore } from '@/lib/store'
 import { formatPrice } from '@/lib/utils'
+import PaymentBadges from '@/components/shared/PaymentBadges'
 
 export default function OrderSummary() {
   const { items, totalPrice } = useCartStore()
@@ -39,6 +40,17 @@ export default function OrderSummary() {
           <span>Totale</span>
           <span>{formatPrice(totalPrice + shipping)}</span>
         </div>
+      </div>
+
+      <ul className="space-y-2 text-xs text-gray-500 mt-4 pt-4 border-t border-gray-300">
+        <li>Spedizione gratuita sopra €80</li>
+        <li>Pagamento sicuro SSL</li>
+        <li>Reso entro 14 giorni</li>
+        <li>Paga in 3 rate con Klarna</li>
+      </ul>
+
+      <div className="mt-4 pt-4 border-t border-gray-300">
+        <PaymentBadges methods={['klarna', 'applepay', 'googlepay', 'visa', 'mastercard', 'amex']} />
       </div>
     </div>
   )
