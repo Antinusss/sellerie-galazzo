@@ -16,18 +16,20 @@ Add trust elements (delivery/security/return bullets, payment-method badges) to 
 
 ## Payment badges
 
-`lib/payment-methods.ts` exports a typed list of payment methods, each with `id`, `label`, `bg` (Tailwind background class), and `text` (Tailwind text-color class):
+`lib/payment-methods.ts` exports a typed list of payment methods, each with just `id` and `label`:
 
-| id | label | bg | text |
-|---|---|---|---|
-| visa | VISA | `bg-[#1A1F71]` | `text-white` |
-| mastercard | Mastercard | `bg-black` | `text-white` |
-| paypal | PayPal | `bg-[#003087]` | `text-white` |
-| amex | Amex | `bg-[#006FCF]` | `text-white` |
-| maestro | Maestro | `bg-[#0099DF]` | `text-white` |
-| klarna | Klarna | `bg-[#FFB3C7]` | `text-black` |
-| applepay | Apple Pay | `bg-black` | `text-white` |
-| googlepay | Google Pay | `bg-white border border-gray-200` | `text-black` |
+| id | label |
+|---|---|
+| visa | VISA |
+| mastercard | Mastercard |
+| paypal | PayPal |
+| amex | Amex |
+| maestro | Maestro |
+| klarna | Klarna |
+| applepay | Apple Pay |
+| googlepay | Google Pay |
+
+The Tailwind style classes per method (bg/text colors — `visa: bg-[#1A1F71] text-white`, `mastercard: bg-black text-white`, `paypal: bg-[#003087] text-white`, `amex: bg-[#006FCF] text-white`, `maestro: bg-[#0099DF] text-white`, `klarna: bg-[#FFB3C7] text-black`, `applepay: bg-black text-white`, `googlepay: bg-white text-black border border-gray-200`) live in `components/shared/PaymentBadges.tsx` itself, **not** in `lib/payment-methods.ts` — `tailwind.config.ts`'s `content` globs only scan `./pages/**`, `./components/**`, `./app/**` (not `./lib/**`), so any Tailwind class string placed in a `lib/` file would be silently purged from the production CSS build. Keeping the class strings inside the component file (already covered by the `./components/**` glob) avoids that bug entirely, no config change needed.
 
 `PaymentBadges` renders a `flex flex-wrap gap-2` row of small rounded-pill badges from a list of method ids passed in as a prop — cart uses `['visa','mastercard','paypal','amex','maestro']` (5, matching the reference screenshot exactly), checkout uses `['klarna','applepay','googlepay','visa','mastercard','amex']` (6, matching the broader "Klarna, Apple Pay, Google Pay, Visa, Mastercard, Amex" from the original request).
 
