@@ -58,7 +58,7 @@ export default function HeroSection() {
                   <div className="relative z-10 p-8 sm:p-10 max-w-xs">
                     <span className="inline-block bg-white text-xs font-bold px-3 py-1 rounded-full mb-4">{slide.category}</span>
                     <p className="text-xs text-gray-500 font-semibold mb-2">{String(activeSlide + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}</p>
-                    <h1 className="text-2xl sm:text-3xl font-black text-black leading-tight mb-3">{slide.name}</h1>
+                    <h1 className="text-2xl sm:text-3xl font-black text-black leading-tight mb-3 line-clamp-3">{slide.name}</h1>
                     <p className="font-black text-xl text-red mb-4">{formatPrice(slide.price)}</p>
                     <Link
                       href={`/prodotto/${slide.slug}`}
