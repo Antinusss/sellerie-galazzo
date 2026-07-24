@@ -172,3 +172,13 @@ Plan: docs/superpowers/plans/2026-07-23-cart-checkout-trust.md
 ## Final whole-branch review (2026-07-23)
 - Ready to merge, 0 Critical/Important findings (opus review); Tailwind-purge constraint independently re-verified across all commits, checkout field/handler preservation confirmed byte-identical, trust copy cross-checked against real site facts (resi-e-rimborsi, faq, hero, ProductInfo)
 - [x] Cleanup: distinguished Apple Pay badge from Mastercard (both were bg-black) (commit 4c7fb06, tests pass)
+
+## Hero Bento Redesign (2026-07-23/24)
+Plan: docs/superpowers/plans/2026-07-23-hero-bento-redesign.md
+
+- [x] Task 1: bento-grid hero rewrite (commit 49300fd, review clean; nested-anchor risk verified avoided, carousel index math verified correct both directions, no product overlap across slides/thumbnails/highlight)
+- [x] Task 2: full build+test+manual verification (105/105 tests, 3274 pages, carousel wrap-around confirmed, real product links confirmed; found+fixed real bug: long product names overflowed hero card overlapping navbar, fixed via line-clamp-3 commit e35ab97)
+
+## Final whole-branch review (2026-07-24)
+- Ready to merge, 0 Critical/Important findings (opus review); line-clamp fix independently re-verified correct, nested-anchor safety re-confirmed after the fix commit, disjoint-slice/index-math/icon/URL/no-autoplay/scope all re-checked clean
+- [x] Cleanup: applied same line-clamp fix to bestseller-highlight card name, same overflow risk class (commit 6ad2e65, tests pass)
