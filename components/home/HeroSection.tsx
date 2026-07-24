@@ -164,7 +164,7 @@ export default function HeroSection() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <span className="absolute top-4 left-4 bg-sand text-black text-xs font-bold px-3 py-1 rounded-full">Bestseller</span>
             <div className="relative z-10 p-5 text-white">
-              <p className="font-black text-sm leading-tight mb-1">{highlight.name}</p>
+              <p className="font-black text-sm leading-tight mb-1 line-clamp-2">{highlight.name}</p>
               <p className="text-xs flex items-center gap-1">
                 <Star size={12} className="fill-sand text-sand" /> {highlightRating.toFixed(1)} ({highlightCount})
               </p>
